@@ -1,0 +1,13 @@
+[package]
+name = "flutter_avif"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib", "cdylib"]
+
+
+[dependencies]
+flutter_rust_bridge = "1"
+libavif-sys = { version = "0.12.0", default-features = false, features = ["codec-aom"] }
+lazy_static = "1.4.0"
