@@ -63,11 +63,6 @@ class _MyAppState extends State<MyApp> {
               height: 200,
               fit: BoxFit.contain,
             ),
-            AvifImage.asset(
-              "assets/hato.avif",
-              height: 200,
-              fit: BoxFit.contain,
-            ),
             AvifImage.network(
               "https://ezgif.com/images/format-demo/butterfly.avif",
               height: 200,
