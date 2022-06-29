@@ -11,6 +11,12 @@ import 'dart:ui' as ui;
 
 import '../ffi.dart' as avif_ffi;
 
+/// Used to support both Flutter 2.x.x and 3.x.x
+///
+/// Private since this is the only file that produces
+/// binding warnings in the 3.x.x version of flutter.
+T? _ambiguate<T>(T? value) => value;
+
 class AvifImage extends StatefulWidget {
   final double? width;
   final double? height;
@@ -166,14 +172,14 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
     _scrollAwareContext = DisposableBuildContext<State<AvifImage>>(this);
   }
 
   @override
   void dispose() {
     assert(_imageStream != null);
-    WidgetsBinding.instance?.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     _stopListeningToStream();
     _completerHandle?.dispose();
     _scrollAwareContext.dispose();
@@ -276,7 +282,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
 
   void _updateInvertColors() {
     _invertColors = MediaQuery.maybeOf(context)?.invertColors ??
-        SemanticsBinding.instance?.accessibilityFeatures.invertColors ??
+        _ambiguate(SemanticsBinding.instance)?.accessibilityFeatures.invertColors ??
         false;
   }
 
@@ -362,7 +368,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      PaintingBinding.instance?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
       throw StateError('$file is empty and cannot be loaded as an image.');
     }
 
@@ -430,7 +436,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      PaintingBinding.instance?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
       throw StateError('$asset is empty and cannot be loaded as an image.');
     }
 
@@ -497,7 +503,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      PaintingBinding.instance?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
       throw StateError('$url is empty and cannot be loaded as an image.');
     }
 
@@ -799,7 +805,7 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
       return;
     }
     _frameCallbackScheduled = true;
-    SchedulerBinding.instance!.scheduleFrameCallback(_handleAppFrame);
+    _ambiguate(SchedulerBinding.instance)!.scheduleFrameCallback(_handleAppFrame);
   }
 
   void _emitFrame(ImageInfo imageInfo) {
