@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ^1.22.0
+  flutter_rust_bridge: ^1.38.2
 
 dev_dependencies:
   flutter_test:
@@ -24,4 +24,6 @@ flutter:
         package: com.teknorota.flutter_avif
         pluginClass: FlutterAvifPlugin
       ios:
+        pluginClass: FlutterAvifPlugin
+      macos:
         pluginClass: FlutterAvifPlugin
