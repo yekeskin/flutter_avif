@@ -27,3 +27,5 @@ flutter:
         pluginClass: FlutterAvifPlugin
       macos:
         pluginClass: FlutterAvifPlugin
+      linux:
+        pluginClass: FlutterAvifPlugin

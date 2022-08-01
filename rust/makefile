@@ -10,3 +10,7 @@ android:
 macos:
 	MACOSX_DEPLOYMENT_TARGET=10.11 cargo build --release
 	cp target/release/libflutter_avif.dylib ../macos/libflutter_avif.dylib
+
+linux:
+	cargo build --release
+	cp target/release/libflutter_avif.so ../linux/libflutter_avif.so
