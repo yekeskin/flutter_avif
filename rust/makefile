@@ -14,3 +14,7 @@ macos:
 linux:
 	cargo build --release
 	cp target/release/libflutter_avif.so ../linux/libflutter_avif.so
+
+windows:
+	cargo build --release
+	cp target/release/flutter_avif.dll ../windows/flutter_avif.dll

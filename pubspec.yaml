@@ -29,3 +29,5 @@ flutter:
         pluginClass: FlutterAvifPlugin
       linux:
         pluginClass: FlutterAvifPlugin
+      windows:
+        pluginClass: FlutterAvifPlugin
