@@ -8,13 +8,14 @@ import 'dart:io' as io;
 
 const _base = 'flutter_avif';
 
-// On MacOS, the dynamic library is not bundled with the binary,
-// but rather directly **linked** against the binary.
-final _dylib = io.Platform.isWindows ? '$_base.dll' : 'lib$_base.so';
+final _dylib = io.Platform.isWindows
+    ? '$_base.dll'
+    : io.Platform.isMacOS
+        ? 'lib$_base.dylib'
+        : 'lib$_base.so';
 
 // The late modifier delays initializing the value until it is actually needed,
 // leaving precious little time for the program to quickly start up.
-late final FlutterAvif api = FlutterAvifImpl(
-    io.Platform.isIOS || io.Platform.isMacOS
-        ? DynamicLibrary.executable()
-        : DynamicLibrary.open(_dylib));
+late final FlutterAvif api = FlutterAvifImpl(io.Platform.isIOS
+    ? DynamicLibrary.executable()
+    : DynamicLibrary.open(_dylib));
