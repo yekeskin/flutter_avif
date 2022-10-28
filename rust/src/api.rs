@@ -278,12 +278,12 @@ fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         }
 
         let size = rgb.rowBytes * (*(*decoder).image).height;
-        let data = slice::from_raw_parts(rgb.pixels, size as usize);
+        let data = ZeroCopyBuffer(slice::from_raw_parts(rgb.pixels, size as usize).to_vec());
         libavif_sys::avifRGBImageFreePixels(raw_rgb);
         return CodecResponse {
             command: DecoderCommand::GetNextFrame,
             frame: Frame {
-                data: ZeroCopyBuffer(data.to_vec()),
+                data: data,
                 duration: (*decoder).imageTiming.duration,
                 width: (*(*decoder).image).width,
                 height: (*(*decoder).image).height,
