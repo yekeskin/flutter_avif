@@ -1,0 +1,28 @@
+name: flutter_avif_android
+description: Android implementation for flutter_avif.
+version: 0.0.1
+repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_android
+
+environment:
+  sdk: ">=2.16.1 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_avif_platform_interface:
+    path: ../flutter_avif_platform_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+  
+flutter:
+  plugin:
+    implements: flutter_avif
+    platforms:
+      android:
+        package: com.teknorota.flutter_avif
+        pluginClass: FlutterAvifPlugin
+        dartPluginClass: FlutterAvifAndroid
