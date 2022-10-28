@@ -1,4 +1,4 @@
-#include "include/flutter_avif/flutter_avif_plugin.h"
+#include "include/flutter_avif_windows/flutter_avif_windows_plugin.h"
 
 // This must be included before many other Windows headers.
 #include <windows.h>
@@ -13,17 +13,17 @@
 #include <memory>
 #include <sstream>
 
-namespace flutter_avif {
+namespace flutter_avif_windows {
 
 // static
-void FlutterAvifPlugin::RegisterWithRegistrar(
+void FlutterAvifWindowsPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
   auto channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "flutter_avif",
+          registrar->messenger(), "flutter_avif_windows",
           &flutter::StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<FlutterAvifPlugin>();
+  auto plugin = std::make_unique<FlutterAvifWindowsPlugin>();
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -33,11 +33,11 @@ void FlutterAvifPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-FlutterAvifPlugin::FlutterAvifPlugin() {}
+FlutterAvifWindowsPlugin::FlutterAvifWindowsPlugin() {}
 
-FlutterAvifPlugin::~FlutterAvifPlugin() {}
+FlutterAvifWindowsPlugin::~FlutterAvifWindowsPlugin() {}
 
-void FlutterAvifPlugin::HandleMethodCall(
+void FlutterAvifWindowsPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("getPlatformVersion") == 0) {
@@ -56,12 +56,12 @@ void FlutterAvifPlugin::HandleMethodCall(
   }
 }
 
-}  // namespace flutter_avif
+}  // namespace flutter_avif_windows
 
 
-void FlutterAvifPluginRegisterWithRegistrar(
+void FlutterAvifWindowsPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar) {
-    flutter_avif::FlutterAvifPlugin::RegisterWithRegistrar(
+    flutter_avif_windows::FlutterAvifWindowsPlugin::RegisterWithRegistrar(
         flutter::PluginRegistrarManager::GetInstance()
         ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }

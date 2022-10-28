@@ -5,20 +5,20 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "flutter_avif")
+set(PROJECT_NAME "flutter_avif_windows")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
-set(PLUGIN_NAME "flutter_avif_plugin")
+set(PLUGIN_NAME "flutter_avif_windows_plugin")
 
 add_compile_definitions(WIN32)
 add_compile_definitions(DART_SHARED_LIB)
 
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
-  "flutter_avif_plugin.cpp"
-  "include/flutter_avif/flutter_avif_plugin.h"
+  "flutter_avif_windows_plugin.cpp"
+  "include/flutter_avif_windows/flutter_avif_windows_plugin.h"
 )
 
 # Define the plugin library target. Its name must not be changed (see comment
@@ -48,7 +48,7 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(flutter_avif_bundled_libraries
+set(flutter_avif_windows_bundled_libraries
   "${CMAKE_CURRENT_SOURCE_DIR}/flutter_avif.dll"
   PARENT_SCOPE
 )

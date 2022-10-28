@@ -23,5 +23,5 @@ flutter:
     implements: flutter_avif
     platforms:
       windows:
-        pluginClass: FlutterAvifPlugin
+        pluginClass: FlutterAvifWindowsPlugin
         dartPluginClass: FlutterAvifWindows

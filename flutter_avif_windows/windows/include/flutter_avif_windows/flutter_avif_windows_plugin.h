@@ -1,5 +1,5 @@
-#ifndef FLUTTER_PLUGIN_FLUTTER_AVIF_PLUGIN_H_
-#define FLUTTER_PLUGIN_FLUTTER_AVIF_PLUGIN_H_
+#ifndef FLUTTER_PLUGIN_FLUTTER_AVIF_WINDOWS_PLUGIN_H_
+#define FLUTTER_PLUGIN_FLUTTER_AVIF_WINDOWS_PLUGIN_H_
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -7,19 +7,19 @@
 
 #include <memory>
 
-namespace flutter_avif {
+namespace flutter_avif_windows {
 
-class FlutterAvifPlugin : public flutter::Plugin {
+class FlutterAvifWindowsPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  FlutterAvifPlugin();
+  FlutterAvifWindowsPlugin();
 
-  virtual ~FlutterAvifPlugin();
+  virtual ~FlutterAvifWindowsPlugin();
 
   // Disallow copy and assign.
-  FlutterAvifPlugin(const FlutterAvifPlugin&) = delete;
-  FlutterAvifPlugin& operator=(const FlutterAvifPlugin&) = delete;
+  FlutterAvifWindowsPlugin(const FlutterAvifWindowsPlugin&) = delete;
+  FlutterAvifWindowsPlugin& operator=(const FlutterAvifWindowsPlugin&) = delete;
 
  private:
   // Called when a method is called on this plugin's channel from Dart.
@@ -40,11 +40,11 @@ class FlutterAvifPlugin : public flutter::Plugin {
 extern "C" {
 #endif
 
-    FLUTTER_PLUGIN_EXPORT void FlutterAvifPluginRegisterWithRegistrar(
+    FLUTTER_PLUGIN_EXPORT void FlutterAvifWindowsPluginRegisterWithRegistrar(
         FlutterDesktopPluginRegistrarRef registrar);
 
 #if defined(__cplusplus)
 }  // extern "C"
 #endif
 
-#endif  // FLUTTER_PLUGIN_FLUTTER_AVIF_PLUGIN_H_
+#endif  // FLUTTER_PLUGIN_FLUTTER_AVIF_WINDOWS_PLUGIN_H_
