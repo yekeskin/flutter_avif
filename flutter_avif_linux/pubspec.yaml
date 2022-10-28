@@ -23,5 +23,5 @@ flutter:
     implements: flutter_avif
     platforms:
       linux:
-        pluginClass: FlutterAvifPlugin
+        pluginClass: FlutterAvifLinuxPlugin
         dartPluginClass: FlutterAvifLinux

@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
-set(PROJECT_NAME "flutter_avif")
+set(PROJECT_NAME "flutter_avif_linux")
 project(${PROJECT_NAME} LANGUAGES C CXX)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
-set(PLUGIN_NAME "flutter_avif_plugin")
+set(PLUGIN_NAME "flutter_avif_linux_plugin")
 
 add_library(${PLUGIN_NAME} SHARED
-  "flutter_avif_plugin.cc"
+  "flutter_avif_linux_plugin.cc"
 )
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
@@ -18,7 +18,7 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
 
 # List of absolute paths to libraries that should be bundled with the plugin
-set(flutter_avif_bundled_libraries
+set(flutter_avif_linux_bundled_libraries
   "${CMAKE_CURRENT_SOURCE_DIR}/libflutter_avif.so"
   PARENT_SCOPE
 )
