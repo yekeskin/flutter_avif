@@ -2,6 +2,10 @@
 
 A flutter plugin to view and encode avif images.
 
+## Installation
+
+To add the flutter_avif to your Flutter application follow the [installation instructions](https://pub.dev/packages/flutter_avif/install) on pub.dev.
+
 ## Usage
 
 AvifImage widget has a similar api as Flutter Image widget.
