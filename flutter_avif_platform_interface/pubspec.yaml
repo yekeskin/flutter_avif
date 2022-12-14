@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ^1.38.2
+  flutter_rust_bridge: ">=1.38.2 <1.51.1"
 
 dev_dependencies:
   flutter_test:
