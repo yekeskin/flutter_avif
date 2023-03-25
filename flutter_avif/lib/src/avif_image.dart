@@ -30,6 +30,7 @@ class AvifImage extends StatefulWidget {
   final bool matchTextDirection;
   final bool isAntiAlias;
   final ImageProvider image;
+  final ImageErrorWidgetBuilder? errorBuilder;
 
   @override
   State<AvifImage> createState() => AvifImageState();
@@ -52,6 +53,7 @@ class AvifImage extends StatefulWidget {
     this.filterQuality = FilterQuality.low,
     int? cacheWidth,
     int? cacheHeight,
+    this.errorBuilder,
   }) : super(key: key);
 
   AvifImage.file(
@@ -73,6 +75,7 @@ class AvifImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     int? overrideDurationMs = -1,
+    this.errorBuilder,
   })  : image = FileAvifImage(
           file,
           scale: scale,
@@ -99,6 +102,7 @@ class AvifImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     int? overrideDurationMs = -1,
+    this.errorBuilder,
   })  : image = AssetAvifImage(
           name,
           scale: scale,
@@ -125,6 +129,7 @@ class AvifImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     int? overrideDurationMs = -1,
+    this.errorBuilder,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
@@ -151,6 +156,7 @@ class AvifImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     int? overrideDurationMs = -1,
+    this.errorBuilder,
   })  : image = MemoryAvifImage(
           bytes,
           scale: scale,
@@ -167,6 +173,8 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   late DisposableBuildContext<State<AvifImage>> _scrollAwareContext;
   ImageStreamCompleterHandle? _completerHandle;
   int? _frameNumber;
+  Object? _lastException;
+  StackTrace? _lastStack;
 
   @override
   void initState() {
@@ -227,10 +235,26 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   ImageStreamListener? _imageStreamListener;
   ImageStreamListener _getListener({bool recreateListener = false}) {
     if (_imageStreamListener == null || recreateListener) {
+      _lastException = null;
+      _lastStack = null;
       _imageStreamListener = ImageStreamListener(
         _handleImageFrame,
         onChunk: null,
-        onError: null,
+        onError: widget.errorBuilder != null || kDebugMode
+            ? (Object error, StackTrace? stackTrace) {
+                setState(() {
+                  _lastException = error;
+                  _lastStack = stackTrace;
+                });
+                assert(() {
+                  if (widget.errorBuilder == null) {
+                    // ignore: only_throw_errors, since we're just proxying the error.
+                    throw error; // Ensures the error message is printed to the console.
+                  }
+                  return true;
+                }());
+              }
+            : null,
       );
     }
     return _imageStreamListener!;
@@ -238,6 +262,8 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
 
   void _handleImageFrame(ImageInfo imageInfo, bool synchronousCall) {
     setState(() {
+      _lastException = null;
+      _lastStack = null;
       _replaceImage(info: imageInfo);
       _frameNumber = _frameNumber == null ? 0 : _frameNumber! + 1;
     });
@@ -311,6 +337,15 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (_lastException != null) {
+      if (widget.errorBuilder != null) {
+        return widget.errorBuilder!(context, _lastException!, _lastStack);
+      }
+      if (kDebugMode) {
+        return _debugBuildErrorWidget(context, _lastException!);
+      }
+    }
+
     return RawImage(
       image: _imageInfo?.image,
       debugImageLabel: _imageInfo?.debugLabel,
@@ -328,6 +363,34 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       invertColors: _invertColors,
       isAntiAlias: widget.isAntiAlias,
       filterQuality: widget.filterQuality,
+    );
+  }
+
+  Widget _debugBuildErrorWidget(BuildContext context, Object error) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        const Positioned.fill(
+          child: Placeholder(
+            color: Color(0xCF8D021F),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: FittedBox(
+            child: Text(
+              '$error',
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.ltr,
+              style: const TextStyle(
+                shadows: <Shadow>[
+                  Shadow(blurRadius: 1.0),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
