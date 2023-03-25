@@ -8,11 +8,13 @@ environment:
   flutter: ">=2.5.0"
 
 dependencies:
+  ffi: ^2.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ">=1.38.2 <1.51.1"
+  flutter_rust_bridge: "1.72.0"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  ffigen: ^7.2.6
