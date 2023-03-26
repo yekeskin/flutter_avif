@@ -1,6 +1,6 @@
 name: flutter_avif_macos
 description: Macos implementation for flutter_avif.
-version: 1.0.1
+version: 1.1.0
 repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_macos
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_avif_platform_interface: ^1.0.1
+  flutter_avif_platform_interface: ^1.1.0
 
 dev_dependencies:
   flutter_test:

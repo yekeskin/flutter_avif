@@ -1,6 +1,6 @@
 name: flutter_avif
 description: Avif support for Flutter.
-version: 1.0.1
+version: 1.1.0
 repository: https://github.com/yekeskin/flutter_avif
 
 environment:
@@ -10,12 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_avif_platform_interface: ^1.0.1
-  flutter_avif_android: ^1.0.1
-  flutter_avif_ios: ^1.0.1
-  flutter_avif_macos: ^1.0.1
-  flutter_avif_linux: ^1.0.1
-  flutter_avif_windows: ^1.0.1
+  flutter_avif_platform_interface: ^1.1.0
+  flutter_avif_android: ^1.1.0
+  flutter_avif_ios: ^1.1.0
+  flutter_avif_macos: ^1.1.0
+  flutter_avif_linux: ^1.1.0
+  flutter_avif_windows: ^1.1.0
   
 
 dev_dependencies:
