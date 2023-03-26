@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_rust_bridge: "1.72.0"
+  meta: ^1.8.0
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
