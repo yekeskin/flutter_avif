@@ -20,6 +20,5 @@ A new flutter plugin project.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 
-  s.resources = ['libflutter_avif.dylib']
-  s.xcconfig = { 'LD_RUNPATH_SEARCH_PATHS' => '@loader_path/../Frameworks/flutter_avif_macos.framework/Resources' }
+  s.vendored_frameworks = 'Frameworks/FlutterAvif.xcframework'
 end
