@@ -20,6 +20,6 @@ A new flutter plugin project.
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.xcconfig = { 'OTHER_LDFLAGS' => '-force_load "${PODS_ROOT}/../.symlinks/plugins/flutter_avif_ios/ios/libflutter_avif.a"'}
+  s.vendored_frameworks = 'Frameworks/FlutterAvif.xcframework'
   s.swift_version = '5.0'
 end

@@ -1,7 +1,10 @@
 ios:
 	cargo rustc --release --target=aarch64-apple-ios --crate-type staticlib
 	cargo rustc --release --target=x86_64-apple-ios --crate-type staticlib
-	lipo -create -output ../flutter_avif_ios/ios/libflutter_avif.a target/aarch64-apple-ios/release/libflutter_avif.a target/x86_64-apple-ios/release/libflutter_avif.a 
+	cargo rustc --release --target=aarch64-apple-ios-sim --crate-type staticlib
+	lipo -create -output target/libflutter_avif.a target/x86_64-apple-ios/release/libflutter_avif.a target/aarch64-apple-ios-sim/release/libflutter_avif.a
+	rm -rf ../flutter_avif_ios/ios/Frameworks/FlutterAvif.xcframework
+	xcodebuild -create-xcframework -library target/aarch64-apple-ios/release/libflutter_avif.a -library target/libflutter_avif.a -output ../flutter_avif_ios/ios/Frameworks/FlutterAvif.xcframework
 
 android:
 	cargo ndk -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ../flutter_avif_android/android/src/main/jniLibs build --release
