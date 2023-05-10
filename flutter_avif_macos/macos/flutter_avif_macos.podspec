@@ -2,6 +2,12 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint flutter_avif.podspec` to validate before publishing.
 #
+
+`
+rm -rf Frameworks/FlutterAvif.xcframework
+unzip FlutterAvif.xcframework.zip -d Frameworks/
+`
+
 Pod::Spec.new do |s|
   s.name             = 'flutter_avif_macos'
   s.version          = '0.0.1'
