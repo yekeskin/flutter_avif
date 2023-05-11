@@ -2,6 +2,12 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint flutter_avif.podspec` to validate before publishing.
 #
+
+`
+rm -rf Frameworks/FlutterAvif.xcframework
+unzip FlutterAvif.xcframework.zip -d Frameworks/
+`
+
 Pod::Spec.new do |s|
   s.name             = 'flutter_avif_macos'
   s.version          = '0.0.1'
@@ -20,6 +26,5 @@ A new flutter plugin project.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 
-  s.resources = ['libflutter_avif.dylib']
-  s.xcconfig = { 'LD_RUNPATH_SEARCH_PATHS' => '@loader_path/../Frameworks/flutter_avif_macos.framework/Resources' }
+  s.vendored_frameworks = 'Frameworks/FlutterAvif.xcframework'
 end

@@ -2,6 +2,12 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint flutter_avif.podspec` to validate before publishing.
 #
+
+`
+rm -rf Frameworks/FlutterAvif.xcframework
+unzip FlutterAvif.xcframework.zip -d Frameworks/
+`
+
 Pod::Spec.new do |s|
   s.name             = 'flutter_avif_ios'
   s.version          = '0.0.1'
@@ -20,6 +26,6 @@ A new flutter plugin project.
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.xcconfig = { 'OTHER_LDFLAGS' => '-force_load "${PODS_ROOT}/../.symlinks/plugins/flutter_avif_ios/ios/libflutter_avif.a"'}
+  s.vendored_frameworks = 'Frameworks/FlutterAvif.xcframework'
   s.swift_version = '5.0'
 end
