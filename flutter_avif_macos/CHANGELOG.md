@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Macos ARM support
+
 ## 1.1.0
 
 * Update flutter_rust_bridge to 1.72.0
