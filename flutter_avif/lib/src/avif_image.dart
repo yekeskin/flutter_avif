@@ -290,6 +290,12 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
 
     _imageStream!.removeListener(_getListener());
     _isListeningToStream = false;
+
+    if (!_imageStream!.completer!.hasListeners &&
+        !PaintingBinding.instance.imageCache.containsKey(widget.image)) {
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.disposeDecoder(key: widget.image.hashCode.toString());
+    }
   }
 
   void _updateSourceStream(ImageStream newStream) {
@@ -414,6 +420,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
   @override
   ImageStreamCompleter load(FileAvifImage key, DecoderCallback decode) {
     return AvifImageStreamCompleter(
+      key: key,
       codec: _loadAsync(key, decode),
       scale: key.scale,
       debugLabel: key.file.path,
@@ -482,6 +489,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   @override
   ImageStreamCompleter load(AssetAvifImage key, DecoderCallback decode) {
     return AvifImageStreamCompleter(
+      key: key,
       codec: _loadAsync(key, decode),
       scale: key.scale,
       debugLabel: key.asset,
@@ -550,6 +558,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   @override
   ImageStreamCompleter load(NetworkAvifImage key, DecoderCallback decode) {
     return AvifImageStreamCompleter(
+      key: key,
       codec: _loadAsync(key, decode),
       scale: key.scale,
       debugLabel: key.url,
@@ -617,6 +626,7 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   @override
   ImageStreamCompleter load(MemoryAvifImage key, DecoderCallback decode) {
     return AvifImageStreamCompleter(
+      key: key,
       codec: _loadAsync(key, decode),
       scale: key.scale,
       debugLabel: 'MemoryAvifImage(${describeIdentity(key.bytes)})',
@@ -746,13 +756,15 @@ class AvifFrameInfo {
 
 class AvifImageStreamCompleter extends ImageStreamCompleter {
   AvifImageStreamCompleter({
+    required ImageProvider key,
     required Future<AvifCodec> codec,
     required double scale,
     String? debugLabel,
     Stream<ImageChunkEvent>? chunkEvents,
     InformationCollector? informationCollector,
   })  : _informationCollector = informationCollector,
-        _scale = scale {
+        _scale = scale,
+        _key = key {
     this.debugLabel = debugLabel;
     codec.then<void>(_handleCodecReady,
         onError: (Object error, StackTrace stack) {
@@ -790,6 +802,7 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
   Duration? _frameDuration;
   int _duration = 0;
   Timer? _timer;
+  final ImageProvider _key;
 
   bool _frameCallbackScheduled = false;
 
@@ -909,5 +922,27 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
     _chunkSubscription?.onData(null);
     _chunkSubscription?.cancel();
     _chunkSubscription = null;
+  }
+
+  @override
+  ImageStreamCompleterHandle keepAlive() {
+    final handle = super.keepAlive();
+    return AvifImageStreamCompleterHandle(handle, this);
+  }
+}
+
+class AvifImageStreamCompleterHandle implements ImageStreamCompleterHandle {
+  final ImageStreamCompleterHandle _handle;
+  final AvifImageStreamCompleter _completer;
+
+  AvifImageStreamCompleterHandle(this._handle, this._completer);
+
+  @override
+  void dispose() {
+    _handle.dispose();
+    if (!_completer.hasListeners &&
+        !PaintingBinding.instance.imageCache.containsKey(_completer._key)) {
+      _completer._codec?.dispose();
+    }
   }
 }
