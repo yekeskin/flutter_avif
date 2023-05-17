@@ -291,7 +291,8 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     _imageStream!.removeListener(_getListener());
     _isListeningToStream = false;
 
-    if (!_imageStream!.completer!.hasListeners &&
+    if (_imageStream?.completer != null &&
+        !_imageStream!.completer!.hasListeners &&
         !PaintingBinding.instance.imageCache.containsKey(widget.image)) {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.disposeDecoder(key: widget.image.hashCode.toString());
