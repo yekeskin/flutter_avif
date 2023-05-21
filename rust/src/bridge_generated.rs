@@ -80,8 +80,8 @@ fn wire_get_next_frame_impl(port_: MessagePort, key: impl Wire2Api<String> + Unw
 }
 fn wire_encode_avif_impl(
     port_: MessagePort,
-    width: impl Wire2Api<i32> + UnwindSafe,
-    height: impl Wire2Api<i32> + UnwindSafe,
+    width: impl Wire2Api<u32> + UnwindSafe,
+    height: impl Wire2Api<u32> + UnwindSafe,
     speed: impl Wire2Api<i32> + UnwindSafe,
     max_threads: impl Wire2Api<i32> + UnwindSafe,
     timescale: impl Wire2Api<u64> + UnwindSafe,
@@ -154,6 +154,11 @@ impl Wire2Api<i32> for i32 {
     }
 }
 
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
+        self
+    }
+}
 impl Wire2Api<u64> for u64 {
     fn wire2api(self) -> u64 {
         self

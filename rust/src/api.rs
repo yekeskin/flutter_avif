@@ -144,8 +144,8 @@ pub fn get_next_frame(key: String) -> Frame {
 }
 
 pub fn encode_avif(
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     speed: i32,
     max_threads: i32,
     timescale: u64,

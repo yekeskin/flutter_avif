@@ -47,8 +47,8 @@ void wire_dispose_decoder(int64_t port_, struct wire_uint_8_list *key);
 void wire_get_next_frame(int64_t port_, struct wire_uint_8_list *key);
 
 void wire_encode_avif(int64_t port_,
-                      int32_t width,
-                      int32_t height,
+                      uint32_t width,
+                      uint32_t height,
                       int32_t speed,
                       int32_t max_threads,
                       uint64_t timescale,

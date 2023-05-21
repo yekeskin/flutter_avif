@@ -28,8 +28,8 @@ pub extern "C" fn wire_get_next_frame(port_: i64, key: *mut wire_uint_8_list) {
 #[no_mangle]
 pub extern "C" fn wire_encode_avif(
     port_: i64,
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     speed: i32,
     max_threads: i32,
     timescale: u64,

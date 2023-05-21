@@ -9,5 +9,7 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 flutter_rust_bridge = "=1.72.0"
-libavif-sys = { version = "0.13.1", default-features = false, features = ["codec-aom"] }
+libdav1d-sys = { version = "0.5", git = "https://github.com/yekeskin/libavif-rs.git" }
+libavif-sys = { version = "0.14.3", git = "https://github.com/yekeskin/libavif-rs.git", default-features = false, features = ["codec-dav1d", "codec-rav1e"] }
 lazy_static = "1.4.0"
+cmake = "=0.1.48"

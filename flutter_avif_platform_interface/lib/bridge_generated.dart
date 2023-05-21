@@ -174,8 +174,8 @@ class FlutterAvifImpl implements FlutterAvif {
       required int minQuantizerAlpha,
       required List<EncodeFrame> imageSequence,
       dynamic hint}) {
-    var arg0 = api2wire_i32(width);
-    var arg1 = api2wire_i32(height);
+    var arg0 = api2wire_u32(width);
+    var arg1 = api2wire_u32(height);
     var arg2 = api2wire_i32(speed);
     var arg3 = api2wire_i32(maxThreads);
     var arg4 = _platform.api2wire_u64(timescale);
@@ -280,6 +280,11 @@ class FlutterAvifImpl implements FlutterAvif {
 
 @protected
 int api2wire_i32(int raw) {
+  return raw;
+}
+
+@protected
+int api2wire_u32(int raw) {
   return raw;
 }
 
@@ -531,8 +536,8 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
       ffi.NativeFunction<
           ffi.Void Function(
               ffi.Int64,
-              ffi.Int32,
-              ffi.Int32,
+              ffi.Uint32,
+              ffi.Uint32,
               ffi.Int32,
               ffi.Int32,
               ffi.Uint64,
