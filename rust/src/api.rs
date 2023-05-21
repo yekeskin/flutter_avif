@@ -70,6 +70,11 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
                 Ok(result) => result,
                 Err(e) => panic!("Decoder connection lost. {}", e),
             };
+
+            match request {
+                DecoderCommand::Dispose => break,
+                _ => {}
+            };
         }
     });
 
