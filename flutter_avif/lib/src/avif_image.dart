@@ -292,7 +292,8 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     _isListeningToStream = false;
 
     if (_imageStream?.completer != null &&
-        !_imageStream!.completer!.hasListeners &&
+        !(_imageStream!.completer! as AvifImageStreamCompleter)
+            .getHasListeners() &&
         !PaintingBinding.instance.imageCache.containsKey(widget.image)) {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.disposeDecoder(key: widget.image.hashCode.toString());
@@ -419,7 +420,8 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
   }
 
   @override
-  ImageStreamCompleter load(FileAvifImage key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      FileAvifImage key, DecoderBufferCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -433,7 +435,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     FileAvifImage key,
-    DecoderCallback decode,
+    DecoderBufferCallback decode,
   ) async {
     assert(key == this);
 
@@ -464,7 +466,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
   }
 
   @override
-  int get hashCode => hashValues(file.path, scale);
+  int get hashCode => Object.hash(file.path, scale);
 
   @override
   String toString() =>
@@ -488,7 +490,8 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   }
 
   @override
-  ImageStreamCompleter load(AssetAvifImage key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      AssetAvifImage key, DecoderBufferCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -502,7 +505,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     AssetAvifImage key,
-    DecoderCallback decode,
+    DecoderBufferCallback decode,
   ) async {
     assert(key == this);
 
@@ -510,7 +513,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache.evict(key);
       throw StateError('$asset is empty and cannot be loaded as an image.');
     }
 
@@ -533,7 +536,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   }
 
   @override
-  int get hashCode => hashValues(asset, scale);
+  int get hashCode => Object.hash(asset, scale);
 
   @override
   String toString() =>
@@ -557,7 +560,8 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   }
 
   @override
-  ImageStreamCompleter load(NetworkAvifImage key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      NetworkAvifImage key, DecoderBufferCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -571,7 +575,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     NetworkAvifImage key,
-    DecoderCallback decode,
+    DecoderBufferCallback decode,
   ) async {
     assert(key == this);
     final bytes = await NetworkAssetBundle(Uri.parse(url)).load(url);
@@ -601,7 +605,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   }
 
   @override
-  int get hashCode => hashValues(url, scale);
+  int get hashCode => Object.hash(url, scale);
 
   @override
   String toString() =>
@@ -625,7 +629,8 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   }
 
   @override
-  ImageStreamCompleter load(MemoryAvifImage key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      MemoryAvifImage key, DecoderBufferCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -635,7 +640,7 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   }
 
   Future<AvifCodec> _loadAsync(
-      MemoryAvifImage key, DecoderCallback decode) async {
+      MemoryAvifImage key, DecoderBufferCallback decode) async {
     assert(key == this);
 
     final codec = AvifCodec(
@@ -659,7 +664,7 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   }
 
   @override
-  int get hashCode => hashValues(bytes.hashCode, scale);
+  int get hashCode => Object.hash(bytes.hashCode, scale);
 
   @override
   String toString() =>
@@ -913,6 +918,8 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
     }
   }
 
+  bool getHasListeners() => hasListeners;
+
   @override
   void setImage(ImageInfo image) {
     _currentFrame = image;
@@ -941,7 +948,7 @@ class AvifImageStreamCompleterHandle implements ImageStreamCompleterHandle {
   @override
   void dispose() {
     _handle.dispose();
-    if (!_completer.hasListeners &&
+    if (!_completer.getHasListeners() &&
         !PaintingBinding.instance.imageCache.containsKey(_completer._key)) {
       _completer._codec?.dispose();
     }
