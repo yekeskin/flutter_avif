@@ -443,7 +443,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache.evict(key);
       throw StateError('$file is empty and cannot be loaded as an image.');
     }
 
@@ -582,7 +582,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
-      _ambiguate(PaintingBinding.instance)?.imageCache?.evict(key);
+      _ambiguate(PaintingBinding.instance)?.imageCache.evict(key);
       throw StateError('$url is empty and cannot be loaded as an image.');
     }
 
