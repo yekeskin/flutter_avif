@@ -21,6 +21,19 @@ use std::sync::Arc;
 
 // Section: wire functions
 
+fn wire_get_image_info_impl(port_: MessagePort, avif_bytes: impl Wire2Api<Vec<u8>> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_image_info",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_avif_bytes = avif_bytes.wire2api();
+            move |task_callback| Ok(get_image_info(api_avif_bytes))
+        },
+    )
+}
 fn wire_init_memory_decoder_impl(
     port_: MessagePort,
     key: impl Wire2Api<String> + UnwindSafe,
@@ -179,6 +192,7 @@ impl support::IntoDart for AvifInfo {
             self.height.into_dart(),
             self.image_count.into_dart(),
             self.duration.into_dart(),
+            self.frame.into_dart(),
         ]
         .into_dart()
     }
