@@ -769,8 +769,7 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
     Stream<ImageChunkEvent>? chunkEvents,
     InformationCollector? informationCollector,
   })  : _informationCollector = informationCollector,
-        _scale = scale,
-        _key = key {
+        _scale = scale {
     this.debugLabel = debugLabel;
     codec.then<void>(_handleCodecReady,
         onError: (Object error, StackTrace stack) {
@@ -808,7 +807,6 @@ class AvifImageStreamCompleter extends ImageStreamCompleter {
   Duration? _frameDuration;
   int _duration = 0;
   Timer? _timer;
-  final ImageProvider _key;
 
   bool _frameCallbackScheduled = false;
 
@@ -948,9 +946,6 @@ class AvifImageStreamCompleterHandle implements ImageStreamCompleterHandle {
   @override
   void dispose() {
     _handle.dispose();
-    if (!_completer.getHasListeners() &&
-        !PaintingBinding.instance.imageCache.containsKey(_completer._key)) {
-      _completer._codec?.dispose();
-    }
+    _completer._codec?.dispose();
   }
 }
