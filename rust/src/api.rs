@@ -35,18 +35,20 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
 
     thread::spawn(move || unsafe {
         let decoder = libavif_sys::avifDecoderCreate();
-        let image = libavif_sys::avifImageCreateEmpty();
-        let read_memory_result = libavif_sys::avifDecoderReadMemory(
-            decoder,
-            image,
-            avif_bytes.as_ptr(),
-            avif_bytes.len(),
-        );
-        if !(read_memory_result == libavif_sys::AVIF_RESULT_OK
-            || read_memory_result == libavif_sys::AVIF_RESULT_BMFF_PARSE_FAILED)
+
+        let set_memory_result =
+            libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
+        if !set_memory_result == libavif_sys::AVIF_RESULT_OK {
+            libavif_sys::avifDecoderDestroy(decoder);
+            panic!("Couldn't decode the image. Code: {}", set_memory_result);
+        }
+
+        let parse_result = libavif_sys::avifDecoderParse(decoder);
+        if !(parse_result == libavif_sys::AVIF_RESULT_OK
+            || parse_result == libavif_sys::AVIF_RESULT_BMFF_PARSE_FAILED)
         {
             libavif_sys::avifDecoderDestroy(decoder);
-            panic!("Couldn't decode the image. Code: {}", read_memory_result);
+            panic!("Couldn't decode the image. Code: {}", parse_result);
         }
 
         match decoder_info_tx.send(AvifInfo {
