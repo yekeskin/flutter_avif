@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_avif_platform_interface: ^1.2.0
+  flutter_avif_platform_interface:
+    path: ../flutter_avif_platform_interface
 
 dev_dependencies:
   flutter_test:

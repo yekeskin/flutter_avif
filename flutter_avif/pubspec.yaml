@@ -10,12 +10,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_avif_platform_interface: ^1.2.0
-  flutter_avif_android: ^1.2.0
-  flutter_avif_ios: ^1.2.0
-  flutter_avif_macos: ^1.2.0
-  flutter_avif_linux: ^1.2.0
-  flutter_avif_windows: ^1.2.0
+  flutter_avif_platform_interface:
+    path: ../flutter_avif_platform_interface
+  flutter_avif_android:
+    path: ../flutter_avif_android
+  flutter_avif_ios:
+    path: ../flutter_avif_ios
+  flutter_avif_macos:
+    path: ../flutter_avif_macos
+  flutter_avif_linux:
+    path: ../flutter_avif_linux
+  flutter_avif_windows:
+    path: ../flutter_avif_windows
   
 
 dev_dependencies:
