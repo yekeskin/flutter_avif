@@ -2,6 +2,11 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
+pub extern "C" fn wire_decode_single_frame_image(port_: i64, avif_bytes: *mut wire_uint_8_list) {
+    wire_decode_single_frame_image_impl(port_, avif_bytes)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_init_memory_decoder(
     port_: i64,
     key: *mut wire_uint_8_list,

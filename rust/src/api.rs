@@ -13,6 +13,32 @@ lazy_static::lazy_static! {
     };
 }
 
+pub fn decode_single_frame_image(avif_bytes: Vec<u8>) -> Frame {
+    unsafe {
+        let decoder = libavif_sys::avifDecoderCreate();
+
+        let set_memory_result =
+            libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
+        if !set_memory_result == libavif_sys::AVIF_RESULT_OK {
+            libavif_sys::avifDecoderDestroy(decoder);
+            panic!("Couldn't decode the image. Code: {}", set_memory_result);
+        }
+
+        let parse_result = libavif_sys::avifDecoderParse(decoder);
+        if !(parse_result == libavif_sys::AVIF_RESULT_OK
+            || parse_result == libavif_sys::AVIF_RESULT_BMFF_PARSE_FAILED)
+        {
+            libavif_sys::avifDecoderDestroy(decoder);
+            panic!("Couldn't decode the image. Code: {}", parse_result);
+        }
+
+        let image = _get_next_frame(decoder);
+        libavif_sys::avifDecoderDestroy(decoder);
+
+        return image.frame;
+    }
+}
+
 pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
     {
         let map = DECODERS.read().unwrap();

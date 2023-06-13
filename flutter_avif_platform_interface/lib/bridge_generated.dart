@@ -11,6 +11,11 @@ import 'package:uuid/uuid.dart';
 import 'dart:ffi' as ffi;
 
 abstract class FlutterAvif {
+  Future<Frame> decodeSingleFrameImage(
+      {required Uint8List avifBytes, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDecodeSingleFrameImageConstMeta;
+
   Future<AvifInfo> initMemoryDecoder(
       {required String key, required Uint8List avifBytes, dynamic hint});
 
@@ -91,6 +96,25 @@ class FlutterAvifImpl implements FlutterAvif {
   factory FlutterAvifImpl.wasm(FutureOr<WasmModule> module) =>
       FlutterAvifImpl(module as ExternalLibrary);
   FlutterAvifImpl.raw(this._platform);
+  Future<Frame> decodeSingleFrameImage(
+      {required Uint8List avifBytes, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(avifBytes);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_decode_single_frame_image(port_, arg0),
+      parseSuccessData: _wire2api_frame,
+      constMeta: kDecodeSingleFrameImageConstMeta,
+      argValues: [avifBytes],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDecodeSingleFrameImageConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "decode_single_frame_image",
+        argNames: ["avifBytes"],
+      );
+
   Future<AvifInfo> initMemoryDecoder(
       {required String key, required Uint8List avifBytes, dynamic hint}) {
     var arg0 = _platform.api2wire_String(key);
@@ -431,6 +455,24 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
           'init_frb_dart_api_dl');
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  void wire_decode_single_frame_image(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> avif_bytes,
+  ) {
+    return _wire_decode_single_frame_image(
+      port_,
+      avif_bytes,
+    );
+  }
+
+  late final _wire_decode_single_frame_imagePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>(
+      'wire_decode_single_frame_image');
+  late final _wire_decode_single_frame_image =
+      _wire_decode_single_frame_imagePtr
+          .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_init_memory_decoder(
     int port_,

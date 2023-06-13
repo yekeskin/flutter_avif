@@ -21,6 +21,22 @@ use std::sync::Arc;
 
 // Section: wire functions
 
+fn wire_decode_single_frame_image_impl(
+    port_: MessagePort,
+    avif_bytes: impl Wire2Api<Vec<u8>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "decode_single_frame_image",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_avif_bytes = avif_bytes.wire2api();
+            move |task_callback| Ok(decode_single_frame_image(api_avif_bytes))
+        },
+    )
+}
 fn wire_init_memory_decoder_impl(
     port_: MessagePort,
     key: impl Wire2Api<String> + UnwindSafe,
