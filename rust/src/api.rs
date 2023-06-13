@@ -13,47 +13,29 @@ lazy_static::lazy_static! {
     };
 }
 
-pub fn get_image_info(avif_bytes: Vec<u8>) -> AvifInfo {
+pub fn decode_single_frame_image(avif_bytes: Vec<u8>) -> Frame {
     unsafe {
         let decoder = libavif_sys::avifDecoderCreate();
-        let image = libavif_sys::avifImageCreateEmpty();
-        let read_memory_result = libavif_sys::avifDecoderReadMemory(
-            decoder,
-            image,
-            avif_bytes.as_ptr(),
-            avif_bytes.len(),
-        );
 
-        if !(read_memory_result == libavif_sys::AVIF_RESULT_OK
-            || read_memory_result == libavif_sys::AVIF_RESULT_BMFF_PARSE_FAILED)
+        let set_memory_result =
+            libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
+        if !set_memory_result == libavif_sys::AVIF_RESULT_OK {
+            libavif_sys::avifDecoderDestroy(decoder);
+            panic!("Couldn't decode the image. Code: {}", set_memory_result);
+        }
+
+        let parse_result = libavif_sys::avifDecoderParse(decoder);
+        if !(parse_result == libavif_sys::AVIF_RESULT_OK
+            || parse_result == libavif_sys::AVIF_RESULT_BMFF_PARSE_FAILED)
         {
             libavif_sys::avifDecoderDestroy(decoder);
-            panic!("Couldn't decode the image. Code: {}", read_memory_result);
+            panic!("Couldn't decode the image. Code: {}", parse_result);
         }
 
-        let mut frame = Frame {
-            data: ZeroCopyBuffer(Vec::new()),
-            duration: 0.0,
-            width: 0,
-            height: 0,
-        };
-
-        if (*decoder).imageCount == 1 {
-            let first_image = _get_next_frame(decoder);
-            frame = first_image.frame;
-        }
-
-        let info = AvifInfo {
-            width: 0,
-            height: 0,
-            duration: (*decoder).duration,
-            image_count: (*decoder).imageCount as u32,
-            frame: frame,
-        };
-
+        let image = _get_next_frame(decoder);
         libavif_sys::avifDecoderDestroy(decoder);
 
-        return info;
+        return image.frame;
     }
 }
 
@@ -62,7 +44,7 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
         let map = DECODERS.read().unwrap();
         if map.contains_key(&key) {
             let decoder = &map[&key];
-            return decoder.info.clone();
+            return decoder.info;
         }
     }
 
@@ -100,12 +82,6 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
             height: 0,
             duration: (*decoder).duration,
             image_count: (*decoder).imageCount as u32,
-            frame: Frame {
-                data: ZeroCopyBuffer(Vec::new()),
-                duration: 0.0,
-                width: 0,
-                height: 0,
-            },
         }) {
             Ok(result) => result,
             Err(e) => panic!("Decoder connection lost. {}", e),
@@ -142,7 +118,7 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
             Decoder {
                 request_tx: decoder_request_tx,
                 response_rx: decoder_response_rx,
-                info: avif_info.clone(),
+                info: avif_info,
             },
         );
     }
@@ -349,16 +325,14 @@ fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
     }
 }
 
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct AvifInfo {
     pub width: u32,
     pub height: u32,
     pub image_count: u32,
     pub duration: f64,
-    pub frame: Frame,
 }
 
-#[derive(Clone)]
 pub struct Frame {
     pub data: ZeroCopyBuffer<Vec<u8>>,
     pub duration: f64,
