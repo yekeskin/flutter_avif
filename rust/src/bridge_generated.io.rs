@@ -2,8 +2,8 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
-pub extern "C" fn wire_get_image_info(port_: i64, avif_bytes: *mut wire_uint_8_list) {
-    wire_get_image_info_impl(port_, avif_bytes)
+pub extern "C" fn wire_decode_single_frame_image(port_: i64, avif_bytes: *mut wire_uint_8_list) {
+    wire_decode_single_frame_image_impl(port_, avif_bytes)
 }
 
 #[no_mangle]

@@ -447,10 +447,13 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
       throw StateError('$file is empty and cannot be loaded as an image.');
     }
 
-    final avifFfi = avif_platform.FlutterAvifPlatform.api;
-    final info = await avifFfi.getImageInfo(avifBytes: bytes);
-    final codec = info.imageCount == 1
-        ? SingleFrameAvifCodec(info: info)
+    final fType = _isAvifFile(bytes.sublist(0, 16));
+    if (fType == _FileType.unknown) {
+      throw StateError('$file is not an avif file.');
+    }
+
+    final codec = fType == _FileType.avif
+        ? SingleFrameAvifCodec(bytes: bytes)
         : MultiFrameAvifCodec(
             key: hashCode,
             avifBytes: bytes,
@@ -521,14 +524,17 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
       throw StateError('$asset is empty and cannot be loaded as an image.');
     }
 
-    final avifFfi = avif_platform.FlutterAvifPlatform.api;
-    final info =
-        await avifFfi.getImageInfo(avifBytes: bytes.buffer.asUint8List(0));
-    final codec = info.imageCount == 1
-        ? SingleFrameAvifCodec(info: info)
+    final bytesUint8List = bytes.buffer.asUint8List(0);
+    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
+    if (fType == _FileType.unknown) {
+      throw StateError('$asset is not an avif file.');
+    }
+
+    final codec = fType == _FileType.avif
+        ? SingleFrameAvifCodec(bytes: bytesUint8List)
         : MultiFrameAvifCodec(
             key: hashCode,
-            avifBytes: bytes.buffer.asUint8List(0),
+            avifBytes: bytesUint8List,
             overrideDurationMs: overrideDurationMs,
           );
     await codec.ready();
@@ -595,14 +601,17 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
       throw StateError('$url is empty and cannot be loaded as an image.');
     }
 
-    final avifFfi = avif_platform.FlutterAvifPlatform.api;
-    final info =
-        await avifFfi.getImageInfo(avifBytes: bytes.buffer.asUint8List(0));
-    final codec = info.imageCount == 1
-        ? SingleFrameAvifCodec(info: info)
+    final bytesUint8List = bytes.buffer.asUint8List(0);
+    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
+    if (fType == _FileType.unknown) {
+      throw StateError('$url is not an avif file.');
+    }
+
+    final codec = fType == _FileType.avif
+        ? SingleFrameAvifCodec(bytes: bytesUint8List)
         : MultiFrameAvifCodec(
             key: hashCode,
-            avifBytes: bytes.buffer.asUint8List(0),
+            avifBytes: bytesUint8List,
             overrideDurationMs: overrideDurationMs,
           );
     await codec.ready();
@@ -657,14 +666,17 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
       MemoryAvifImage key, DecoderBufferCallback decode) async {
     assert(key == this);
 
-    final avifFfi = avif_platform.FlutterAvifPlatform.api;
-    final info =
-        await avifFfi.getImageInfo(avifBytes: bytes.buffer.asUint8List(0));
-    final codec = info.imageCount == 1
-        ? SingleFrameAvifCodec(info: info)
+    final bytesUint8List = bytes.buffer.asUint8List(0);
+    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
+    if (fType == _FileType.unknown) {
+      throw StateError('Loaded file is not an avif file.');
+    }
+
+    final codec = fType == _FileType.avif
+        ? SingleFrameAvifCodec(bytes: bytesUint8List)
         : MultiFrameAvifCodec(
             key: hashCode,
-            avifBytes: bytes.buffer.asUint8List(0),
+            avifBytes: bytesUint8List,
             overrideDurationMs: overrideDurationMs,
           );
     await codec.ready();
@@ -793,11 +805,11 @@ class SingleFrameAvifCodec implements AvifCodec {
   @override
   int get durationMs => -1;
 
-  final avif_platform.AvifInfo _info;
+  final Uint8List _bytes;
 
   SingleFrameAvifCodec({
-    required avif_platform.AvifInfo info,
-  }) : _info = info;
+    required Uint8List bytes,
+  }) : _bytes = bytes;
 
   @override
   Future<void> ready() async {}
@@ -825,15 +837,18 @@ class SingleFrameAvifCodec implements AvifCodec {
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
     try {
-      ui.decodeImageFromPixels(
-        _info.frame.data,
-        _info.frame.width,
-        _info.frame.height,
-        ui.PixelFormat.rgba8888,
-        (image) {
-          callback(image, (_info.frame.duration * 1000).round());
-        },
-      );
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
+        ui.decodeImageFromPixels(
+          frame.data,
+          frame.width,
+          frame.height,
+          ui.PixelFormat.rgba8888,
+          (image) {
+            callback(image, (frame.duration * 1000).round());
+          },
+        );
+      });
       return null;
     } catch (e) {
       callback(null, 0);
@@ -1045,4 +1060,31 @@ class AvifImageStreamCompleterHandle implements ImageStreamCompleterHandle {
       _completer._codec?.dispose();
     }
   }
+}
+
+enum _FileType { avif, avis, unknown }
+
+_FileType _isAvifFile(Uint8List bytes) {
+  if (_isSubset(bytes, [102, 116, 121, 112, 97, 118, 105, 102])) {
+    return _FileType.avif;
+  }
+
+  if (_isSubset(bytes, [102, 116, 121, 112, 97, 118, 105, 115])) {
+    return _FileType.avis;
+  }
+
+  return _FileType.unknown;
+}
+
+bool _isSubset(List arr1, List arr2) {
+  int i = 0, j = 0;
+  for (i = 0; i < arr1.length - arr2.length + 1; i++) {
+    for (j = 0; j < arr2.length; j++) {
+      if (arr1[i + j] != arr2[j]) break;
+    }
+
+    if (j == arr2.length) return true;
+  }
+
+  return false;
 }

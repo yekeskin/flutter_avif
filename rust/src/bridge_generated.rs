@@ -21,16 +21,19 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_get_image_info_impl(port_: MessagePort, avif_bytes: impl Wire2Api<Vec<u8>> + UnwindSafe) {
+fn wire_decode_single_frame_image_impl(
+    port_: MessagePort,
+    avif_bytes: impl Wire2Api<Vec<u8>> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "get_image_info",
+            debug_name: "decode_single_frame_image",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_avif_bytes = avif_bytes.wire2api();
-            move |task_callback| Ok(get_image_info(api_avif_bytes))
+            move |task_callback| Ok(decode_single_frame_image(api_avif_bytes))
         },
     )
 }
@@ -192,7 +195,6 @@ impl support::IntoDart for AvifInfo {
             self.height.into_dart(),
             self.image_count.into_dart(),
             self.duration.into_dart(),
-            self.frame.into_dart(),
         ]
         .into_dart()
     }
