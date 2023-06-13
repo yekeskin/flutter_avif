@@ -11,6 +11,10 @@ import 'package:uuid/uuid.dart';
 import 'dart:ffi' as ffi;
 
 abstract class FlutterAvif {
+  Future<AvifInfo> getImageInfo({required Uint8List avifBytes, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetImageInfoConstMeta;
+
   Future<AvifInfo> initMemoryDecoder(
       {required String key, required Uint8List avifBytes, dynamic hint});
 
@@ -49,12 +53,14 @@ class AvifInfo {
   final int height;
   final int imageCount;
   final double duration;
+  final Frame frame;
 
   const AvifInfo({
     required this.width,
     required this.height,
     required this.imageCount,
     required this.duration,
+    required this.frame,
   });
 }
 
@@ -91,6 +97,23 @@ class FlutterAvifImpl implements FlutterAvif {
   factory FlutterAvifImpl.wasm(FutureOr<WasmModule> module) =>
       FlutterAvifImpl(module as ExternalLibrary);
   FlutterAvifImpl.raw(this._platform);
+  Future<AvifInfo> getImageInfo({required Uint8List avifBytes, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(avifBytes);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_image_info(port_, arg0),
+      parseSuccessData: _wire2api_avif_info,
+      constMeta: kGetImageInfoConstMeta,
+      argValues: [avifBytes],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetImageInfoConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_image_info",
+        argNames: ["avifBytes"],
+      );
+
   Future<AvifInfo> initMemoryDecoder(
       {required String key, required Uint8List avifBytes, dynamic hint}) {
     var arg0 = _platform.api2wire_String(key);
@@ -233,13 +256,14 @@ class FlutterAvifImpl implements FlutterAvif {
 
   AvifInfo _wire2api_avif_info(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return AvifInfo(
       width: _wire2api_u32(arr[0]),
       height: _wire2api_u32(arr[1]),
       imageCount: _wire2api_u32(arr[2]),
       duration: _wire2api_f64(arr[3]),
+      frame: _wire2api_frame(arr[4]),
     );
   }
 
@@ -431,6 +455,23 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
           'init_frb_dart_api_dl');
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  void wire_get_image_info(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> avif_bytes,
+  ) {
+    return _wire_get_image_info(
+      port_,
+      avif_bytes,
+    );
+  }
+
+  late final _wire_get_image_infoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_get_image_info');
+  late final _wire_get_image_info = _wire_get_image_infoPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_init_memory_decoder(
     int port_,
