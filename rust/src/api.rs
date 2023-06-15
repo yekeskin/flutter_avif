@@ -19,7 +19,7 @@ pub fn decode_single_frame_image(avif_bytes: Vec<u8>) -> Frame {
 
         let set_memory_result =
             libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
-        if !set_memory_result == libavif_sys::AVIF_RESULT_OK {
+        if set_memory_result != libavif_sys::AVIF_RESULT_OK {
             libavif_sys::avifDecoderDestroy(decoder);
             panic!("Couldn't decode the image. Code: {}", set_memory_result);
         }
@@ -64,7 +64,7 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
 
         let set_memory_result =
             libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
-        if !set_memory_result == libavif_sys::AVIF_RESULT_OK {
+        if set_memory_result != libavif_sys::AVIF_RESULT_OK {
             libavif_sys::avifDecoderDestroy(decoder);
             panic!("Couldn't decode the image. Code: {}", set_memory_result);
         }
@@ -304,6 +304,7 @@ fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         libavif_sys::avifRGBImageSetDefaults(raw_rgb, (*decoder).image);
         rgb.format = libavif_sys::AVIF_RGB_FORMAT_RGBA;
         rgb.depth = 8;
+        rgb.alphaPremultiplied = libavif_sys::AVIF_TRUE as i32;
         libavif_sys::avifRGBImageAllocatePixels(raw_rgb);
         let conversion_result = libavif_sys::avifImageYUVToRGB((*decoder).image, raw_rgb);
         if conversion_result != libavif_sys::AVIF_RESULT_OK {
