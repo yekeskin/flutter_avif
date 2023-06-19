@@ -1,6 +1,6 @@
 name: flutter_avif
-description: Avif support for Flutter.
-version: 1.2.0
+description: A flutter plugin to view and encode avif images using libavif.
+version: 1.3.0
 repository: https://github.com/yekeskin/flutter_avif
 
 environment:
@@ -10,12 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_avif_platform_interface: ^1.2.0
-  flutter_avif_android: ^1.2.0
-  flutter_avif_ios: ^1.2.0
-  flutter_avif_macos: ^1.2.0
-  flutter_avif_linux: ^1.2.0
-  flutter_avif_windows: ^1.2.0
+  flutter_avif_platform_interface: ^1.3.0
+  flutter_avif_android: ^1.3.0
+  flutter_avif_ios: ^1.3.0
+  flutter_avif_macos: ^1.3.0
+  flutter_avif_linux: ^1.3.0
+  flutter_avif_windows: ^1.3.0
   
 
 dev_dependencies:
