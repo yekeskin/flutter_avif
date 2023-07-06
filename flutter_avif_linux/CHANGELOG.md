@@ -1,3 +1,11 @@
+## 1.3.0
+
+* Enable dav1d decoder
+* Enable rav1e encoder
+* Add single frame decoder to lower the memory footprint of static images
+* Fix skipping first frame of animated images
+* Fix alpha channel rendering
+
 ## 1.2.0
 
 * Macos ARM support
