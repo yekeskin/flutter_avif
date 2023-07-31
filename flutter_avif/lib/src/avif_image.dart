@@ -34,6 +34,7 @@ class AvifImage extends StatefulWidget {
   final String? semanticLabel;
   final bool excludeFromSemantics;
   final bool gaplessPlayback;
+  final ImageFrameBuilder? frameBuilder;
 
   @override
   State<AvifImage> createState() => AvifImageState();
@@ -60,6 +61,7 @@ class AvifImage extends StatefulWidget {
     this.semanticLabel,
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
+    this.frameBuilder,
   }) : super(key: key);
 
   AvifImage.file(
@@ -85,6 +87,7 @@ class AvifImage extends StatefulWidget {
     this.semanticLabel,
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
+    this.frameBuilder,
   })  : image = FileAvifImage(
           file,
           scale: scale,
@@ -115,6 +118,7 @@ class AvifImage extends StatefulWidget {
     this.semanticLabel,
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
+    this.frameBuilder,
   })  : image = AssetAvifImage(
           name,
           scale: scale,
@@ -145,6 +149,7 @@ class AvifImage extends StatefulWidget {
     this.semanticLabel,
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
+    this.frameBuilder,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
@@ -175,6 +180,7 @@ class AvifImage extends StatefulWidget {
     this.semanticLabel,
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
+    this.frameBuilder,
   })  : image = MemoryAvifImage(
           bytes,
           scale: scale,
@@ -193,6 +199,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   int? _frameNumber;
   Object? _lastException;
   StackTrace? _lastStack;
+  bool _wasSynchronouslyLoaded = false;
 
   @override
   void initState() {
@@ -284,6 +291,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       _lastStack = null;
       _replaceImage(info: imageInfo);
       _frameNumber = _frameNumber == null ? 0 : _frameNumber! + 1;
+      _wasSynchronouslyLoaded = _wasSynchronouslyLoaded | synchronousCall;
     });
   }
 
@@ -330,8 +338,8 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     }
 
     setState(() {
-      _replaceImage(info: null);
       _frameNumber = null;
+      _wasSynchronouslyLoaded = false;
     });
 
     _imageStream = newStream;
@@ -403,6 +411,15 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
         image: true,
         label: widget.semanticLabel ?? '',
         child: result,
+      );
+    }
+
+    if (widget.frameBuilder != null) {
+      result = widget.frameBuilder!(
+        context,
+        result,
+        _frameNumber,
+        _wasSynchronouslyLoaded,
       );
     }
 
