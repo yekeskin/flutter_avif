@@ -31,6 +31,8 @@ class AvifImage extends StatefulWidget {
   final bool isAntiAlias;
   final ImageProvider image;
   final ImageErrorWidgetBuilder? errorBuilder;
+  final String? semanticLabel;
+  final bool excludeFromSemantics;
 
   @override
   State<AvifImage> createState() => AvifImageState();
@@ -54,6 +56,8 @@ class AvifImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     this.errorBuilder,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
   }) : super(key: key);
 
   AvifImage.file(
@@ -76,6 +80,8 @@ class AvifImage extends StatefulWidget {
     int? cacheHeight,
     int? overrideDurationMs = -1,
     this.errorBuilder,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
   })  : image = FileAvifImage(
           file,
           scale: scale,
@@ -103,6 +109,8 @@ class AvifImage extends StatefulWidget {
     int? cacheHeight,
     int? overrideDurationMs = -1,
     this.errorBuilder,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
   })  : image = AssetAvifImage(
           name,
           scale: scale,
@@ -130,6 +138,8 @@ class AvifImage extends StatefulWidget {
     int? cacheHeight,
     int? overrideDurationMs = -1,
     this.errorBuilder,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
@@ -157,6 +167,8 @@ class AvifImage extends StatefulWidget {
     int? cacheHeight,
     int? overrideDurationMs = -1,
     this.errorBuilder,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
   })  : image = MemoryAvifImage(
           bytes,
           scale: scale,
@@ -354,7 +366,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       }
     }
 
-    return RawImage(
+    Widget result = RawImage(
       image: _imageInfo?.image,
       debugImageLabel: _imageInfo?.debugLabel,
       width: widget.width,
@@ -372,6 +384,17 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       isAntiAlias: widget.isAntiAlias,
       filterQuality: widget.filterQuality,
     );
+
+    if (!widget.excludeFromSemantics) {
+      result = Semantics(
+        container: widget.semanticLabel != null,
+        image: true,
+        label: widget.semanticLabel ?? '',
+        child: result,
+      );
+    }
+
+    return result;
   }
 
   Widget _debugBuildErrorWidget(BuildContext context, Object error) {
