@@ -33,6 +33,7 @@ class AvifImage extends StatefulWidget {
   final ImageErrorWidgetBuilder? errorBuilder;
   final String? semanticLabel;
   final bool excludeFromSemantics;
+  final bool gaplessPlayback;
 
   @override
   State<AvifImage> createState() => AvifImageState();
@@ -58,6 +59,7 @@ class AvifImage extends StatefulWidget {
     this.errorBuilder,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.gaplessPlayback = false,
   }) : super(key: key);
 
   AvifImage.file(
@@ -82,6 +84,7 @@ class AvifImage extends StatefulWidget {
     this.errorBuilder,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.gaplessPlayback = false,
   })  : image = FileAvifImage(
           file,
           scale: scale,
@@ -111,6 +114,7 @@ class AvifImage extends StatefulWidget {
     this.errorBuilder,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.gaplessPlayback = false,
   })  : image = AssetAvifImage(
           name,
           scale: scale,
@@ -140,6 +144,7 @@ class AvifImage extends StatefulWidget {
     this.errorBuilder,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.gaplessPlayback = false,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
@@ -169,6 +174,7 @@ class AvifImage extends StatefulWidget {
     this.errorBuilder,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.gaplessPlayback = false,
   })  : image = MemoryAvifImage(
           bytes,
           scale: scale,
@@ -316,6 +322,12 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     if (_imageStream?.key == newStream.key) return;
 
     if (_isListeningToStream) _imageStream!.removeListener(_getListener());
+
+    if (!widget.gaplessPlayback) {
+      setState(() {
+        _replaceImage(info: null);
+      });
+    }
 
     setState(() {
       _replaceImage(info: null);
