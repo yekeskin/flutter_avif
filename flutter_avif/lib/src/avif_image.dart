@@ -35,6 +35,7 @@ class AvifImage extends StatefulWidget {
   final bool excludeFromSemantics;
   final bool gaplessPlayback;
   final ImageFrameBuilder? frameBuilder;
+  final ImageLoadingBuilder? loadingBuilder;
 
   @override
   State<AvifImage> createState() => AvifImageState();
@@ -62,6 +63,7 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
+    this.loadingBuilder,
   }) : super(key: key);
 
   AvifImage.file(
@@ -93,6 +95,7 @@ class AvifImage extends StatefulWidget {
           scale: scale,
           overrideDurationMs: overrideDurationMs,
         ),
+        loadingBuilder = null,
         super(key: key);
 
   AvifImage.asset(
@@ -126,6 +129,7 @@ class AvifImage extends StatefulWidget {
           overrideDurationMs: overrideDurationMs,
           bundle: bundle,
         ),
+        loadingBuilder = null,
         super(key: key);
 
   AvifImage.network(
@@ -152,6 +156,7 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
+    this.loadingBuilder,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
@@ -188,6 +193,7 @@ class AvifImage extends StatefulWidget {
           scale: scale,
           overrideDurationMs: overrideDurationMs,
         ),
+        loadingBuilder = null,
         super(key: key);
 }
 
@@ -202,6 +208,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   Object? _lastException;
   StackTrace? _lastStack;
   bool _wasSynchronouslyLoaded = false;
+  ImageChunkEvent? _loadingProgress;
 
   @override
   void initState() {
@@ -238,6 +245,12 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
   @override
   void didUpdateWidget(AvifImage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (_isListeningToStream &&
+        (widget.loadingBuilder == null) != (oldWidget.loadingBuilder == null)) {
+      final ImageStreamListener oldListener = _getListener();
+      _imageStream!.addListener(_getListener(recreateListener: true));
+      _imageStream!.removeListener(oldListener);
+    }
     if (widget.image != oldWidget.image) {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.disposeDecoder(key: oldWidget.image.hashCode.toString());
@@ -266,7 +279,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       _lastStack = null;
       _imageStreamListener = ImageStreamListener(
         _handleImageFrame,
-        onChunk: null,
+        onChunk: widget.loadingBuilder == null ? null : _handleImageChunk,
         onError: widget.errorBuilder != null || kDebugMode
             ? (Object error, StackTrace? stackTrace) {
                 setState(() {
@@ -294,6 +307,16 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
       _replaceImage(info: imageInfo);
       _frameNumber = _frameNumber == null ? 0 : _frameNumber! + 1;
       _wasSynchronouslyLoaded = _wasSynchronouslyLoaded | synchronousCall;
+      _loadingProgress = null;
+    });
+  }
+
+  void _handleImageChunk(ImageChunkEvent event) {
+    assert(widget.loadingBuilder != null);
+    setState(() {
+      _loadingProgress = event;
+      _lastException = null;
+      _lastStack = null;
     });
   }
 
@@ -342,6 +365,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     setState(() {
       _frameNumber = null;
       _wasSynchronouslyLoaded = false;
+      _loadingProgress = null;
     });
 
     _imageStream = newStream;
@@ -423,6 +447,10 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
         _frameNumber,
         _wasSynchronouslyLoaded,
       );
+    }
+
+    if (widget.loadingBuilder != null) {
+      result = widget.loadingBuilder!(context, result, _loadingProgress);
     }
 
     return result;
@@ -633,23 +661,48 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   @override
   ImageStreamCompleter loadBuffer(
       NetworkAvifImage key, DecoderBufferCallback decode) {
+    final StreamController<ImageChunkEvent> chunkEvents =
+        StreamController<ImageChunkEvent>();
+
     return AvifImageStreamCompleter(
       key: key,
-      codec: _loadAsync(key, decode),
+      codec: _loadAsync(
+        key,
+        decode,
+        chunkEvents,
+      ),
       scale: key.scale,
       debugLabel: key.url,
       informationCollector: () => <DiagnosticsNode>[
         ErrorDescription('Url: $url'),
       ],
+      chunkEvents: chunkEvents.stream,
     );
   }
 
   Future<AvifCodec> _loadAsync(
     NetworkAvifImage key,
     DecoderBufferCallback decode,
+    StreamController<ImageChunkEvent> chunkEvents,
   ) async {
     assert(key == this);
-    final bytes = await NetworkAssetBundle(Uri.parse(url)).load(url);
+
+    final httpClient = HttpClient();
+    final httpRequest = await httpClient.getUrl(Uri.parse(url));
+    final httpResponse = await httpRequest.close();
+    if (httpResponse.statusCode != HttpStatus.ok) {
+      throw StateError(
+          '$url cannot be loaded as an image. Http error code ${httpResponse.statusCode}');
+    }
+    final Uint8List bytes = await consolidateHttpClientResponseBytes(
+      httpResponse,
+      onBytesReceived: (int cumulative, int? total) {
+        chunkEvents.add(ImageChunkEvent(
+          cumulativeBytesLoaded: cumulative,
+          expectedTotalBytes: total,
+        ));
+      },
+    );
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
@@ -657,17 +710,16 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
       throw StateError('$url is empty and cannot be loaded as an image.');
     }
 
-    final bytesUint8List = bytes.buffer.asUint8List(0);
-    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
+    final fType = _isAvifFile(bytes.sublist(0, 16));
     if (fType == _FileType.unknown) {
       throw StateError('$url is not an avif file.');
     }
 
     final codec = fType == _FileType.avif
-        ? SingleFrameAvifCodec(bytes: bytesUint8List)
+        ? SingleFrameAvifCodec(bytes: bytes)
         : MultiFrameAvifCodec(
             key: hashCode,
-            avifBytes: bytesUint8List,
+            avifBytes: bytes,
             overrideDurationMs: overrideDurationMs,
           );
     await codec.ready();
