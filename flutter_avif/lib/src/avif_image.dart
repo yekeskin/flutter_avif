@@ -119,10 +119,12 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
+    AssetBundle? bundle,
   })  : image = AssetAvifImage(
           name,
           scale: scale,
           overrideDurationMs: overrideDurationMs,
+          bundle: bundle,
         ),
         super(key: key);
 
@@ -537,11 +539,13 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
     this.asset, {
     this.scale = 1.0,
     this.overrideDurationMs = -1,
+    this.bundle,
   });
 
   final String asset;
   final double scale;
   final int? overrideDurationMs;
+  final AssetBundle? bundle;
 
   @override
   Future<AssetAvifImage> obtainKey(ImageConfiguration configuration) {
@@ -568,7 +572,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   ) async {
     assert(key == this);
 
-    final bytes = await rootBundle.load(asset);
+    final bytes = await (bundle ?? rootBundle).load(asset);
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
