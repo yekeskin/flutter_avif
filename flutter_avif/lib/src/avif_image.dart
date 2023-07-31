@@ -157,10 +157,12 @@ class AvifImage extends StatefulWidget {
     this.gaplessPlayback = false,
     this.frameBuilder,
     this.loadingBuilder,
+    Map<String, String>? headers,
   })  : image = NetworkAvifImage(
           url,
           scale: scale,
           overrideDurationMs: overrideDurationMs,
+          headers: headers,
         ),
         super(key: key);
 
@@ -647,11 +649,13 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
     this.url, {
     this.scale = 1.0,
     this.overrideDurationMs = -1,
+    this.headers,
   });
 
   final String url;
   final double scale;
   final int? overrideDurationMs;
+  final Map<String, String>? headers;
 
   @override
   Future<NetworkAvifImage> obtainKey(ImageConfiguration configuration) {
@@ -689,6 +693,9 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
 
     final httpClient = HttpClient();
     final httpRequest = await httpClient.getUrl(Uri.parse(url));
+    headers?.forEach((String name, String value) {
+      httpRequest.headers.add(name, value);
+    });
     final httpResponse = await httpRequest.close();
     if (httpResponse.statusCode != HttpStatus.ok) {
       throw StateError(
