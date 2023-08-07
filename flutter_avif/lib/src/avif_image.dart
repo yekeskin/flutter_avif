@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,8 @@ import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.
 /// Private since this is the only file that produces
 /// binding warnings in the 3.x.x version of flutter.
 T? _ambiguate<T>(T? value) => value;
+
+const double _kLowDprLimit = 2.0;
 
 class AvifImage extends StatefulWidget {
   final double? width;
@@ -577,9 +580,30 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   final int? overrideDurationMs;
   final AssetBundle? bundle;
 
+  static const double _naturalResolution = 1.0;
+
   @override
-  Future<AssetAvifImage> obtainKey(ImageConfiguration configuration) {
-    return SynchronousFuture<AssetAvifImage>(this);
+  Future<AssetAvifImage> obtainKey(ImageConfiguration configuration) async {
+    final chosenBundle = bundle ?? rootBundle;
+
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(chosenBundle);
+      final Iterable<AssetMetadata>? candidateVariants =
+          manifest.getAssetVariants(asset);
+      final AssetMetadata chosenVariant = _chooseVariant(
+        asset,
+        configuration,
+        candidateVariants,
+      );
+
+      return AssetAvifImage(
+        chosenVariant.key,
+        bundle: chosenBundle,
+        scale: chosenVariant.targetDevicePixelRatio ?? _naturalResolution,
+      );
+    } catch (e) {
+      return this;
+    }
   }
 
   @override
@@ -600,9 +624,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
     AssetAvifImage key,
     DecoderBufferCallback decode,
   ) async {
-    assert(key == this);
-
-    final bytes = await (bundle ?? rootBundle).load(asset);
+    final bytes = await (bundle ?? rootBundle).load(key.asset);
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
@@ -626,6 +648,52 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
     await codec.ready();
 
     return codec;
+  }
+
+  AssetMetadata _chooseVariant(
+    String mainAssetKey,
+    ImageConfiguration config,
+    Iterable<AssetMetadata>? candidateVariants,
+  ) {
+    if (candidateVariants == null ||
+        candidateVariants.isEmpty ||
+        config.devicePixelRatio == null) {
+      return AssetMetadata(
+          key: mainAssetKey, targetDevicePixelRatio: null, main: true);
+    }
+
+    final SplayTreeMap<double, AssetMetadata> candidatesByDevicePixelRatio =
+        SplayTreeMap<double, AssetMetadata>();
+    for (final AssetMetadata candidate in candidateVariants) {
+      candidatesByDevicePixelRatio[
+          candidate.targetDevicePixelRatio ?? _naturalResolution] = candidate;
+    }
+
+    return _findBestVariant(
+        candidatesByDevicePixelRatio, config.devicePixelRatio!);
+  }
+
+  AssetMetadata _findBestVariant(
+    SplayTreeMap<double, AssetMetadata> candidatesByDpr,
+    double value,
+  ) {
+    if (candidatesByDpr.containsKey(value)) {
+      return candidatesByDpr[value]!;
+    }
+    final double? lower = candidatesByDpr.lastKeyBefore(value);
+    final double? upper = candidatesByDpr.firstKeyAfter(value);
+    if (lower == null) {
+      return candidatesByDpr[upper]!;
+    }
+    if (upper == null) {
+      return candidatesByDpr[lower]!;
+    }
+
+    if (value < _kLowDprLimit || value > (lower + upper) / 2) {
+      return candidatesByDpr[upper]!;
+    } else {
+      return candidatesByDpr[lower]!;
+    }
   }
 
   @override
