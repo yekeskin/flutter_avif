@@ -1,3 +1,8 @@
+## 1.4.0
+
+* Add missing constructor arguments to match flutter image api
+* Add support for asset variants
+
 ## 1.3.0
 
 * Enable dav1d decoder
