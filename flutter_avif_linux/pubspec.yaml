@@ -1,6 +1,6 @@
 name: flutter_avif_linux
 description: Linux implementation for flutter_avif.
-version: 1.3.0
+version: 1.4.0
 repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_linux
 
 environment:
