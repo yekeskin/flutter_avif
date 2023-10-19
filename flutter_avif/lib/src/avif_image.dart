@@ -507,8 +507,8 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
-      FileAvifImage key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadImage(
+      FileAvifImage key, ImageDecoderCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -522,7 +522,7 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     FileAvifImage key,
-    DecoderBufferCallback decode,
+    ImageDecoderCallback decode,
   ) async {
     assert(key == this);
 
@@ -607,8 +607,8 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
-      AssetAvifImage key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadImage(
+      AssetAvifImage key, ImageDecoderCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -622,7 +622,7 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     AssetAvifImage key,
-    DecoderBufferCallback decode,
+    ImageDecoderCallback decode,
   ) async {
     final bytes = await (bundle ?? rootBundle).load(key.asset);
 
@@ -731,8 +731,8 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
-      NetworkAvifImage key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadImage(
+      NetworkAvifImage key, ImageDecoderCallback decode) {
     final StreamController<ImageChunkEvent> chunkEvents =
         StreamController<ImageChunkEvent>();
 
@@ -754,7 +754,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
 
   Future<AvifCodec> _loadAsync(
     NetworkAvifImage key,
-    DecoderBufferCallback decode,
+    ImageDecoderCallback decode,
     StreamController<ImageChunkEvent> chunkEvents,
   ) async {
     assert(key == this);
@@ -835,8 +835,8 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
-      MemoryAvifImage key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadImage(
+      MemoryAvifImage key, ImageDecoderCallback decode) {
     return AvifImageStreamCompleter(
       key: key,
       codec: _loadAsync(key, decode),
@@ -846,7 +846,7 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
   }
 
   Future<AvifCodec> _loadAsync(
-      MemoryAvifImage key, DecoderBufferCallback decode) async {
+      MemoryAvifImage key, ImageDecoderCallback decode) async {
     assert(key == this);
 
     final bytesUint8List = bytes.buffer.asUint8List(0);
