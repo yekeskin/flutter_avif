@@ -1,4 +1,4 @@
-## 1.5.0
+## Unreleased
 
 * Update dart sdk to use 3.0.0+
 * Update flutter_lints to 2.0.3

@@ -1,4 +1,4 @@
-## 1.5.0
+## Unreleased
 
 * Update dart sdk to use 3.0.0+
 * Update ffi to 2.1.0
