@@ -1,4 +1,4 @@
-## Unreleased
+## 2.0.0
 
 * Update dart sdk to use 3.0.0+
 * Update flutter_avif_platform_interface to 1.5.0
