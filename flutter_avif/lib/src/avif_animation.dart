@@ -229,7 +229,10 @@ class _AvifAnimationState extends State<AvifAnimation>
       _frames = avif.frames;
       _controller.duration = _controller.duration ?? avif.duration;
       if (widget.onLoaded != null) {
-        widget.onLoaded!(_controller.duration!, _frames.length);
+        final fps =
+            (_frames.length * 1000 / _controller.duration!.inMilliseconds)
+                .round();
+        widget.onLoaded!(_controller.duration!, fps);
       }
     });
   }
