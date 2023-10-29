@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Fix pub.dev build
+
 ## 2.1.0
 
 * Custom animation controller support

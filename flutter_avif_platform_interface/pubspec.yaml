@@ -1,6 +1,6 @@
 name: flutter_avif_platform_interface
 description: Common platform interface for the flutter_avif plugin.
-version: 2.1.0
+version: 2.1.1
 repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_platform_interface
 
 environment:
