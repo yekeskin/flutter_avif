@@ -1,3 +1,8 @@
+## 2.1.0
+
+* Custom animation controller support
+* Gradle 8+ support
+
 ## 2.0.0
 
 * Update dart sdk to use 3.0.0+
