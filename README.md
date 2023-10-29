@@ -67,9 +67,6 @@ AnimationController controller = AnimationController(vsync: this);
 AvifAnimation(
     controller: controller,
     image: const AssetAvifImage('multiframe.avif'),
-    loadingBuilder: (context) => const Center(
-        child: CircularProgressIndicator(),
-    ),
     onLoaded: (duration, fps) {
         controller.forward(); // play the animation
     },
