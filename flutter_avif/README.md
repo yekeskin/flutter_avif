@@ -54,3 +54,21 @@ final avifBytes = await encodeAvif(inputBytes);
 final outputFile = File('output.avif');
 outputFile.writeAsBytes(avifBytes);
 ```
+
+## Custom Animation Controller
+
+`AvifAnimation` can be used together with an `AnimationController` to manipulate the playback of multiframe images.
+
+```dart
+import 'package:flutter_avif/flutter_avif.dart';
+
+AnimationController controller = AnimationController(vsync: this);
+
+AvifAnimation(
+    controller: controller,
+    image: const AssetAvifImage('multiframe.avif'),
+    onLoaded: (duration, fps) {
+        controller.forward(); // play the animation
+    },
+),
+```
