@@ -897,10 +897,13 @@ abstract class AvifCodec {
 class MultiFrameAvifCodec implements AvifCodec {
   final String _key;
   late Completer<void> _ready;
+  ui.Codec? nativeDecoder;
 
   int _frameCount = 1;
   @override
-  int get frameCount => _frameCount;
+  int get frameCount => avif_platform.FlutterAvifPlatform.useNativeDecoder
+      ? nativeDecoder!.frameCount
+      : _frameCount;
 
   int _durationMs = -1;
   @override
@@ -913,12 +916,19 @@ class MultiFrameAvifCodec implements AvifCodec {
   }) : _key = key.toString() {
     _ready = Completer();
     try {
-      final avifFfi = avif_platform.FlutterAvifPlatform.api;
-      avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
-        _frameCount = info.imageCount;
-        _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
-        _ready.complete();
-      });
+      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
+        ui.instantiateImageCodec(avifBytes).then((codec) {
+          nativeDecoder = codec;
+          _ready.complete();
+        });
+      } else {
+        final avifFfi = avif_platform.FlutterAvifPlatform.api;
+        avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
+          _frameCount = info.imageCount;
+          _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
+          _ready.complete();
+        });
+      }
     } catch (e) {
       _ready.complete();
     }
@@ -955,18 +965,24 @@ class MultiFrameAvifCodec implements AvifCodec {
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
     try {
-      final avifFfi = avif_platform.FlutterAvifPlatform.api;
-      avifFfi.getNextFrame(key: _key).then((frame) {
-        ui.decodeImageFromPixels(
-          frame.data,
-          frame.width,
-          frame.height,
-          ui.PixelFormat.rgba8888,
-          (image) {
-            callback(image, (frame.duration * 1000).round());
-          },
-        );
-      });
+      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
+        nativeDecoder!.getNextFrame().then((frame) {
+          callback(frame.image, frame.duration.inMilliseconds);
+        });
+      } else {
+        final avifFfi = avif_platform.FlutterAvifPlatform.api;
+        avifFfi.getNextFrame(key: _key).then((frame) {
+          ui.decodeImageFromPixels(
+            frame.data,
+            frame.width,
+            frame.height,
+            ui.PixelFormat.rgba8888,
+            (image) {
+              callback(image, (frame.duration * 1000).round());
+            },
+          );
+        });
+      }
       return null;
     } catch (e) {
       callback(null, 0);
@@ -976,8 +992,12 @@ class MultiFrameAvifCodec implements AvifCodec {
 
   @override
   void dispose() {
-    final avifFfi = avif_platform.FlutterAvifPlatform.api;
-    avifFfi.disposeDecoder(key: _key);
+    if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
+      nativeDecoder!.dispose();
+    } else {
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.disposeDecoder(key: _key);
+    }
   }
 }
 
@@ -1020,18 +1040,26 @@ class SingleFrameAvifCodec implements AvifCodec {
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
     try {
-      final avifFfi = avif_platform.FlutterAvifPlatform.api;
-      avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
-        ui.decodeImageFromPixels(
-          frame.data,
-          frame.width,
-          frame.height,
-          ui.PixelFormat.rgba8888,
-          (image) {
-            callback(image, (frame.duration * 1000).round());
-          },
-        );
-      });
+      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
+        ui.instantiateImageCodec(_bytes).then((codec) {
+          codec.getNextFrame().then((frame) {
+            callback(frame.image, frame.duration.inMilliseconds);
+          });
+        });
+      } else {
+        final avifFfi = avif_platform.FlutterAvifPlatform.api;
+        avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
+          ui.decodeImageFromPixels(
+            frame.data,
+            frame.width,
+            frame.height,
+            ui.PixelFormat.rgba8888,
+            (image) {
+              callback(image, (frame.duration * 1000).round());
+            },
+          );
+        });
+      }
       return null;
     } catch (e) {
       callback(null, 0);
