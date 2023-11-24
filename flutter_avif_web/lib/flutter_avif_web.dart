@@ -6,6 +6,7 @@ class FlutterAvifWeb extends FlutterAvifPlatform {
   static void registerWith([Object? registrar]) async {
     FlutterAvifPlatform.useNativeDecoder = true;
     FlutterAvifPlatform.api = FlutterAvifWebImpl();
+    FlutterAvifPlatform.decode = decodeImage;
   }
 }
 
@@ -31,17 +32,16 @@ class FlutterAvifWebImpl extends FlutterAvif {
       FlutterAvifWebImpl.scriptLoaded = true;
     }
 
-    /*final pixels = BytesBuilder();
-    final durations = Uint8List(1);
-    final durations = Uint8List(imageSequence.length);
+    final pixels = BytesBuilder();
+    final List<int> durations = [];
     imageSequence.forEach((frame) {
       pixels.add(frame.data);
       durations.add(frame.durationInTimescale);
-    });*/
+    });
 
     return wasm.encodeAvif(
-      pixels: imageSequence[0].data,
-      durations: Uint8List.fromList([imageSequence[0].durationInTimescale]),
+      pixels: pixels.toBytes(),
+      durations: Uint8List.fromList(durations),
       width: width,
       height: height,
       speed: speed,
@@ -117,4 +117,13 @@ class FlutterAvifWebImpl extends FlutterAvif {
   Future<bool> resetDecoder({required String key, hint}) {
     throw UnimplementedError();
   }
+}
+
+Future<DecodeData> decodeImage(Uint8List data) async {
+  if (!FlutterAvifWebImpl.scriptLoaded) {
+    await wasm.loadScript();
+    FlutterAvifWebImpl.scriptLoaded = true;
+  }
+
+  return await wasm.decode(data);
 }

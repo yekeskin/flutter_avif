@@ -143,23 +143,14 @@ __exports.encode = function(_pixels, _durations, _options) {
 };
 
 /**
-* Sample position for subsampled chroma
+* @param {Uint8Array} _data
+* @returns {any}
 */
-__exports.ChromaSamplePosition = Object.freeze({
-/**
-* The source video transfer function must be signaled
-* outside the AV1 bitstream.
-*/
-Unknown:0,"0":"Unknown",
-/**
-* Horizontally co-located with (0, 0) luma sample, vertically positioned
-* in the middle between two luma samples.
-*/
-Vertical:1,"1":"Vertical",
-/**
-* Co-located with (0, 0) luma sample.
-*/
-Colocated:2,"2":"Colocated", });
+__exports.decode = function(_data) {
+    const ret = wasm.decode(addHeapObject(_data));
+    return takeObject(ret);
+};
+
 /**
 */
 __exports.Tune = Object.freeze({ Psnr:0,"0":"Psnr",Psychovisual:1,"1":"Psychovisual", });
@@ -177,6 +168,24 @@ Limited:0,"0":"Limited",
 * Full swing representation
 */
 Full:1,"1":"Full", });
+/**
+* Sample position for subsampled chroma
+*/
+__exports.ChromaSamplePosition = Object.freeze({
+/**
+* The source video transfer function must be signaled
+* outside the AV1 bitstream.
+*/
+Unknown:0,"0":"Unknown",
+/**
+* Horizontally co-located with (0, 0) luma sample, vertically positioned
+* in the middle between two luma samples.
+*/
+Vertical:1,"1":"Vertical",
+/**
+* Co-located with (0, 0) luma sample.
+*/
+Colocated:2,"2":"Colocated", });
 
 async function __wbg_load(module, imports) {
     if (typeof Response === 'function' && module instanceof Response) {
@@ -266,6 +275,10 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_set_1991b64882adb4cb = function(arg0, arg1, arg2) {
         getObject(arg0).set(getObject(arg1), arg2 >>> 0);
+    };
+    imports.wbg.__wbindgen_json_parse = function(arg0, arg1) {
+        const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
+        return addHeapObject(ret);
     };
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));

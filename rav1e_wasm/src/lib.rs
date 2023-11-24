@@ -1,3 +1,4 @@
+mod decode;
 mod encode;
 mod utils;
 
@@ -28,9 +29,6 @@ pub fn encode(
     let durations: Vec<u8> = _durations.to_vec();
     let options: Vec<u32> = _options.to_vec();
 
-    // let frame_size = (options[0] * options[1] * 4) as usize;
-    // let frame_count = pixels.len() / frame_size;
-
     // scale quantizer values as rav1e's range
     let max_quantizer = (options[5] * 255) / 63;
     let min_quantizer = (options[6] * 255) / 63;
@@ -48,6 +46,16 @@ pub fn encode(
         max_quantizer_alpha as usize,
         min_quantizer_alpha as u8,
         &pixels,
+        &durations,
     )
     .expect("Failed to encode AVIF! image");
+}
+
+#[wasm_bindgen]
+pub fn decode(_data: js_sys::Uint8Array) -> JsValue {
+    utils::set_panic_hook();
+
+    let data: Vec<u8> = _data.to_vec();
+
+    return JsValue::from_serde(&decode::decode_image(&data)).unwrap();
 }
