@@ -1,7 +1,7 @@
 use image::{AnimationDecoder, ImageFormat};
 use rgb::{ComponentBytes, FromSlice};
 use serde::{Deserialize, Serialize};
-use std::io::Cursor;
+use std::{cmp, io::Cursor};
 
 pub fn decode_image(byte_data: &[u8]) -> DecodeData {
     let format = image::guess_format(byte_data).unwrap();
@@ -39,7 +39,7 @@ pub fn decode_image(byte_data: &[u8]) -> DecodeData {
                 let (numer, denom) = frame.delay().numer_denom_ms();
 
                 data.extend_from_slice(frame.buffer().as_rgba().as_bytes());
-                durations.push(numer / denom);
+                durations.push(cmp::max(1, (numer as f32 / denom as f32).ceil() as u32));
 
                 width = frame.buffer().width();
                 height = frame.buffer().height()
