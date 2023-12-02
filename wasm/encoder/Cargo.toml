@@ -1,6 +1,6 @@
 [package]
-name = "rav1e_wasm"
-description = "Rav1e WASM"
+name = "avif_encoder"
+description = "Avif Encoder"
 version = "2.1.1"
 authors = ["Yunus Emre Keskin <yekeskin@aol.com>"]
 edition = "2018"

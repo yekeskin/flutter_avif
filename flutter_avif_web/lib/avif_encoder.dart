@@ -14,10 +14,10 @@ import 'package:js/js.dart';
 
 Future<void> loadScript() async {
   final script = ScriptElement();
-  script.src = 'packages/flutter_avif_web/web/rav1e_wasm.js';
+  script.src = 'packages/flutter_avif_web/web/avif_encoder.js';
   document.head!.append(script);
   await script.onLoad.first;
-  _eval('window.rav1e_wasm = wasm_bindgen');
+  _eval('window.avif_encoder = wasm_bindgen');
 
   final initBindgen = promiseToFuture(_initBindgen());
   await initBindgen;
@@ -66,17 +66,17 @@ Future<DecodeData> decode(Uint8List data) async {
 @JS('window.eval')
 external void _eval(String script);
 
-@JS('window.rav1e_wasm')
+@JS('window.avif_encoder')
 external JSPromise _initBindgen();
 
-@JS('window.rav1e_wasm.encode')
+@JS('window.avif_encoder.encode')
 external Uint8List _encode(
   Uint8List pixels,
   Uint8List durations,
   Uint32List options,
 );
 
-@JS('window.rav1e_wasm.decode')
+@JS('window.avif_encoder.decode')
 external JSObject _decode(
   Uint8List data,
 );

@@ -1,6 +1,6 @@
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
-import 'rav1e_wasm.dart' as wasm;
+import 'avif_encoder.dart' as wasm;
 
 class FlutterAvifWeb extends FlutterAvifPlatform {
   static void registerWith([Object? registrar]) async {
