@@ -130,9 +130,9 @@ class FlutterAvifWebImpl extends FlutterAvif {
 }
 
 Future<DecodeData> decodeImage(Uint8List data) async {
-  if (!FlutterAvifWebImpl.scriptLoaded) {
-    await wasm.loadScript();
-    FlutterAvifWebImpl.scriptLoaded = true;
+  if (!FlutterAvifWebImpl.encoderScriptLoaded) {
+    await wasm_encoder.loadScript();
+    FlutterAvifWebImpl.encoderScriptLoaded = true;
   }
 
   return await wasm_encoder.decode(data);
