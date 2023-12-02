@@ -1,17 +1,19 @@
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
-import 'avif_encoder.dart' as wasm;
+import 'avif_encoder.dart' as wasm_encoder;
+import 'avif_decoder.dart' as wasm_decoder;
 
 class FlutterAvifWeb extends FlutterAvifPlatform {
   static void registerWith([Object? registrar]) async {
-    FlutterAvifPlatform.useNativeDecoder = true;
+    // FlutterAvifPlatform.useNativeDecoder = true;
     FlutterAvifPlatform.api = FlutterAvifWebImpl();
     FlutterAvifPlatform.decode = decodeImage;
   }
 }
 
 class FlutterAvifWebImpl extends FlutterAvif {
-  static bool scriptLoaded = false;
+  static bool encoderScriptLoaded = false;
+  static bool decoderScriptLoaded = false;
 
   @override
   Future<Uint8List> encodeAvif({
@@ -27,9 +29,9 @@ class FlutterAvifWebImpl extends FlutterAvif {
     required List<EncodeFrame> imageSequence,
     hint,
   }) async {
-    if (!FlutterAvifWebImpl.scriptLoaded) {
-      await wasm.loadScript();
-      FlutterAvifWebImpl.scriptLoaded = true;
+    if (!FlutterAvifWebImpl.encoderScriptLoaded) {
+      await wasm_encoder.loadScript();
+      FlutterAvifWebImpl.encoderScriptLoaded = true;
     }
 
     final pixels = BytesBuilder();
@@ -39,7 +41,7 @@ class FlutterAvifWebImpl extends FlutterAvif {
       durations.add(frame.durationInTimescale);
     });
 
-    return wasm.encodeAvif(
+    return wasm_encoder.encodeAvif(
       pixels: pixels.toBytes(),
       durations: Uint8List.fromList(durations),
       width: width,
@@ -73,8 +75,16 @@ class FlutterAvifWebImpl extends FlutterAvif {
       );
 
   @override
-  Future<Frame> decodeSingleFrameImage({required Uint8List avifBytes, hint}) {
-    throw UnimplementedError();
+  Future<Frame> decodeSingleFrameImage({
+    required Uint8List avifBytes,
+    hint,
+  }) async {
+    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+      await wasm_decoder.loadScript();
+      FlutterAvifWebImpl.decoderScriptLoaded = true;
+    }
+
+    return await wasm_decoder.decodeSingleFrameImage(avifBytes);
   }
 
   @override
@@ -125,5 +135,5 @@ Future<DecodeData> decodeImage(Uint8List data) async {
     FlutterAvifWebImpl.scriptLoaded = true;
   }
 
-  return await wasm.decode(data);
+  return await wasm_encoder.decode(data);
 }
