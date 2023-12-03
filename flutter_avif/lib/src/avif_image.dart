@@ -93,11 +93,16 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
-  })  : image = FileAvifImage(
-          file,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? FileImage(
+                file,
+                scale: scale,
+              ) as ImageProvider
+            : FileAvifImage(
+                file,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+              ),
         loadingBuilder = null,
         super(key: key);
 
@@ -126,12 +131,17 @@ class AvifImage extends StatefulWidget {
     this.gaplessPlayback = false,
     this.frameBuilder,
     AssetBundle? bundle,
-  })  : image = AssetAvifImage(
-          name,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-          bundle: bundle,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? AssetImage(
+                name,
+                bundle: bundle,
+              ) as ImageProvider
+            : AssetAvifImage(
+                name,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+                bundle: bundle,
+              ),
         loadingBuilder = null,
         super(key: key);
 
@@ -161,12 +171,18 @@ class AvifImage extends StatefulWidget {
     this.frameBuilder,
     this.loadingBuilder,
     Map<String, String>? headers,
-  })  : image = NetworkAvifImage(
-          url,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-          headers: headers,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? NetworkImage(
+                url,
+                scale: scale,
+                headers: headers,
+              ) as ImageProvider
+            : NetworkAvifImage(
+                url,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+                headers: headers,
+              ),
         super(key: key);
 
   AvifImage.memory(
@@ -193,11 +209,16 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
-  })  : image = MemoryAvifImage(
-          bytes,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? MemoryImage(
+                bytes,
+                scale: scale,
+              ) as ImageProvider
+            : MemoryAvifImage(
+                bytes,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+              ),
         loadingBuilder = null,
         super(key: key);
 }
@@ -897,13 +918,10 @@ abstract class AvifCodec {
 class MultiFrameAvifCodec implements AvifCodec {
   final String _key;
   late Completer<void> _ready;
-  ui.Codec? nativeDecoder;
 
   int _frameCount = 1;
   @override
-  int get frameCount => avif_platform.FlutterAvifPlatform.useNativeDecoder
-      ? nativeDecoder!.frameCount
-      : _frameCount;
+  int get frameCount => _frameCount;
 
   int _durationMs = -1;
   @override
@@ -916,19 +934,12 @@ class MultiFrameAvifCodec implements AvifCodec {
   }) : _key = key.toString() {
     _ready = Completer();
     try {
-      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
-        ui.instantiateImageCodec(avifBytes).then((codec) {
-          nativeDecoder = codec;
-          _ready.complete();
-        });
-      } else {
-        final avifFfi = avif_platform.FlutterAvifPlatform.api;
-        avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
-          _frameCount = info.imageCount;
-          _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
-          _ready.complete();
-        });
-      }
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
+        _frameCount = info.imageCount;
+        _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
+        _ready.complete();
+      });
     } catch (e) {
       _ready.complete();
     }
@@ -965,24 +976,18 @@ class MultiFrameAvifCodec implements AvifCodec {
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
     try {
-      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
-        nativeDecoder!.getNextFrame().then((frame) {
-          callback(frame.image, frame.duration.inMilliseconds);
-        });
-      } else {
-        final avifFfi = avif_platform.FlutterAvifPlatform.api;
-        avifFfi.getNextFrame(key: _key).then((frame) {
-          ui.decodeImageFromPixels(
-            frame.data,
-            frame.width,
-            frame.height,
-            ui.PixelFormat.rgba8888,
-            (image) {
-              callback(image, (frame.duration * 1000).round());
-            },
-          );
-        });
-      }
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.getNextFrame(key: _key).then((frame) {
+        ui.decodeImageFromPixels(
+          frame.data,
+          frame.width,
+          frame.height,
+          ui.PixelFormat.rgba8888,
+          (image) {
+            callback(image, (frame.duration * 1000).round());
+          },
+        );
+      });
       return null;
     } catch (e) {
       callback(null, 0);
@@ -992,12 +997,8 @@ class MultiFrameAvifCodec implements AvifCodec {
 
   @override
   void dispose() {
-    if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
-      nativeDecoder!.dispose();
-    } else {
-      final avifFfi = avif_platform.FlutterAvifPlatform.api;
-      avifFfi.disposeDecoder(key: _key);
-    }
+    final avifFfi = avif_platform.FlutterAvifPlatform.api;
+    avifFfi.disposeDecoder(key: _key);
   }
 }
 
@@ -1040,26 +1041,18 @@ class SingleFrameAvifCodec implements AvifCodec {
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
     try {
-      if (avif_platform.FlutterAvifPlatform.useNativeDecoder) {
-        ui.instantiateImageCodec(_bytes).then((codec) {
-          codec.getNextFrame().then((frame) {
-            callback(frame.image, frame.duration.inMilliseconds);
-          });
-        });
-      } else {
-        final avifFfi = avif_platform.FlutterAvifPlatform.api;
-        avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
-          ui.decodeImageFromPixels(
-            frame.data,
-            frame.width,
-            frame.height,
-            ui.PixelFormat.rgba8888,
-            (image) {
-              callback(image, (frame.duration * 1000).round());
-            },
-          );
-        });
-      }
+      final avifFfi = avif_platform.FlutterAvifPlatform.api;
+      avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
+        ui.decodeImageFromPixels(
+          frame.data,
+          frame.width,
+          frame.height,
+          ui.PixelFormat.rgba8888,
+          (image) {
+            callback(image, (frame.duration * 1000).round());
+          },
+        );
+      });
       return null;
     } catch (e) {
       callback(null, 0);
