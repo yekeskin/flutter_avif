@@ -88,19 +88,47 @@ class FlutterAvifWebImpl extends FlutterAvif {
   }
 
   @override
-  Future<bool> disposeDecoder({required String key, hint}) {
-    throw UnimplementedError();
+  Future<bool> disposeDecoder({required String key, hint}) async {
+    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+      await wasm_decoder.loadScript();
+      FlutterAvifWebImpl.decoderScriptLoaded = true;
+    }
+
+    return await wasm_decoder.disposeDecoder(key);
   }
 
   @override
-  Future<Frame> getNextFrame({required String key, hint}) {
-    throw UnimplementedError();
+  Future<Frame> getNextFrame({required String key, hint}) async {
+    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+      await wasm_decoder.loadScript();
+      FlutterAvifWebImpl.decoderScriptLoaded = true;
+    }
+
+    return await wasm_decoder.getNextFrame(key);
   }
 
   @override
-  Future<AvifInfo> initMemoryDecoder(
-      {required String key, required Uint8List avifBytes, hint}) {
-    throw UnimplementedError();
+  Future<AvifInfo> initMemoryDecoder({
+    required String key,
+    required Uint8List avifBytes,
+    hint,
+  }) async {
+    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+      await wasm_decoder.loadScript();
+      FlutterAvifWebImpl.decoderScriptLoaded = true;
+    }
+
+    return await wasm_decoder.initMemoryDecoder(key, avifBytes);
+  }
+
+  @override
+  Future<bool> resetDecoder({required String key, hint}) async {
+    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+      await wasm_decoder.loadScript();
+      FlutterAvifWebImpl.decoderScriptLoaded = true;
+    }
+
+    return await wasm_decoder.resetDecoder(key);
   }
 
   @override
@@ -122,11 +150,6 @@ class FlutterAvifWebImpl extends FlutterAvif {
   @override
   FlutterRustBridgeTaskConstMeta get kResetDecoderConstMeta =>
       throw UnimplementedError();
-
-  @override
-  Future<bool> resetDecoder({required String key, hint}) {
-    throw UnimplementedError();
-  }
 }
 
 Future<DecodeData> decodeImage(Uint8List data) async {

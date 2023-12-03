@@ -20,9 +20,11 @@ Future<void> loadScript() async {
   await script.onLoad.first;
 
   _eval(
-      'window.DecodeData = class DecodeData { constructor(data, width, height) { this.data = data; this.width = width; this.height = height; } };');
+      'window.AvifInfo = class AvifInfo { constructor(width, height, imageCount, duration) { this.width = width; this.height = height; this.imageCount = imageCount; this.duration = duration; } };');
   _eval(
-      'window.init_avif_decoder = function() { var promise = new Promise(function(resolve, reject) { window.Module().then(function(_module) { window.avif_decoder = _module; resolve(); }); }); return promise; }');
+      'window.AvifFrame = class AvifFrame { constructor(data, width, height, duration) { this.data = data; this.width = width; this.height = height; this.duration = duration; } };');
+  _eval(
+      'window.init_avif_decoder = function() { var promise = new Promise(function(resolve, reject) { window.avif_decoder_wasm().then(function(_module) { window.avif_decoder = _module; resolve(); }); }); return promise; }');
 
   final initBindgen = promiseToFuture(_initDecoder());
   await initBindgen;
@@ -33,10 +35,42 @@ Future<Frame> decodeSingleFrameImage(Uint8List data) async {
 
   return Frame(
     data: decoded.getProperty('data'.toJS) as Uint8List,
-    duration: 1.0,
+    duration: decoded.getProperty('duration'.toJS) as double,
     width: decoded.getProperty('width'.toJS) as int,
     height: decoded.getProperty('height'.toJS) as int,
   );
+}
+
+Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
+  final decoded = _initMemoryDecoder(key, data);
+
+  return AvifInfo(
+    width: decoded.getProperty('width'.toJS) as int,
+    height: decoded.getProperty('height'.toJS) as int,
+    imageCount: decoded.getProperty('imageCount'.toJS) as int,
+    duration: decoded.getProperty('duration'.toJS) as double,
+  );
+}
+
+Future<Frame> getNextFrame(String key) async {
+  final decoded = _getNextFrame(key);
+
+  return Frame(
+    data: decoded.getProperty('data'.toJS) as Uint8List,
+    duration: decoded.getProperty('duration'.toJS) as double,
+    width: decoded.getProperty('width'.toJS) as int,
+    height: decoded.getProperty('height'.toJS) as int,
+  );
+}
+
+Future<bool> resetDecoder(String key) async {
+  _resetDecoder(key);
+  return true;
+}
+
+Future<bool> disposeDecoder(String key) async {
+  _disposeDecoder(key);
+  return true;
 }
 
 @JS('window.init_avif_decoder')
@@ -47,3 +81,15 @@ external void _eval(String script);
 
 @JS('window.avif_decoder.decodeSingleFrameImage')
 external JSObject _decodeSingleFrameImage(Uint8List data);
+
+@JS('window.avif_decoder.initMemoryDecoder')
+external JSObject _initMemoryDecoder(String key, Uint8List data);
+
+@JS('window.avif_decoder.getNextFrame')
+external JSObject _getNextFrame(String key);
+
+@JS('window.avif_decoder.resetDecoder')
+external JSObject _resetDecoder(String key);
+
+@JS('window.avif_decoder.disposeDecoder')
+external JSObject _disposeDecoder(String key);
