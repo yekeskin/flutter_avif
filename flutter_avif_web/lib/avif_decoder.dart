@@ -15,23 +15,16 @@ import 'package:js/js.dart';
 
 Future<void> loadScript() async {
   final script = ScriptElement();
-  script.src = 'packages/flutter_avif_web/web/avif_decoder.js';
+  script.src = 'packages/flutter_avif_web/web/avif_decoder.loader.js';
   document.head!.append(script);
   await script.onLoad.first;
 
-  _eval(
-      'window.AvifInfo = class AvifInfo { constructor(width, height, imageCount, duration) { this.width = width; this.height = height; this.imageCount = imageCount; this.duration = duration; } };');
-  _eval(
-      'window.AvifFrame = class AvifFrame { constructor(data, width, height, duration) { this.data = data; this.width = width; this.height = height; this.duration = duration; } };');
-  _eval(
-      'window.init_avif_decoder = function() { var promise = new Promise(function(resolve, reject) { window.avif_decoder_wasm().then(function(_module) { window.avif_decoder = _module; resolve(); }); }); return promise; }');
-
-  final initBindgen = promiseToFuture(_initDecoder());
+  final initBindgen = promiseToFuture(_initBindgen());
   await initBindgen;
 }
 
 Future<Frame> decodeSingleFrameImage(Uint8List data) async {
-  final decoded = _decodeSingleFrameImage(data);
+  final JSObject decoded = await promiseToFuture(_decodeSingleFrameImage(data));
 
   return Frame(
     data: decoded.getProperty('data'.toJS) as Uint8List,
@@ -42,7 +35,7 @@ Future<Frame> decodeSingleFrameImage(Uint8List data) async {
 }
 
 Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
-  final decoded = _initMemoryDecoder(key, data);
+  final JSObject decoded = await promiseToFuture(_initMemoryDecoder(key, data));
 
   return AvifInfo(
     width: decoded.getProperty('width'.toJS) as int,
@@ -53,7 +46,7 @@ Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
 }
 
 Future<Frame> getNextFrame(String key) async {
-  final decoded = _getNextFrame(key);
+  final JSObject decoded = await promiseToFuture(_getNextFrame(key));
 
   return Frame(
     data: decoded.getProperty('data'.toJS) as Uint8List,
@@ -64,32 +57,29 @@ Future<Frame> getNextFrame(String key) async {
 }
 
 Future<bool> resetDecoder(String key) async {
-  _resetDecoder(key);
+  await promiseToFuture(_resetDecoder(key));
   return true;
 }
 
 Future<bool> disposeDecoder(String key) async {
-  _disposeDecoder(key);
+  await promiseToFuture(_disposeDecoder(key));
   return true;
 }
 
-@JS('window.init_avif_decoder')
-external JSPromise _initDecoder();
-
-@JS('window.eval')
-external void _eval(String script);
+@JS('window.avifDecoderLoad')
+external JSPromise _initBindgen();
 
 @JS('window.avif_decoder.decodeSingleFrameImage')
-external JSObject _decodeSingleFrameImage(Uint8List data);
+external JSPromise _decodeSingleFrameImage(Uint8List data);
 
 @JS('window.avif_decoder.initMemoryDecoder')
-external JSObject _initMemoryDecoder(String key, Uint8List data);
+external JSPromise _initMemoryDecoder(String key, Uint8List data);
 
 @JS('window.avif_decoder.getNextFrame')
-external JSObject _getNextFrame(String key);
+external JSPromise _getNextFrame(String key);
 
 @JS('window.avif_decoder.resetDecoder')
-external JSObject _resetDecoder(String key);
+external JSPromise _resetDecoder(String key);
 
 @JS('window.avif_decoder.disposeDecoder')
-external JSObject _disposeDecoder(String key);
+external JSPromise _disposeDecoder(String key);
