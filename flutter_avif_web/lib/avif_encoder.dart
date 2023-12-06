@@ -14,10 +14,9 @@ import 'package:js/js.dart';
 
 Future<void> loadScript() async {
   final script = ScriptElement();
-  script.src = 'packages/flutter_avif_web/web/avif_encoder.js';
+  script.src = 'packages/flutter_avif_web/web/avif_encoder.loader.js';
   document.head!.append(script);
   await script.onLoad.first;
-  _eval('window.avif_encoder = wasm_bindgen');
 
   final initBindgen = promiseToFuture(_initBindgen());
   await initBindgen;
@@ -35,7 +34,7 @@ Future<Uint8List> encodeAvif({
   required int minQuantizer,
   required int maxQuantizerAlpha,
   required int minQuantizerAlpha,
-}) async {
+}) {
   final options = Uint32List.fromList([
     width,
     height,
@@ -47,11 +46,11 @@ Future<Uint8List> encodeAvif({
     maxQuantizerAlpha,
     minQuantizerAlpha,
   ]);
-  return _encode(pixels, durations, options);
+  return promiseToFuture(_encode(pixels, durations, options));
 }
 
 Future<DecodeData> decode(Uint8List data) async {
-  final decoded = _decode(data);
+  final JSObject decoded = await promiseToFuture(_decode(data));
   final rgbaData = decoded.getProperty('data'.toJS) as List<dynamic>;
   final durations = decoded.getProperty('durations'.toJS) as List<dynamic>;
 
@@ -63,20 +62,17 @@ Future<DecodeData> decode(Uint8List data) async {
   );
 }
 
-@JS('window.eval')
-external void _eval(String script);
-
-@JS('window.avif_encoder')
+@JS('window.avifEncoderLoad')
 external JSPromise _initBindgen();
 
 @JS('window.avif_encoder.encode')
-external Uint8List _encode(
+external JSPromise _encode(
   Uint8List pixels,
   Uint8List durations,
   Uint32List options,
 );
 
 @JS('window.avif_encoder.decode')
-external JSObject _decode(
+external JSPromise _decode(
   Uint8List data,
 );
