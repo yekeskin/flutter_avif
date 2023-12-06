@@ -1,3 +1,3 @@
-# flutter_avif_ios
+# flutter_avif_web
 
-Ios implementation of flutter_avif
+Web implementation of flutter_avif
