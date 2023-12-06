@@ -369,6 +369,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     _isListeningToStream = false;
 
     if (_imageStream?.completer != null &&
+        (_imageStream!.completer! is AvifImageStreamCompleter) &&
         !(_imageStream!.completer! as AvifImageStreamCompleter)
             .getHasListeners() &&
         !PaintingBinding.instance.imageCache.containsKey(widget.image)) {
