@@ -93,11 +93,16 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
-  })  : image = FileAvifImage(
-          file,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? FileImage(
+                file,
+                scale: scale,
+              ) as ImageProvider
+            : FileAvifImage(
+                file,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+              ),
         loadingBuilder = null,
         super(key: key);
 
@@ -126,12 +131,17 @@ class AvifImage extends StatefulWidget {
     this.gaplessPlayback = false,
     this.frameBuilder,
     AssetBundle? bundle,
-  })  : image = AssetAvifImage(
-          name,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-          bundle: bundle,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? AssetImage(
+                name,
+                bundle: bundle,
+              ) as ImageProvider
+            : AssetAvifImage(
+                name,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+                bundle: bundle,
+              ),
         loadingBuilder = null,
         super(key: key);
 
@@ -161,12 +171,18 @@ class AvifImage extends StatefulWidget {
     this.frameBuilder,
     this.loadingBuilder,
     Map<String, String>? headers,
-  })  : image = NetworkAvifImage(
-          url,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-          headers: headers,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? NetworkImage(
+                url,
+                scale: scale,
+                headers: headers,
+              ) as ImageProvider
+            : NetworkAvifImage(
+                url,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+                headers: headers,
+              ),
         super(key: key);
 
   AvifImage.memory(
@@ -193,11 +209,16 @@ class AvifImage extends StatefulWidget {
     this.excludeFromSemantics = false,
     this.gaplessPlayback = false,
     this.frameBuilder,
-  })  : image = MemoryAvifImage(
-          bytes,
-          scale: scale,
-          overrideDurationMs: overrideDurationMs,
-        ),
+  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+            ? MemoryImage(
+                bytes,
+                scale: scale,
+              ) as ImageProvider
+            : MemoryAvifImage(
+                bytes,
+                scale: scale,
+                overrideDurationMs: overrideDurationMs,
+              ),
         loadingBuilder = null,
         super(key: key);
 }
@@ -348,6 +369,7 @@ class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
     _isListeningToStream = false;
 
     if (_imageStream?.completer != null &&
+        (_imageStream!.completer! is AvifImageStreamCompleter) &&
         !(_imageStream!.completer! as AvifImageStreamCompleter)
             .getHasListeners() &&
         !PaintingBinding.instance.imageCache.containsKey(widget.image)) {

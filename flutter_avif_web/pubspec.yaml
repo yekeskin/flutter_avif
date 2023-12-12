@@ -1,0 +1,32 @@
+name: flutter_avif_web
+description: Web implementation for flutter_avif.
+version: 2.1.1
+repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_web
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  flutter_avif_platform_interface: ^2.1.1
+  js: ^0.6.7
+  flutter_rust_bridge: "1.82.3"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+  
+flutter:
+  plugin:
+    implements: flutter_avif
+    platforms:
+      web:
+        pluginClass: FlutterAvifWeb
+        fileName: flutter_avif_web.dart
+  assets:
+    - web/

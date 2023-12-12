@@ -1,0 +1,30 @@
+[package]
+name = "avif_encoder"
+description = "Avif Encoder"
+version = "2.1.1"
+authors = ["Yunus Emre Keskin <yekeskin@aol.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["console_error_panic_hook", "wee_alloc"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2.88", features = ["serde-serialize"] }
+console_error_panic_hook = { version = "0.1.7", optional = true }
+wee_alloc = { version = "0.4.5", optional = true }
+avif-serialize = { version = "0.8.1", git = "https://github.com/yekeskin/avif-serialize.git", branch = "avis_support" }
+rav1e = { version = "0.6.6", default-features = false, features = ["asm", "threading", "wasm"] }
+rgb = "0.8.37"
+js-sys = "0.3.65"
+image = "0.24.7"
+serde = { version = "1.0.193", features = ["derive"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.38"
+
+[profile.release]
+opt-level = "z"
+lto = true

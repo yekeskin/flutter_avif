@@ -16,6 +16,7 @@ dependencies:
   flutter_avif_macos: ^2.1.1
   flutter_avif_linux: ^2.1.1
   flutter_avif_windows: ^2.1.1
+  flutter_avif_web: ^2.1.1
   
 
 dev_dependencies:
@@ -36,3 +37,5 @@ flutter:
         default_package: flutter_avif_linux
       windows:
         default_package: flutter_avif_windows
+      web:
+        default_package: flutter_avif_web
