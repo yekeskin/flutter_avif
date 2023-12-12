@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Web support
+
 ## 2.1.1
 
 * Fix pub.dev build
