@@ -1,7 +1,7 @@
 var avif_encoder = null;
 
-function avifEncoderLoad() {
-    avif_encoder = { worker: new Worker('packages/flutter_avif_web/web/avif_encoder.worker.js'), callbacks: {} };
+function avifEncoderLoad(workerPath) {
+    avif_encoder = { worker: new Worker(workerPath), callbacks: {} };
     avif_encoder.worker.onmessage = function(ev) {
         var message = ev.data;
 

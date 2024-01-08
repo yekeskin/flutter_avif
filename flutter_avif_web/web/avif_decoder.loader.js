@@ -1,7 +1,7 @@
 var avif_decoder = null;
 
-function avifDecoderLoad() {
-    avif_decoder = { worker: new Worker('packages/flutter_avif_web/web/avif_decoder.worker.js'), callbacks: {} };
+function avifDecoderLoad(workerPath) {
+    avif_decoder = { worker: new Worker(workerPath), callbacks: {} };
     avif_decoder.worker.onmessage = function(ev) {
         var message = ev.data;
 

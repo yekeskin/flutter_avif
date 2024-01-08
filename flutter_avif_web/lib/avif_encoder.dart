@@ -2,6 +2,7 @@
 library wasm_bindgen;
 
 import 'dart:js_interop_unsafe';
+import 'dart:ui_web';
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart';
 
 import 'dart:async';
@@ -13,12 +14,15 @@ import 'dart:typed_data';
 import 'package:js/js.dart';
 
 Future<void> loadScript() async {
+  final assetManager = AssetManager();
   final script = ScriptElement();
-  script.src = 'packages/flutter_avif_web/web/avif_encoder.loader.js';
+  script.src = assetManager
+      .getAssetUrl('packages/flutter_avif_web/web/avif_encoder.loader.js');
   document.head!.append(script);
   await script.onLoad.first;
 
-  final initBindgen = promiseToFuture(_initBindgen());
+  final initBindgen = promiseToFuture(_initBindgen(assetManager
+      .getAssetUrl('packages/flutter_avif_web/web/avif_encoder.worker.js')));
   await initBindgen;
 }
 
@@ -63,7 +67,7 @@ Future<DecodeData> decode(Uint8List data) async {
 }
 
 @JS('window.avifEncoderLoad')
-external JSPromise _initBindgen();
+external JSPromise _initBindgen(String workerPath);
 
 @JS('window.avif_encoder.encode')
 external JSPromise _encode(
