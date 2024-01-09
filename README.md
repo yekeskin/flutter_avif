@@ -55,6 +55,18 @@ final outputFile = File('output.avif');
 outputFile.writeAsBytes(avifBytes);
 ```
 
+## Decoding
+
+decodeAvif function can be used to decode an avif file to a list of dart:ui [Image](https://api.flutter.dev/flutter/dart-ui/Image-class.html):
+
+```dart
+import 'package:flutter_avif/flutter_avif.dart';
+
+final bytes = await rootBundle.load('asset.avif');
+final frames = await decodeAvif(bytes.buffer.asUint8List());
+```
+decodeAvif functions return a list of [AvifFrameInfo](https://pub.dev/documentation/flutter_avif/latest/flutter_avif/AvifFrameInfo-class.html) which has the duration and the image of a frame.
+
 ## Custom Animation Controller
 
 `AvifAnimation` can be used together with an `AnimationController` to manipulate the playback of multiframe images.
