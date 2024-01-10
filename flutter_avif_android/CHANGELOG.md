@@ -1,3 +1,8 @@
+## 2.3.0
+
+* Add decodeAvif
+* Fix asset path resolution on web
+
 ## 2.2.0
 
 * Web support
