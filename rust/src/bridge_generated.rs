@@ -107,6 +107,7 @@ fn wire_encode_avif_impl(
     max_quantizer_alpha: impl Wire2Api<i32> + UnwindSafe,
     min_quantizer_alpha: impl Wire2Api<i32> + UnwindSafe,
     image_sequence: impl Wire2Api<Vec<EncodeFrame>> + UnwindSafe,
+    exif_data: impl Wire2Api<Vec<u8>> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, ZeroCopyBuffer<Vec<u8>>, _>(
         WrapInfo {
@@ -125,6 +126,7 @@ fn wire_encode_avif_impl(
             let api_max_quantizer_alpha = max_quantizer_alpha.wire2api();
             let api_min_quantizer_alpha = min_quantizer_alpha.wire2api();
             let api_image_sequence = image_sequence.wire2api();
+            let api_exif_data = exif_data.wire2api();
             move |task_callback| {
                 Result::<_, ()>::Ok(encode_avif(
                     api_width,
@@ -137,6 +139,7 @@ fn wire_encode_avif_impl(
                     api_max_quantizer_alpha,
                     api_min_quantizer_alpha,
                     api_image_sequence,
+                    api_exif_data,
                 ))
             }
         },

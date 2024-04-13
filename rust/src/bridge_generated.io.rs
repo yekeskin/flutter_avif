@@ -43,6 +43,7 @@ pub extern "C" fn wire_encode_avif(
     max_quantizer_alpha: i32,
     min_quantizer_alpha: i32,
     image_sequence: *mut wire_list_encode_frame,
+    exif_data: *mut wire_uint_8_list,
 ) {
     wire_encode_avif_impl(
         port_,
@@ -56,6 +57,7 @@ pub extern "C" fn wire_encode_avif(
         max_quantizer_alpha,
         min_quantizer_alpha,
         image_sequence,
+        exif_data,
     )
 }
 

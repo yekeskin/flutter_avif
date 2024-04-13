@@ -182,6 +182,7 @@ pub fn encode_avif(
     max_quantizer_alpha: i32,
     min_quantizer_alpha: i32,
     image_sequence: Vec<EncodeFrame>,
+    exif_data: Vec<u8>,
 ) -> ZeroCopyBuffer<Vec<u8>> {
     unsafe {
         let encoder = libavif_sys::avifEncoderCreate();
@@ -213,6 +214,10 @@ pub fn encode_avif(
                 rgb.pixels,
                 (rgb.rowBytes * (*image).height) as usize,
             );
+
+            if exif_data.len() > 0 {
+                libavif_sys::avifImageSetMetadataExif(image, exif_data.as_ptr(), exif_data.len());
+            }
 
             let conversion_result = libavif_sys::avifImageRGBToYUV(image, &rgb);
             if conversion_result != libavif_sys::AVIF_RESULT_OK {

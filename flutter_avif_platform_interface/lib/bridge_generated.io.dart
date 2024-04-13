@@ -44,6 +44,7 @@ abstract class FlutterAvif {
       required int maxQuantizerAlpha,
       required int minQuantizerAlpha,
       required List<EncodeFrame> imageSequence,
+      required Uint8List exifData,
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kEncodeAvifConstMeta;
@@ -202,6 +203,7 @@ class FlutterAvifImpl implements FlutterAvif {
       required int maxQuantizerAlpha,
       required int minQuantizerAlpha,
       required List<EncodeFrame> imageSequence,
+      required Uint8List exifData,
       dynamic hint}) {
     var arg0 = api2wire_u32(width);
     var arg1 = api2wire_u32(height);
@@ -213,9 +215,10 @@ class FlutterAvifImpl implements FlutterAvif {
     var arg7 = api2wire_i32(maxQuantizerAlpha);
     var arg8 = api2wire_i32(minQuantizerAlpha);
     var arg9 = _platform.api2wire_list_encode_frame(imageSequence);
+    var arg10 = _platform.api2wire_uint_8_list(exifData);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_encode_avif(
-          port_, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9),
+      callFfi: (port_) => _platform.inner.wire_encode_avif(port_, arg0, arg1,
+          arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10),
       parseSuccessData: _wire2api_ZeroCopyBuffer_Uint8List,
       parseErrorData: null,
       constMeta: kEncodeAvifConstMeta,
@@ -229,7 +232,8 @@ class FlutterAvifImpl implements FlutterAvif {
         minQuantizer,
         maxQuantizerAlpha,
         minQuantizerAlpha,
-        imageSequence
+        imageSequence,
+        exifData
       ],
       hint: hint,
     ));
@@ -248,7 +252,8 @@ class FlutterAvifImpl implements FlutterAvif {
           "minQuantizer",
           "maxQuantizerAlpha",
           "minQuantizerAlpha",
-          "imageSequence"
+          "imageSequence",
+          "exifData"
         ],
       );
 
@@ -565,6 +570,7 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
     int max_quantizer_alpha,
     int min_quantizer_alpha,
     ffi.Pointer<wire_list_encode_frame> image_sequence,
+    ffi.Pointer<wire_uint_8_list> exif_data,
   ) {
     return _wire_encode_avif(
       port_,
@@ -578,6 +584,7 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
       max_quantizer_alpha,
       min_quantizer_alpha,
       image_sequence,
+      exif_data,
     );
   }
 
@@ -594,10 +601,22 @@ class FlutterAvifWire implements FlutterRustBridgeWireBase {
               ffi.Int32,
               ffi.Int32,
               ffi.Int32,
-              ffi.Pointer<wire_list_encode_frame>)>>('wire_encode_avif');
+              ffi.Pointer<wire_list_encode_frame>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_encode_avif');
   late final _wire_encode_avif = _wire_encode_avifPtr.asFunction<
-      void Function(int, int, int, int, int, int, int, int, int, int,
-          ffi.Pointer<wire_list_encode_frame>)>();
+      void Function(
+          int,
+          int,
+          int,
+          int,
+          int,
+          int,
+          int,
+          int,
+          int,
+          int,
+          ffi.Pointer<wire_list_encode_frame>,
+          ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_list_encode_frame> new_list_encode_frame_0(
     int len,
