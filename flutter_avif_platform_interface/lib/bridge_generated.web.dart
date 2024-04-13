@@ -42,6 +42,7 @@ abstract class FlutterAvif {
       required int maxQuantizerAlpha,
       required int minQuantizerAlpha,
       required List<EncodeFrame> imageSequence,
+      required Uint8List exifData,
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kEncodeAvifConstMeta;

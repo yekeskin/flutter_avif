@@ -28,7 +28,7 @@ function load(message) {
 }
 
 function encode(message) {
-    var encoded = wasm_bindgen.encode(message.data[0], message.data[1], message.data[2]);
+    var encoded = wasm_bindgen.encode(message.data[0], message.data[1], message.data[2], message.data[3]);
     self.postMessage({
         method: message.method,
         callbackId: message.callbackId,

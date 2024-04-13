@@ -38,6 +38,7 @@ Future<Uint8List> encodeAvif({
   required int minQuantizer,
   required int maxQuantizerAlpha,
   required int minQuantizerAlpha,
+  required Uint8List exifData,
 }) {
   final options = Uint32List.fromList([
     width,
@@ -50,7 +51,7 @@ Future<Uint8List> encodeAvif({
     maxQuantizerAlpha,
     minQuantizerAlpha,
   ]);
-  return promiseToFuture(_encode(pixels, durations, options));
+  return promiseToFuture(_encode(pixels, durations, options, exifData));
 }
 
 Future<DecodeData> decode(Uint8List data) async {
@@ -74,6 +75,7 @@ external JSPromise _encode(
   Uint8List pixels,
   Uint8List durations,
   Uint32List options,
+  Uint8List exifData,
 );
 
 @JS('window.avif_encoder.decode')

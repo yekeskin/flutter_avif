@@ -151,6 +151,7 @@ pub fn encode_to_avif(
     min_quantizer_alpha: u8,
     pixels: &[RGBA<u8>],
     durations: &[u8],
+    exif_data: &[u8],
 ) -> Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
     // let (y, u, v, a) = split_rgb_planes(pixels);
     let (y, u, v, a) = rgb_to_ycbcr(pixels);
@@ -215,6 +216,7 @@ pub fn encode_to_avif(
                     _ => None,
                 },
             },
+            exif_data,
         );
 
     return Ok(result);
