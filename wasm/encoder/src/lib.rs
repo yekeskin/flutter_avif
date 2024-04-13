@@ -22,12 +22,14 @@ pub fn encode(
     _pixels: js_sys::Uint8Array,
     _durations: js_sys::Uint8Array,
     _options: js_sys::Uint32Array,
+    _exif_data: js_sys::Uint8Array,
 ) -> Vec<u8> {
     utils::set_panic_hook();
 
     let pixels: Vec<RGBA<u8>> = _pixels.to_vec().as_rgba().to_vec();
     let durations: Vec<u8> = _durations.to_vec();
     let options: Vec<u32> = _options.to_vec();
+    let exif_data: Vec<u8> = _exif_data.to_vec();
 
     // scale quantizer values as rav1e's range
     let max_quantizer = (options[5] * 255) / 63;
@@ -47,6 +49,7 @@ pub fn encode(
         min_quantizer_alpha as u8,
         &pixels,
         &durations,
+        &exif_data,
     )
     .expect("Failed to encode AVIF! image");
 }

@@ -30,6 +30,7 @@ class FlutterAvifWebImpl extends FlutterAvif {
     required int maxQuantizerAlpha,
     required int minQuantizerAlpha,
     required List<EncodeFrame> imageSequence,
+    required Uint8List exifData,
     hint,
   }) async {
     if (!FlutterAvifWebImpl.encoderScriptLoaded) {
@@ -56,6 +57,7 @@ class FlutterAvifWebImpl extends FlutterAvif {
       minQuantizer: minQuantizer,
       maxQuantizerAlpha: maxQuantizerAlpha,
       minQuantizerAlpha: minQuantizerAlpha,
+      exifData: exifData,
     );
   }
 
