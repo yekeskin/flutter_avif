@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart'
     as avif_platform;
+import 'package:image/image.dart' as dart_image;
 
 Future<Uint8List> encodeAvif(
   Uint8List input, {
@@ -13,6 +14,7 @@ Future<Uint8List> encodeAvif(
   minQuantizer = 25,
   maxQuantizerAlpha = 40,
   minQuantizerAlpha = 25,
+  keepExif = false,
 }) async {
   final avifFfi = avif_platform.FlutterAvifPlatform.api;
   final List<avif_platform.EncodeFrame> encodeFrames = [];
@@ -72,6 +74,14 @@ Future<Uint8List> encodeAvif(
     }
   }
 
+  Uint8List exifData = Uint8List(0);
+  if (keepExif) {
+    final decodedExif = dart_image.decodeImage(input);
+    final exifBuffer = dart_image.OutputBuffer();
+    decodedExif?.exif.write(exifBuffer);
+    exifData = exifBuffer.getBytes();
+  }
+
   final output = await avifFfi.encodeAvif(
     width: width,
     height: height,
@@ -83,6 +93,7 @@ Future<Uint8List> encodeAvif(
     maxQuantizerAlpha: maxQuantizerAlpha,
     minQuantizerAlpha: minQuantizerAlpha,
     imageSequence: encodeFrames,
+    exifData: exifData,
   );
 
   return output;

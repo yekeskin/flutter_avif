@@ -58,7 +58,8 @@ void wire_encode_avif(int64_t port_,
                       int32_t min_quantizer,
                       int32_t max_quantizer_alpha,
                       int32_t min_quantizer_alpha,
-                      struct wire_list_encode_frame *image_sequence);
+                      struct wire_list_encode_frame *image_sequence,
+                      struct wire_uint_8_list *exif_data);
 
 struct wire_list_encode_frame *new_list_encode_frame_0(int32_t len);
 
