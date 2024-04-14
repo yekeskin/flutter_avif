@@ -55,10 +55,10 @@ pub fn encode(
 }
 
 #[wasm_bindgen]
-pub fn decode(_data: js_sys::Uint8Array) -> JsValue {
+pub fn decode(_data: js_sys::Uint8Array, orientation: i32) -> JsValue {
     utils::set_panic_hook();
 
     let data: Vec<u8> = _data.to_vec();
 
-    return JsValue::from_serde(&decode::decode_image(&data)).unwrap();
+    return JsValue::from_serde(&decode::decode_image(&data, orientation)).unwrap();
 }

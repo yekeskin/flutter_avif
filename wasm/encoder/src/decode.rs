@@ -1,9 +1,10 @@
+use image::imageops;
 use image::{AnimationDecoder, ImageFormat};
 use rgb::{ComponentBytes, FromSlice};
 use serde::{Deserialize, Serialize};
 use std::{cmp, io::Cursor};
 
-pub fn decode_image(byte_data: &[u8]) -> DecodeData {
+pub fn decode_image(byte_data: &[u8], orientation: i32) -> DecodeData {
     let format = image::guess_format(byte_data).unwrap();
 
     let frames = match format {
@@ -46,12 +47,54 @@ pub fn decode_image(byte_data: &[u8]) -> DecodeData {
             }
         }
         None => {
-            let image = image::load_from_memory(byte_data).unwrap();
-            data.extend_from_slice(image.to_rgba8().as_raw());
-            durations.push(1);
+            let mut image = image::load_from_memory(byte_data).unwrap();
+            let corrected_image = match orientation {
+                8 => {
+                    width = image.height();
+                    height = image.width();
+                    imageops::rotate270(&image)
+                }
+                7 => {
+                    width = image.height();
+                    height = image.width();
+                    imageops::flip_horizontal_in_place(&mut image);
+                    imageops::rotate90(&image)
+                }
+                6 => {
+                    width = image.height();
+                    height = image.width();
+                    imageops::rotate90(&image)
+                }
+                5 => {
+                    width = image.height();
+                    height = image.width();
+                    imageops::flip_horizontal_in_place(&mut image);
+                    imageops::rotate270(&image)
+                }
+                4 => {
+                    width = image.width();
+                    height = image.height();
+                    imageops::flip_vertical(&image)
+                }
+                3 => {
+                    width = image.width();
+                    height = image.height();
+                    imageops::rotate180(&image)
+                }
+                2 => {
+                    width = image.width();
+                    height = image.height();
+                    imageops::flip_horizontal(&image)
+                }
+                _ => {
+                    width = image.width();
+                    height = image.height();
+                    imageops::rotate90(&image)
+                }
+            };
 
-            width = image.width();
-            height = image.height()
+            data.extend_from_slice(corrected_image.as_raw());
+            durations.push(1);
         }
     }
 

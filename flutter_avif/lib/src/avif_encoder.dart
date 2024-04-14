@@ -20,8 +20,23 @@ Future<Uint8List> encodeAvif(
   final List<avif_platform.EncodeFrame> encodeFrames = [];
   int averageFps = 0, width = 0, height = 0;
 
+  Uint8List exifData = Uint8List(0);
+  int orientation = 1;
+  if (keepExif) {
+    final decodedExif = dart_image.decodeImage(input);
+    final exifBuffer = dart_image.OutputBuffer();
+    decodedExif?.exif.write(exifBuffer);
+    exifData = exifBuffer.getBytes();
+    orientation = decodedExif?.exif.imageIfd['Orientation']?.toInt() ??
+        decodedExif?.exif.exifIfd['Orientation']?.toInt() ??
+        decodedExif?.exif.thumbnailIfd['Orientation']?.toInt() ??
+        decodedExif?.exif.interopIfd['Orientation']?.toInt() ??
+        1;
+  }
+
   if (kIsWeb) {
-    final decoded = await avif_platform.FlutterAvifPlatform.decode(input);
+    final decoded =
+        await avif_platform.FlutterAvifPlatform.decode(input, orientation);
     int totalDurationMs = 0;
     int frameSize = decoded.width * decoded.height * 4;
 
@@ -72,14 +87,6 @@ Future<Uint8List> encodeAvif(
         ));
       }
     }
-  }
-
-  Uint8List exifData = Uint8List(0);
-  if (keepExif) {
-    final decodedExif = dart_image.decodeImage(input);
-    final exifBuffer = dart_image.OutputBuffer();
-    decodedExif?.exif.write(exifBuffer);
-    exifData = exifBuffer.getBytes();
   }
 
   final output = await avifFfi.encodeAvif(

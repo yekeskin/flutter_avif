@@ -8,7 +8,7 @@ export 'bridge_generated.io.dart'
 abstract class FlutterAvifPlatform {
   static late final FlutterAvif api;
   static bool useNativeDecoder = false;
-  static late final Future<DecodeData> Function(Uint8List) decode;
+  static late final Future<DecodeData> Function(Uint8List, int) decode;
 }
 
 class DecodeData {
