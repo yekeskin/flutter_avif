@@ -15,8 +15,8 @@ function avifEncoderLoad(workerPath) {
         return avif_encoder.postMessageAsync({ method: 'encode', data: [pixels, durations, options, exifData] }, [pixels.buffer, durations.buffer, exifData.buffer]);
     }
 
-    avif_encoder.decode = function(data) {
-        return avif_encoder.postMessageAsync({ method: 'decode', data: data }, [data.buffer]);
+    avif_encoder.decode = function(data, orientation) {
+        return avif_encoder.postMessageAsync({ method: 'decode', data: data, orientation: orientation }, [data.buffer]);
     }
 
     avif_encoder.makeId = function() {

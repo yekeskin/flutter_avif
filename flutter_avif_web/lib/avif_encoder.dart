@@ -54,8 +54,8 @@ Future<Uint8List> encodeAvif({
   return promiseToFuture(_encode(pixels, durations, options, exifData));
 }
 
-Future<DecodeData> decode(Uint8List data) async {
-  final JSObject decoded = await promiseToFuture(_decode(data));
+Future<DecodeData> decode(Uint8List data, int orientation) async {
+  final JSObject decoded = await promiseToFuture(_decode(data, orientation));
   final rgbaData = decoded.getProperty('data'.toJS) as List<dynamic>;
   final durations = decoded.getProperty('durations'.toJS) as List<dynamic>;
 
@@ -81,4 +81,5 @@ external JSPromise _encode(
 @JS('window.avif_encoder.decode')
 external JSPromise _decode(
   Uint8List data,
+  int orientation,
 );

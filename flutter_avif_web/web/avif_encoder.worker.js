@@ -37,7 +37,7 @@ function encode(message) {
 }
 
 function decode(message) {
-    var decoded = wasm_bindgen.decode(message.data);
+    var decoded = wasm_bindgen.decode(message.data, message.orientation);
     self.postMessage({
         method: message.method,
         callbackId: message.callbackId,
