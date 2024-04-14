@@ -71,12 +71,13 @@ function getArrayU8FromWasm0(ptr, len) {
 * @param {Uint8Array} _pixels
 * @param {Uint8Array} _durations
 * @param {Uint32Array} _options
+* @param {Uint8Array} _exif_data
 * @returns {Uint8Array}
 */
-__exports.encode = function(_pixels, _durations, _options) {
+__exports.encode = function(_pixels, _durations, _options, _exif_data) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.encode(retptr, addHeapObject(_pixels), addHeapObject(_durations), addHeapObject(_options));
+        wasm.encode(retptr, addHeapObject(_pixels), addHeapObject(_durations), addHeapObject(_options), addHeapObject(_exif_data));
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -89,10 +90,11 @@ __exports.encode = function(_pixels, _durations, _options) {
 
 /**
 * @param {Uint8Array} _data
+* @param {number} orientation
 * @returns {any}
 */
-__exports.decode = function(_data) {
-    const ret = wasm.decode(addHeapObject(_data));
+__exports.decode = function(_data, orientation) {
+    const ret = wasm.decode(addHeapObject(_data), orientation);
     return takeObject(ret);
 };
 
@@ -151,9 +153,6 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 /**
-*/
-__exports.Tune = Object.freeze({ Psnr:0,"0":"Psnr",Psychovisual:1,"1":"Psychovisual", });
-/**
 * Sample position for subsampled chroma
 */
 __exports.ChromaSamplePosition = Object.freeze({
@@ -171,6 +170,9 @@ Vertical:1,"1":"Vertical",
 * Co-located with (0, 0) luma sample.
 */
 Colocated:2,"2":"Colocated", });
+/**
+*/
+__exports.Tune = Object.freeze({ Psnr:0,"0":"Psnr",Psychovisual:1,"1":"Psychovisual", });
 /**
 * Allowed pixel value range
 *
