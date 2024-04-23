@@ -1,22 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_avif/flutter_avif.dart';
-
-final HttpClient _sharedHttpClient = HttpClient()..autoUncompress = false;
-
-HttpClient get _httpClient {
-  HttpClient client = _sharedHttpClient;
-  assert(() {
-    if (debugNetworkImageHttpClientProvider != null) {
-      client = debugNetworkImageHttpClientProvider!();
-    }
-    return true;
-  }());
-  return client;
-}
+import 'package:http/http.dart' as http;
 
 ///
 /// A widget that renders an avif with [AnimationController].
@@ -243,11 +229,11 @@ class _AvifAnimationState extends State<AvifAnimation>
 
     if (provider is NetworkAvifImage) {
       final Uri resolved = Uri.base.resolve(provider.url);
-      final HttpClientRequest request = await _httpClient.getUrl(resolved);
+      final httpRequest = http.Request('GET', resolved);
       provider.headers?.forEach(
-          (String name, String value) => request.headers.add(name, value));
-      final HttpClientResponse response = await request.close();
-      bytes = await consolidateHttpClientResponseBytes(response);
+          (String name, String value) => httpRequest.headers[name] = value);
+      final httpResponse = await httpRequest.send();
+      bytes = await httpResponse.stream.toBytes();
     } else if (provider is AssetAvifImage) {
       bytes = (await (provider.bundle ?? rootBundle).load(provider.asset))
           .buffer
