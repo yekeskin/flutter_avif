@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'dart:ui' as ui;
+import 'package:http/http.dart' as http;
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart'
     as avif_platform;
 
@@ -781,25 +783,29 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
   ) async {
     assert(key == this);
 
-    final httpClient = HttpClient();
-    final httpRequest = await httpClient.getUrl(Uri.parse(url));
+    final httpRequest = http.Request('GET', Uri.parse(url));
     headers?.forEach((String name, String value) {
-      httpRequest.headers.add(name, value);
+      httpRequest.headers[name] = value;
     });
-    final httpResponse = await httpRequest.close();
+    final httpResponse = await httpRequest.send();
     if (httpResponse.statusCode != HttpStatus.ok) {
       throw StateError(
           '$url cannot be loaded as an image. Http error code ${httpResponse.statusCode}');
     }
-    final Uint8List bytes = await consolidateHttpClientResponseBytes(
-      httpResponse,
-      onBytesReceived: (int cumulative, int? total) {
-        chunkEvents.add(ImageChunkEvent(
-          cumulativeBytesLoaded: cumulative,
-          expectedTotalBytes: total,
-        ));
-      },
-    );
+
+    final b = BytesBuilder();
+    int cumulative = 0;
+    final total = httpResponse.contentLength ?? 0;
+
+    await for (final newBytes in httpResponse.stream) {
+      cumulative += newBytes.length;
+      b.add(newBytes);
+      chunkEvents.add(ImageChunkEvent(
+        cumulativeBytesLoaded: cumulative,
+        expectedTotalBytes: total,
+      ));
+    }
+    final bytes = b.takeBytes();
 
     if (bytes.lengthInBytes == 0) {
       // The file may become available later.
