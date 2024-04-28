@@ -17,6 +17,7 @@ dependencies:
   flutter_avif_linux: ^2.3.0
   flutter_avif_windows: ^2.3.0
   flutter_avif_web: ^2.3.0
+  http: ^1.2.0
   
 
 dev_dependencies:
