@@ -4,7 +4,8 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart'
     as avif_platform;
-import 'package:image/image.dart' as dart_image;
+import 'package:exif/exif.dart' as exif;
+import 'exif_encoder.dart';
 
 Future<Uint8List> encodeAvif(
   Uint8List input, {
@@ -23,14 +24,12 @@ Future<Uint8List> encodeAvif(
   Uint8List exifData = Uint8List(0);
   int orientation = 1;
   if (keepExif) {
-    final decodedExif = dart_image.decodeImage(input);
-    final exifBuffer = dart_image.OutputBuffer();
-    decodedExif?.exif.write(exifBuffer);
-    exifData = exifBuffer.getBytes();
-    orientation = decodedExif?.exif.imageIfd['Orientation']?.toInt() ??
-        decodedExif?.exif.exifIfd['Orientation']?.toInt() ??
-        decodedExif?.exif.thumbnailIfd['Orientation']?.toInt() ??
-        decodedExif?.exif.interopIfd['Orientation']?.toInt() ??
+    final decodedExif = await exif.readExifFromBytes(input);
+    exifData = encodeExif(decodedExif);
+    orientation = decodedExif['Image Orientation']?.values.toList()[0] ??
+        decodedExif['EXIF Orientation']?.values.toList()[0] ??
+        decodedExif['Thumbnail Orientation']?.values.toList()[0] ??
+        decodedExif['Interoperability Orientation']?.values.toList()[0] ??
         1;
   }
 
