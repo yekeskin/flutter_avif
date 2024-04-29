@@ -1,3 +1,8 @@
+## 2.4.0
+
+* Option to keep exif data while encoding
+* Switch to http package for loading network requests
+
 ## 2.3.0
 
 * Add decodeAvif
