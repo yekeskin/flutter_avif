@@ -7,3 +7,4 @@ Acknowledgements
 * [flutter_gif](https://github.com/pierluigizagaria/flutter_gif) (Copyright (c) 2019 Jpeng) [MIT License](https://github.com/pierluigizagaria/flutter_gif/blob/master/LICENSE)
 * [wasm-rav1e ](https://github.com/saschazar21/wasm-rav1e) (Copyright (c) 2021 Sascha Zarhuber <sascha.zarhuber@gmail.com>) [MIT License](https://github.com/saschazar21/wasm-rav1e/blob/master/LICENSE)
  * [jSquash](https://github.com/jamsinclair/jSquash) (Copyright [2023] jamsinclair) [Apache License 2.0](https://github.com/jamsinclair/jSquash/blob/main/LICENSE)
+ * [http](https://github.com/dart-lang/http/tree/master/pkgs/http) (Copyright 2014 the Dart project authors) [BSD-3-Clause License](https://github.com/dart-lang/http/blob/master/pkgs/http/LICENSE)
