@@ -14,7 +14,18 @@ import 'dart:typed_data';
 
 import 'package:js/js.dart';
 
+Completer? _scriptLoaderCompleter;
+
+bool get isScriptLoaded =>
+    _scriptLoaderCompleter != null && _scriptLoaderCompleter!.isCompleted;
+
 Future<void> loadScript() async {
+  if (_scriptLoaderCompleter != null) {
+    return _scriptLoaderCompleter!.future;
+  }
+
+  _scriptLoaderCompleter = Completer();
+
   final assetManager = AssetManager();
   final script = ScriptElement();
   script.src = assetManager
@@ -25,6 +36,8 @@ Future<void> loadScript() async {
   final initBindgen = promiseToFuture(_initBindgen(assetManager
       .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.worker.js')));
   await initBindgen;
+
+  _scriptLoaderCompleter!.complete();
 }
 
 Future<Frame> decodeSingleFrameImage(Uint8List data) async {
