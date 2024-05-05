@@ -15,9 +15,6 @@ class FlutterAvifWeb extends FlutterAvifPlatform {
 }
 
 class FlutterAvifWebImpl extends FlutterAvif {
-  static bool encoderScriptLoaded = false;
-  static bool decoderScriptLoaded = false;
-
   @override
   Future<Uint8List> encodeAvif({
     required int width,
@@ -33,9 +30,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
     required Uint8List exifData,
     hint,
   }) async {
-    if (!FlutterAvifWebImpl.encoderScriptLoaded) {
+    if (!wasm_encoder.isScriptLoaded) {
       await wasm_encoder.loadScript();
-      FlutterAvifWebImpl.encoderScriptLoaded = true;
     }
 
     final pixels = BytesBuilder();
@@ -84,9 +80,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
     required Uint8List avifBytes,
     hint,
   }) async {
-    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+    if (!wasm_decoder.isScriptLoaded) {
       await wasm_decoder.loadScript();
-      FlutterAvifWebImpl.decoderScriptLoaded = true;
     }
 
     return await wasm_decoder.decodeSingleFrameImage(avifBytes);
@@ -94,9 +89,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
 
   @override
   Future<bool> disposeDecoder({required String key, hint}) async {
-    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+    if (!wasm_decoder.isScriptLoaded) {
       await wasm_decoder.loadScript();
-      FlutterAvifWebImpl.decoderScriptLoaded = true;
     }
 
     return await wasm_decoder.disposeDecoder(key);
@@ -104,9 +98,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
 
   @override
   Future<Frame> getNextFrame({required String key, hint}) async {
-    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+    if (!wasm_decoder.isScriptLoaded) {
       await wasm_decoder.loadScript();
-      FlutterAvifWebImpl.decoderScriptLoaded = true;
     }
 
     return await wasm_decoder.getNextFrame(key);
@@ -118,9 +111,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
     required Uint8List avifBytes,
     hint,
   }) async {
-    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+    if (!wasm_decoder.isScriptLoaded) {
       await wasm_decoder.loadScript();
-      FlutterAvifWebImpl.decoderScriptLoaded = true;
     }
 
     return await wasm_decoder.initMemoryDecoder(key, avifBytes);
@@ -128,9 +120,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
 
   @override
   Future<bool> resetDecoder({required String key, hint}) async {
-    if (!FlutterAvifWebImpl.decoderScriptLoaded) {
+    if (!wasm_decoder.isScriptLoaded) {
       await wasm_decoder.loadScript();
-      FlutterAvifWebImpl.decoderScriptLoaded = true;
     }
 
     return await wasm_decoder.resetDecoder(key);
@@ -158,9 +149,8 @@ class FlutterAvifWebImpl extends FlutterAvif {
 }
 
 Future<DecodeData> decodeImage(Uint8List data, int orientation) async {
-  if (!FlutterAvifWebImpl.encoderScriptLoaded) {
+  if (!wasm_encoder.isScriptLoaded) {
     await wasm_encoder.loadScript();
-    FlutterAvifWebImpl.encoderScriptLoaded = true;
   }
 
   return await wasm_encoder.decode(data, orientation);
