@@ -1,3 +1,7 @@
+## 2.4.1
+
+* Fix multiple script loading on web (Thanks @hsbijarniya)
+
 ## 2.4.0
 
 * Option to keep exif data while encoding
