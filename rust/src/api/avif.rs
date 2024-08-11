@@ -1,4 +1,3 @@
-use flutter_rust_bridge::ZeroCopyBuffer;
 use std::collections::HashMap;
 use std::slice;
 use std::sync::mpsc;
@@ -183,7 +182,7 @@ pub fn encode_avif(
     min_quantizer_alpha: i32,
     image_sequence: Vec<EncodeFrame>,
     exif_data: Vec<u8>,
-) -> ZeroCopyBuffer<Vec<u8>> {
+) -> Vec<u8> {
     unsafe {
         let encoder = libavif_sys::avifEncoderCreate();
         (*encoder).maxThreads = max_threads;
@@ -257,7 +256,7 @@ pub fn encode_avif(
         let output_data = slice::from_raw_parts(avif_output.data, avif_output.size).to_vec();
         libavif_sys::avifRWDataFree(raw_avif_output);
         libavif_sys::avifEncoderDestroy(encoder);
-        return ZeroCopyBuffer(output_data);
+        return output_data;
     }
 }
 
@@ -267,7 +266,7 @@ fn _dispose_decoder(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         return CodecResponse {
             command: DecoderCommand::Dispose,
             frame: Frame {
-                data: ZeroCopyBuffer(Vec::new()),
+                data: Vec::new(),
                 duration: 0.0,
                 width: 0,
                 height: 0,
@@ -282,7 +281,7 @@ fn _reset_decoder(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         return CodecResponse {
             command: DecoderCommand::Reset,
             frame: Frame {
-                data: ZeroCopyBuffer(Vec::new()),
+                data: Vec::new(),
                 duration: 0.0,
                 width: 0,
                 height: 0,
@@ -317,7 +316,7 @@ fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         }
 
         let size = rgb.rowBytes * (*(*decoder).image).height;
-        let data = ZeroCopyBuffer(slice::from_raw_parts(rgb.pixels, size as usize).to_vec());
+        let data = slice::from_raw_parts(rgb.pixels, size as usize).to_vec();
         libavif_sys::avifRGBImageFreePixels(raw_rgb);
         return CodecResponse {
             command: DecoderCommand::GetNextFrame,
@@ -340,7 +339,7 @@ pub struct AvifInfo {
 }
 
 pub struct Frame {
-    pub data: ZeroCopyBuffer<Vec<u8>>,
+    pub data: Vec<u8>,
     pub duration: f64,
     pub width: u32,
     pub height: u32,

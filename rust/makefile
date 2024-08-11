@@ -29,4 +29,4 @@ windows:
 	cp target/release/flutter_avif.dll ../flutter_avif_windows/windows/flutter_avif.dll
 
 codegen:
-	flutter_rust_bridge_codegen --rust-input src/api.rs --dart-output ../flutter_avif_platform_interface/lib/bridge_generated.io.dart --c-output ../flutter_avif_ios/ios/Classes/bridge_generated.h --extra-c-output-path ../flutter_avif_macos/macos/Classes/
+	flutter_rust_bridge_codegen generate --rust-input crate::api --rust-root ./ --dart-output ../flutter_avif_platform_interface/lib/ --no-web --dart-entrypoint-class-name FlutterAvif --c-output ../flutter_avif_ios/ios/Classes/bridge_generated.h --duplicated-c-output ../flutter_avif_macos/macos/Classes/bridge_generated.h
