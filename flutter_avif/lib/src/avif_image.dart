@@ -607,27 +607,47 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
   static const double _naturalResolution = 1.0;
 
   @override
-  Future<AssetAvifImage> obtainKey(ImageConfiguration configuration) async {
-    final chosenBundle = bundle ?? rootBundle;
+  Future<AssetAvifImage> obtainKey(ImageConfiguration configuration) {
+    // This function tries to return a SynchronousFuture if possible. We do this
+    // because otherwise showing an image would always take at least one frame,
+    // which would be sad. (This code is called from inside build/layout/paint,
+    // which all happens in one call frame; using native Futures would guarantee
+    // that we resolve each future in a new call frame, and thus not in this
+    // build/layout/paint sequence.)
+    final AssetBundle chosenBundle = bundle ?? configuration.bundle ?? rootBundle;
+    Completer<AssetAvifImage>? completer;
+    Future<AssetAvifImage>? result;
 
-    try {
-      final manifest = await AssetManifest.loadFromAssetBundle(chosenBundle);
-      final Iterable<AssetMetadata>? candidateVariants =
-          manifest.getAssetVariants(asset);
+    AssetManifest.loadFromAssetBundle(chosenBundle).then((AssetManifest manifest) {
+      final Iterable<AssetMetadata>? candidateVariants = manifest.getAssetVariants(asset);
       final AssetMetadata chosenVariant = _chooseVariant(
         asset,
         configuration,
         candidateVariants,
       );
-
-      return AssetAvifImage(
+      final AssetAvifImage key = AssetAvifImage(
         chosenVariant.key,
         bundle: chosenBundle,
         scale: chosenVariant.targetDevicePixelRatio ?? _naturalResolution,
       );
-    } catch (e) {
-      return this;
+
+      if (completer != null) {
+        completer.complete(key);
+      } else {
+        result = SynchronousFuture<AssetAvifImage>(key);
+      }
+    }).onError((Object error, StackTrace stack) {
+      assert(completer != null);
+      assert(result == null);
+      completer!.completeError(error, stack);
+    });
+
+    if (result != null) {
+      return result!;
     }
+
+    completer = Completer<AssetAvifImage>();
+    return completer.future;
   }
 
   @override
