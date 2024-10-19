@@ -33,6 +33,18 @@ AvifImage.network(
 ```
 For documentation on widget properties, please refer to <https://api.flutter.dev/flutter/widgets/Image-class.html>.
 
+The package also provides `CachedNetworkAvifImage` for caching network images.
+
+```dart
+import 'package:flutter_avif/flutter_avif.dart';
+
+CachedNetworkAvifImage(
+    "https://test.com/test.avif",
+    height: 200,
+    fit: BoxFit.contain,
+)
+```
+
 ## Encoding
 
 To convert an image to avif:
