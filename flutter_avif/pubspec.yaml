@@ -19,6 +19,7 @@ dependencies:
   flutter_avif_web: ^2.4.1
   http: ^1.2.0
   exif: ^3.3.0
+  flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:
