@@ -1,3 +1,10 @@
+## 2.5.0
+
+* Add CachedNetworkAvifImage and CachedNetworkAvifImageProvider
+* Fix AssetAvifImage caching (Thanks @Tosuj-work)
+* Fix macos build warnings
+* Fix exif orientation correction on web (Thanks @michaelnew)
+
 ## 2.4.1
 
 * Fix multiple script loading on web (Thanks @hsbijarniya)

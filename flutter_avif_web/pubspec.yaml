@@ -1,6 +1,6 @@
 name: flutter_avif_web
 description: Web implementation for flutter_avif.
-version: 2.4.1
+version: 2.5.0
 repository: https://github.com/yekeskin/flutter_avif/tree/main/flutter_avif_web
 
 environment:
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_avif_platform_interface: ^2.4.1
+  flutter_avif_platform_interface: ^2.5.0
   js: ^0.6.7
   flutter_rust_bridge: "1.82.3"
 
