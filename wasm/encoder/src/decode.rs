@@ -89,7 +89,7 @@ pub fn decode_image(byte_data: &[u8], orientation: i32) -> DecodeData {
                 _ => {
                     width = image.width();
                     height = image.height();
-                    imageops::rotate90(&image)
+                    image.to_rgba8()
                 }
             };
 
