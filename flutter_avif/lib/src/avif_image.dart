@@ -558,12 +558,12 @@ class FileAvifImage extends ImageProvider<FileAvifImage> {
       throw StateError('$file is empty and cannot be loaded as an image.');
     }
 
-    final fType = _isAvifFile(bytes.sublist(0, 16));
-    if (fType == _FileType.unknown) {
+    final fType = isAvifFile(bytes.sublist(0, 16));
+    if (fType == AvifFileType.unknown) {
       throw StateError('$file is not an avif file.');
     }
 
-    final codec = fType == _FileType.avif
+    final codec = fType == AvifFileType.avif
         ? SingleFrameAvifCodec(bytes: bytes)
         : MultiFrameAvifCodec(
             key: hashCode,
@@ -614,12 +614,15 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
     // which all happens in one call frame; using native Futures would guarantee
     // that we resolve each future in a new call frame, and thus not in this
     // build/layout/paint sequence.)
-    final AssetBundle chosenBundle = bundle ?? configuration.bundle ?? rootBundle;
+    final AssetBundle chosenBundle =
+        bundle ?? configuration.bundle ?? rootBundle;
     Completer<AssetAvifImage>? completer;
     Future<AssetAvifImage>? result;
 
-    AssetManifest.loadFromAssetBundle(chosenBundle).then((AssetManifest manifest) {
-      final Iterable<AssetMetadata>? candidateVariants = manifest.getAssetVariants(asset);
+    AssetManifest.loadFromAssetBundle(chosenBundle)
+        .then((AssetManifest manifest) {
+      final Iterable<AssetMetadata>? candidateVariants =
+          manifest.getAssetVariants(asset);
       final AssetMetadata chosenVariant = _chooseVariant(
         asset,
         configuration,
@@ -677,12 +680,12 @@ class AssetAvifImage extends ImageProvider<AssetAvifImage> {
     }
 
     final bytesUint8List = bytes.buffer.asUint8List(0);
-    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
-    if (fType == _FileType.unknown) {
+    final fType = isAvifFile(bytesUint8List.sublist(0, 16));
+    if (fType == AvifFileType.unknown) {
       throw StateError('$asset is not an avif file.');
     }
 
-    final codec = fType == _FileType.avif
+    final codec = fType == AvifFileType.avif
         ? SingleFrameAvifCodec(bytes: bytesUint8List)
         : MultiFrameAvifCodec(
             key: hashCode,
@@ -833,12 +836,12 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
       throw StateError('$url is empty and cannot be loaded as an image.');
     }
 
-    final fType = _isAvifFile(bytes.sublist(0, 16));
-    if (fType == _FileType.unknown) {
+    final fType = isAvifFile(bytes.sublist(0, 16));
+    if (fType == AvifFileType.unknown) {
       throw StateError('$url is not an avif file.');
     }
 
-    final codec = fType == _FileType.avif
+    final codec = fType == AvifFileType.avif
         ? SingleFrameAvifCodec(bytes: bytes)
         : MultiFrameAvifCodec(
             key: hashCode,
@@ -898,12 +901,12 @@ class MemoryAvifImage extends ImageProvider<MemoryAvifImage> {
     assert(key == this);
 
     final bytesUint8List = bytes.buffer.asUint8List(0);
-    final fType = _isAvifFile(bytesUint8List.sublist(0, 16));
-    if (fType == _FileType.unknown) {
+    final fType = isAvifFile(bytesUint8List.sublist(0, 16));
+    if (fType == AvifFileType.unknown) {
       throw StateError('Loaded file is not an avif file.');
     }
 
-    final codec = fType == _FileType.avif
+    final codec = fType == AvifFileType.avif
         ? SingleFrameAvifCodec(bytes: bytesUint8List)
         : MultiFrameAvifCodec(
             key: hashCode,
@@ -1293,18 +1296,18 @@ class AvifImageStreamCompleterHandle implements ImageStreamCompleterHandle {
   }
 }
 
-enum _FileType { avif, avis, unknown }
+enum AvifFileType { avif, avis, unknown }
 
-_FileType _isAvifFile(Uint8List bytes) {
+AvifFileType isAvifFile(Uint8List bytes) {
   if (_isSubset(bytes, [102, 116, 121, 112, 97, 118, 105, 102])) {
-    return _FileType.avif;
+    return AvifFileType.avif;
   }
 
   if (_isSubset(bytes, [102, 116, 121, 112, 97, 118, 105, 115])) {
-    return _FileType.avis;
+    return AvifFileType.avis;
   }
 
-  return _FileType.unknown;
+  return AvifFileType.unknown;
 }
 
 bool _isSubset(List arr1, List arr2) {
