@@ -16,14 +16,14 @@ import 'package:protobuf/protobuf.dart' as $pb;
 class EncodeFrame extends $pb.GeneratedMessage {
   factory EncodeFrame({
     $core.List<$core.int>? data,
-    $core.int? durationintimescale,
+    $core.int? durationInTimescale,
   }) {
     final $result = create();
     if (data != null) {
       $result.data = data;
     }
-    if (durationintimescale != null) {
-      $result.durationintimescale = durationintimescale;
+    if (durationInTimescale != null) {
+      $result.durationInTimescale = durationInTimescale;
     }
     return $result;
   }
@@ -33,7 +33,7 @@ class EncodeFrame extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'EncodeFrame', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
     ..a<$core.List<$core.int>>(1, _omitFieldNames ? '' : 'data', $pb.PbFieldType.OY)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'durationintimescale', $pb.PbFieldType.OU3)
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'durationInTimescale', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -68,13 +68,13 @@ class EncodeFrame extends $pb.GeneratedMessage {
   void clearData() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.int get durationintimescale => $_getIZ(1);
+  $core.int get durationInTimescale => $_getIZ(1);
   @$pb.TagNumber(2)
-  set durationintimescale($core.int v) { $_setUnsignedInt32(1, v); }
+  set durationInTimescale($core.int v) { $_setUnsignedInt32(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasDurationintimescale() => $_has(1);
+  $core.bool hasDurationInTimescale() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDurationintimescale() => clearField(2);
+  void clearDurationInTimescale() => clearField(2);
 }
 
 

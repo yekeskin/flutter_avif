@@ -17,7 +17,7 @@ class AvifInfo extends $pb.GeneratedMessage {
   factory AvifInfo({
     $core.int? width,
     $core.int? height,
-    $core.int? imagecount,
+    $core.int? imageCount,
     $core.double? duration,
   }) {
     final $result = create();
@@ -27,8 +27,8 @@ class AvifInfo extends $pb.GeneratedMessage {
     if (height != null) {
       $result.height = height;
     }
-    if (imagecount != null) {
-      $result.imagecount = imagecount;
+    if (imageCount != null) {
+      $result.imageCount = imageCount;
     }
     if (duration != null) {
       $result.duration = duration;
@@ -42,7 +42,7 @@ class AvifInfo extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AvifInfo', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OU3)
     ..a<$core.int>(2, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OU3)
-    ..a<$core.int>(3, _omitFieldNames ? '' : 'imagecount', $pb.PbFieldType.OU3)
+    ..a<$core.int>(3, _omitFieldNames ? '' : 'imageCount', $pb.PbFieldType.OU3)
     ..a<$core.double>(4, _omitFieldNames ? '' : 'duration', $pb.PbFieldType.OD)
     ..hasRequiredFields = false
   ;
@@ -87,13 +87,13 @@ class AvifInfo extends $pb.GeneratedMessage {
   void clearHeight() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get imagecount => $_getIZ(2);
+  $core.int get imageCount => $_getIZ(2);
   @$pb.TagNumber(3)
-  set imagecount($core.int v) { $_setUnsignedInt32(2, v); }
+  set imageCount($core.int v) { $_setUnsignedInt32(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasImagecount() => $_has(2);
+  $core.bool hasImageCount() => $_has(2);
   @$pb.TagNumber(3)
-  void clearImagecount() => clearField(3);
+  void clearImageCount() => clearField(3);
 
   @$pb.TagNumber(4)
   $core.double get duration => $_getN(3);

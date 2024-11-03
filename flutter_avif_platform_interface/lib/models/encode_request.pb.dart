@@ -20,14 +20,14 @@ class EncodeRequest extends $pb.GeneratedMessage {
     $core.int? width,
     $core.int? height,
     $core.int? speed,
-    $core.int? maxthreads,
+    $core.int? maxThreads,
     $core.int? timescale,
-    $core.int? maxquantizer,
-    $core.int? minquantizer,
-    $core.int? maxquantizeralpha,
-    $core.int? minquantizeralpha,
-    $core.Iterable<$0.EncodeFrame>? imagelist,
-    $core.List<$core.int>? exifdata,
+    $core.int? maxQuantizer,
+    $core.int? minQuantizer,
+    $core.int? maxQuantizerAlpha,
+    $core.int? minQuantizerAlpha,
+    $core.Iterable<$0.EncodeFrame>? imageList,
+    $core.List<$core.int>? exifData,
   }) {
     final $result = create();
     if (width != null) {
@@ -39,29 +39,29 @@ class EncodeRequest extends $pb.GeneratedMessage {
     if (speed != null) {
       $result.speed = speed;
     }
-    if (maxthreads != null) {
-      $result.maxthreads = maxthreads;
+    if (maxThreads != null) {
+      $result.maxThreads = maxThreads;
     }
     if (timescale != null) {
       $result.timescale = timescale;
     }
-    if (maxquantizer != null) {
-      $result.maxquantizer = maxquantizer;
+    if (maxQuantizer != null) {
+      $result.maxQuantizer = maxQuantizer;
     }
-    if (minquantizer != null) {
-      $result.minquantizer = minquantizer;
+    if (minQuantizer != null) {
+      $result.minQuantizer = minQuantizer;
     }
-    if (maxquantizeralpha != null) {
-      $result.maxquantizeralpha = maxquantizeralpha;
+    if (maxQuantizerAlpha != null) {
+      $result.maxQuantizerAlpha = maxQuantizerAlpha;
     }
-    if (minquantizeralpha != null) {
-      $result.minquantizeralpha = minquantizeralpha;
+    if (minQuantizerAlpha != null) {
+      $result.minQuantizerAlpha = minQuantizerAlpha;
     }
-    if (imagelist != null) {
-      $result.imagelist.addAll(imagelist);
+    if (imageList != null) {
+      $result.imageList.addAll(imageList);
     }
-    if (exifdata != null) {
-      $result.exifdata = exifdata;
+    if (exifData != null) {
+      $result.exifData = exifData;
     }
     return $result;
   }
@@ -73,14 +73,14 @@ class EncodeRequest extends $pb.GeneratedMessage {
     ..a<$core.int>(1, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OU3)
     ..a<$core.int>(2, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OU3)
     ..a<$core.int>(3, _omitFieldNames ? '' : 'speed', $pb.PbFieldType.OS3)
-    ..a<$core.int>(4, _omitFieldNames ? '' : 'maxthreads', $pb.PbFieldType.OS3)
+    ..a<$core.int>(4, _omitFieldNames ? '' : 'maxThreads', $pb.PbFieldType.OS3)
     ..a<$core.int>(5, _omitFieldNames ? '' : 'timescale', $pb.PbFieldType.OU3)
-    ..a<$core.int>(6, _omitFieldNames ? '' : 'maxquantizer', $pb.PbFieldType.OS3)
-    ..a<$core.int>(7, _omitFieldNames ? '' : 'minquantizer', $pb.PbFieldType.OS3)
-    ..a<$core.int>(8, _omitFieldNames ? '' : 'maxquantizeralpha', $pb.PbFieldType.OS3)
-    ..a<$core.int>(9, _omitFieldNames ? '' : 'minquantizeralpha', $pb.PbFieldType.OS3)
-    ..pc<$0.EncodeFrame>(10, _omitFieldNames ? '' : 'imagelist', $pb.PbFieldType.PM, subBuilder: $0.EncodeFrame.create)
-    ..a<$core.List<$core.int>>(11, _omitFieldNames ? '' : 'exifdata', $pb.PbFieldType.OY)
+    ..a<$core.int>(6, _omitFieldNames ? '' : 'maxQuantizer', $pb.PbFieldType.OS3)
+    ..a<$core.int>(7, _omitFieldNames ? '' : 'minQuantizer', $pb.PbFieldType.OS3)
+    ..a<$core.int>(8, _omitFieldNames ? '' : 'maxQuantizerAlpha', $pb.PbFieldType.OS3)
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'minQuantizerAlpha', $pb.PbFieldType.OS3)
+    ..pc<$0.EncodeFrame>(10, _omitFieldNames ? '' : 'imageList', $pb.PbFieldType.PM, subBuilder: $0.EncodeFrame.create)
+    ..a<$core.List<$core.int>>(11, _omitFieldNames ? '' : 'exifData', $pb.PbFieldType.OY)
     ..hasRequiredFields = false
   ;
 
@@ -133,13 +133,13 @@ class EncodeRequest extends $pb.GeneratedMessage {
   void clearSpeed() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.int get maxthreads => $_getIZ(3);
+  $core.int get maxThreads => $_getIZ(3);
   @$pb.TagNumber(4)
-  set maxthreads($core.int v) { $_setSignedInt32(3, v); }
+  set maxThreads($core.int v) { $_setSignedInt32(3, v); }
   @$pb.TagNumber(4)
-  $core.bool hasMaxthreads() => $_has(3);
+  $core.bool hasMaxThreads() => $_has(3);
   @$pb.TagNumber(4)
-  void clearMaxthreads() => clearField(4);
+  void clearMaxThreads() => clearField(4);
 
   @$pb.TagNumber(5)
   $core.int get timescale => $_getIZ(4);
@@ -151,52 +151,52 @@ class EncodeRequest extends $pb.GeneratedMessage {
   void clearTimescale() => clearField(5);
 
   @$pb.TagNumber(6)
-  $core.int get maxquantizer => $_getIZ(5);
+  $core.int get maxQuantizer => $_getIZ(5);
   @$pb.TagNumber(6)
-  set maxquantizer($core.int v) { $_setSignedInt32(5, v); }
+  set maxQuantizer($core.int v) { $_setSignedInt32(5, v); }
   @$pb.TagNumber(6)
-  $core.bool hasMaxquantizer() => $_has(5);
+  $core.bool hasMaxQuantizer() => $_has(5);
   @$pb.TagNumber(6)
-  void clearMaxquantizer() => clearField(6);
+  void clearMaxQuantizer() => clearField(6);
 
   @$pb.TagNumber(7)
-  $core.int get minquantizer => $_getIZ(6);
+  $core.int get minQuantizer => $_getIZ(6);
   @$pb.TagNumber(7)
-  set minquantizer($core.int v) { $_setSignedInt32(6, v); }
+  set minQuantizer($core.int v) { $_setSignedInt32(6, v); }
   @$pb.TagNumber(7)
-  $core.bool hasMinquantizer() => $_has(6);
+  $core.bool hasMinQuantizer() => $_has(6);
   @$pb.TagNumber(7)
-  void clearMinquantizer() => clearField(7);
+  void clearMinQuantizer() => clearField(7);
 
   @$pb.TagNumber(8)
-  $core.int get maxquantizeralpha => $_getIZ(7);
+  $core.int get maxQuantizerAlpha => $_getIZ(7);
   @$pb.TagNumber(8)
-  set maxquantizeralpha($core.int v) { $_setSignedInt32(7, v); }
+  set maxQuantizerAlpha($core.int v) { $_setSignedInt32(7, v); }
   @$pb.TagNumber(8)
-  $core.bool hasMaxquantizeralpha() => $_has(7);
+  $core.bool hasMaxQuantizerAlpha() => $_has(7);
   @$pb.TagNumber(8)
-  void clearMaxquantizeralpha() => clearField(8);
+  void clearMaxQuantizerAlpha() => clearField(8);
 
   @$pb.TagNumber(9)
-  $core.int get minquantizeralpha => $_getIZ(8);
+  $core.int get minQuantizerAlpha => $_getIZ(8);
   @$pb.TagNumber(9)
-  set minquantizeralpha($core.int v) { $_setSignedInt32(8, v); }
+  set minQuantizerAlpha($core.int v) { $_setSignedInt32(8, v); }
   @$pb.TagNumber(9)
-  $core.bool hasMinquantizeralpha() => $_has(8);
+  $core.bool hasMinQuantizerAlpha() => $_has(8);
   @$pb.TagNumber(9)
-  void clearMinquantizeralpha() => clearField(9);
+  void clearMinQuantizerAlpha() => clearField(9);
 
   @$pb.TagNumber(10)
-  $core.List<$0.EncodeFrame> get imagelist => $_getList(9);
+  $core.List<$0.EncodeFrame> get imageList => $_getList(9);
 
   @$pb.TagNumber(11)
-  $core.List<$core.int> get exifdata => $_getN(10);
+  $core.List<$core.int> get exifData => $_getN(10);
   @$pb.TagNumber(11)
-  set exifdata($core.List<$core.int> v) { $_setBytes(10, v); }
+  set exifData($core.List<$core.int> v) { $_setBytes(10, v); }
   @$pb.TagNumber(11)
-  $core.bool hasExifdata() => $_has(10);
+  $core.bool hasExifData() => $_has(10);
   @$pb.TagNumber(11)
-  void clearExifdata() => clearField(11);
+  void clearExifData() => clearField(11);
 }
 
 

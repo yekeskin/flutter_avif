@@ -4,5 +4,5 @@ package models;
 
 message EncodeFrame {
   bytes data = 1;
-  uint32 durationintimescale = 2;
+  uint32 duration_in_timescale = 2;
 }

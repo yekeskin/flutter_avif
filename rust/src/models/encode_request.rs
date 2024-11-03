@@ -34,22 +34,22 @@ pub struct EncodeRequest {
     pub height: u32,
     // @@protoc_insertion_point(field:models.EncodeRequest.speed)
     pub speed: i32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.maxthreads)
-    pub maxthreads: i32,
+    // @@protoc_insertion_point(field:models.EncodeRequest.max_threads)
+    pub max_threads: i32,
     // @@protoc_insertion_point(field:models.EncodeRequest.timescale)
     pub timescale: u32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.maxquantizer)
-    pub maxquantizer: i32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.minquantizer)
-    pub minquantizer: i32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.maxquantizeralpha)
-    pub maxquantizeralpha: i32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.minquantizeralpha)
-    pub minquantizeralpha: i32,
-    // @@protoc_insertion_point(field:models.EncodeRequest.imagelist)
-    pub imagelist: ::std::vec::Vec<super::encode_frame::EncodeFrame>,
-    // @@protoc_insertion_point(field:models.EncodeRequest.exifdata)
-    pub exifdata: ::std::vec::Vec<u8>,
+    // @@protoc_insertion_point(field:models.EncodeRequest.max_quantizer)
+    pub max_quantizer: i32,
+    // @@protoc_insertion_point(field:models.EncodeRequest.min_quantizer)
+    pub min_quantizer: i32,
+    // @@protoc_insertion_point(field:models.EncodeRequest.max_quantizer_alpha)
+    pub max_quantizer_alpha: i32,
+    // @@protoc_insertion_point(field:models.EncodeRequest.min_quantizer_alpha)
+    pub min_quantizer_alpha: i32,
+    // @@protoc_insertion_point(field:models.EncodeRequest.image_list)
+    pub image_list: ::std::vec::Vec<super::encode_frame::EncodeFrame>,
+    // @@protoc_insertion_point(field:models.EncodeRequest.exif_data)
+    pub exif_data: ::std::vec::Vec<u8>,
     // special fields
     // @@protoc_insertion_point(special_field:models.EncodeRequest.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -85,9 +85,9 @@ impl EncodeRequest {
             |m: &mut EncodeRequest| { &mut m.speed },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "maxthreads",
-            |m: &EncodeRequest| { &m.maxthreads },
-            |m: &mut EncodeRequest| { &mut m.maxthreads },
+            "max_threads",
+            |m: &EncodeRequest| { &m.max_threads },
+            |m: &mut EncodeRequest| { &mut m.max_threads },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
             "timescale",
@@ -95,34 +95,34 @@ impl EncodeRequest {
             |m: &mut EncodeRequest| { &mut m.timescale },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "maxquantizer",
-            |m: &EncodeRequest| { &m.maxquantizer },
-            |m: &mut EncodeRequest| { &mut m.maxquantizer },
+            "max_quantizer",
+            |m: &EncodeRequest| { &m.max_quantizer },
+            |m: &mut EncodeRequest| { &mut m.max_quantizer },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "minquantizer",
-            |m: &EncodeRequest| { &m.minquantizer },
-            |m: &mut EncodeRequest| { &mut m.minquantizer },
+            "min_quantizer",
+            |m: &EncodeRequest| { &m.min_quantizer },
+            |m: &mut EncodeRequest| { &mut m.min_quantizer },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "maxquantizeralpha",
-            |m: &EncodeRequest| { &m.maxquantizeralpha },
-            |m: &mut EncodeRequest| { &mut m.maxquantizeralpha },
+            "max_quantizer_alpha",
+            |m: &EncodeRequest| { &m.max_quantizer_alpha },
+            |m: &mut EncodeRequest| { &mut m.max_quantizer_alpha },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "minquantizeralpha",
-            |m: &EncodeRequest| { &m.minquantizeralpha },
-            |m: &mut EncodeRequest| { &mut m.minquantizeralpha },
+            "min_quantizer_alpha",
+            |m: &EncodeRequest| { &m.min_quantizer_alpha },
+            |m: &mut EncodeRequest| { &mut m.min_quantizer_alpha },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_vec_simpler_accessor::<_, _>(
-            "imagelist",
-            |m: &EncodeRequest| { &m.imagelist },
-            |m: &mut EncodeRequest| { &mut m.imagelist },
+            "image_list",
+            |m: &EncodeRequest| { &m.image_list },
+            |m: &mut EncodeRequest| { &mut m.image_list },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "exifdata",
-            |m: &EncodeRequest| { &m.exifdata },
-            |m: &mut EncodeRequest| { &mut m.exifdata },
+            "exif_data",
+            |m: &EncodeRequest| { &m.exif_data },
+            |m: &mut EncodeRequest| { &mut m.exif_data },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EncodeRequest>(
             "EncodeRequest",
@@ -152,28 +152,28 @@ impl ::protobuf::Message for EncodeRequest {
                     self.speed = is.read_sint32()?;
                 },
                 32 => {
-                    self.maxthreads = is.read_sint32()?;
+                    self.max_threads = is.read_sint32()?;
                 },
                 40 => {
                     self.timescale = is.read_uint32()?;
                 },
                 48 => {
-                    self.maxquantizer = is.read_sint32()?;
+                    self.max_quantizer = is.read_sint32()?;
                 },
                 56 => {
-                    self.minquantizer = is.read_sint32()?;
+                    self.min_quantizer = is.read_sint32()?;
                 },
                 64 => {
-                    self.maxquantizeralpha = is.read_sint32()?;
+                    self.max_quantizer_alpha = is.read_sint32()?;
                 },
                 72 => {
-                    self.minquantizeralpha = is.read_sint32()?;
+                    self.min_quantizer_alpha = is.read_sint32()?;
                 },
                 82 => {
-                    self.imagelist.push(is.read_message()?);
+                    self.image_list.push(is.read_message()?);
                 },
                 90 => {
-                    self.exifdata = is.read_bytes()?;
+                    self.exif_data = is.read_bytes()?;
                 },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
@@ -196,30 +196,30 @@ impl ::protobuf::Message for EncodeRequest {
         if self.speed != 0 {
             my_size += ::protobuf::rt::sint32_size(3, self.speed);
         }
-        if self.maxthreads != 0 {
-            my_size += ::protobuf::rt::sint32_size(4, self.maxthreads);
+        if self.max_threads != 0 {
+            my_size += ::protobuf::rt::sint32_size(4, self.max_threads);
         }
         if self.timescale != 0 {
             my_size += ::protobuf::rt::uint32_size(5, self.timescale);
         }
-        if self.maxquantizer != 0 {
-            my_size += ::protobuf::rt::sint32_size(6, self.maxquantizer);
+        if self.max_quantizer != 0 {
+            my_size += ::protobuf::rt::sint32_size(6, self.max_quantizer);
         }
-        if self.minquantizer != 0 {
-            my_size += ::protobuf::rt::sint32_size(7, self.minquantizer);
+        if self.min_quantizer != 0 {
+            my_size += ::protobuf::rt::sint32_size(7, self.min_quantizer);
         }
-        if self.maxquantizeralpha != 0 {
-            my_size += ::protobuf::rt::sint32_size(8, self.maxquantizeralpha);
+        if self.max_quantizer_alpha != 0 {
+            my_size += ::protobuf::rt::sint32_size(8, self.max_quantizer_alpha);
         }
-        if self.minquantizeralpha != 0 {
-            my_size += ::protobuf::rt::sint32_size(9, self.minquantizeralpha);
+        if self.min_quantizer_alpha != 0 {
+            my_size += ::protobuf::rt::sint32_size(9, self.min_quantizer_alpha);
         }
-        for value in &self.imagelist {
+        for value in &self.image_list {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
         };
-        if !self.exifdata.is_empty() {
-            my_size += ::protobuf::rt::bytes_size(11, &self.exifdata);
+        if !self.exif_data.is_empty() {
+            my_size += ::protobuf::rt::bytes_size(11, &self.exif_data);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
@@ -236,29 +236,29 @@ impl ::protobuf::Message for EncodeRequest {
         if self.speed != 0 {
             os.write_sint32(3, self.speed)?;
         }
-        if self.maxthreads != 0 {
-            os.write_sint32(4, self.maxthreads)?;
+        if self.max_threads != 0 {
+            os.write_sint32(4, self.max_threads)?;
         }
         if self.timescale != 0 {
             os.write_uint32(5, self.timescale)?;
         }
-        if self.maxquantizer != 0 {
-            os.write_sint32(6, self.maxquantizer)?;
+        if self.max_quantizer != 0 {
+            os.write_sint32(6, self.max_quantizer)?;
         }
-        if self.minquantizer != 0 {
-            os.write_sint32(7, self.minquantizer)?;
+        if self.min_quantizer != 0 {
+            os.write_sint32(7, self.min_quantizer)?;
         }
-        if self.maxquantizeralpha != 0 {
-            os.write_sint32(8, self.maxquantizeralpha)?;
+        if self.max_quantizer_alpha != 0 {
+            os.write_sint32(8, self.max_quantizer_alpha)?;
         }
-        if self.minquantizeralpha != 0 {
-            os.write_sint32(9, self.minquantizeralpha)?;
+        if self.min_quantizer_alpha != 0 {
+            os.write_sint32(9, self.min_quantizer_alpha)?;
         }
-        for v in &self.imagelist {
+        for v in &self.image_list {
             ::protobuf::rt::write_message_field_with_cached_size(10, v, os)?;
         };
-        if !self.exifdata.is_empty() {
-            os.write_bytes(11, &self.exifdata)?;
+        if !self.exif_data.is_empty() {
+            os.write_bytes(11, &self.exif_data)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -280,14 +280,14 @@ impl ::protobuf::Message for EncodeRequest {
         self.width = 0;
         self.height = 0;
         self.speed = 0;
-        self.maxthreads = 0;
+        self.max_threads = 0;
         self.timescale = 0;
-        self.maxquantizer = 0;
-        self.minquantizer = 0;
-        self.maxquantizeralpha = 0;
-        self.minquantizeralpha = 0;
-        self.imagelist.clear();
-        self.exifdata.clear();
+        self.max_quantizer = 0;
+        self.min_quantizer = 0;
+        self.max_quantizer_alpha = 0;
+        self.min_quantizer_alpha = 0;
+        self.image_list.clear();
+        self.exif_data.clear();
         self.special_fields.clear();
     }
 
@@ -296,14 +296,14 @@ impl ::protobuf::Message for EncodeRequest {
             width: 0,
             height: 0,
             speed: 0,
-            maxthreads: 0,
+            max_threads: 0,
             timescale: 0,
-            maxquantizer: 0,
-            minquantizer: 0,
-            maxquantizeralpha: 0,
-            minquantizeralpha: 0,
-            imagelist: ::std::vec::Vec::new(),
-            exifdata: ::std::vec::Vec::new(),
+            max_quantizer: 0,
+            min_quantizer: 0,
+            max_quantizer_alpha: 0,
+            min_quantizer_alpha: 0,
+            image_list: ::std::vec::Vec::new(),
+            exif_data: ::std::vec::Vec::new(),
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -328,17 +328,17 @@ impl ::protobuf::reflect::ProtobufValue for EncodeRequest {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x14encode_request.proto\x12\x06models\x1a\x12encode_frame.proto\"\x84\
+    \n\x14encode_request.proto\x12\x06models\x1a\x12encode_frame.proto\"\x8d\
     \x03\n\rEncodeRequest\x12\x14\n\x05width\x18\x01\x20\x01(\rR\x05width\
     \x12\x16\n\x06height\x18\x02\x20\x01(\rR\x06height\x12\x14\n\x05speed\
-    \x18\x03\x20\x01(\x11R\x05speed\x12\x1e\n\nmaxthreads\x18\x04\x20\x01(\
-    \x11R\nmaxthreads\x12\x1c\n\ttimescale\x18\x05\x20\x01(\rR\ttimescale\
-    \x12\"\n\x0cmaxquantizer\x18\x06\x20\x01(\x11R\x0cmaxquantizer\x12\"\n\
-    \x0cminquantizer\x18\x07\x20\x01(\x11R\x0cminquantizer\x12,\n\x11maxquan\
-    tizeralpha\x18\x08\x20\x01(\x11R\x11maxquantizeralpha\x12,\n\x11minquant\
-    izeralpha\x18\t\x20\x01(\x11R\x11minquantizeralpha\x121\n\timagelist\x18\
-    \n\x20\x03(\x0b2\x13.models.EncodeFrameR\timagelist\x12\x1a\n\x08exifdat\
-    a\x18\x0b\x20\x01(\x0cR\x08exifdataJ\xaa\x05\n\x06\x12\x04\0\0\x12\x01\n\
+    \x18\x03\x20\x01(\x11R\x05speed\x12\x1f\n\x0bmax_threads\x18\x04\x20\x01\
+    (\x11R\nmaxThreads\x12\x1c\n\ttimescale\x18\x05\x20\x01(\rR\ttimescale\
+    \x12#\n\rmax_quantizer\x18\x06\x20\x01(\x11R\x0cmaxQuantizer\x12#\n\rmin\
+    _quantizer\x18\x07\x20\x01(\x11R\x0cminQuantizer\x12.\n\x13max_quantizer\
+    _alpha\x18\x08\x20\x01(\x11R\x11maxQuantizerAlpha\x12.\n\x13min_quantize\
+    r_alpha\x18\t\x20\x01(\x11R\x11minQuantizerAlpha\x122\n\nimage_list\x18\
+    \n\x20\x03(\x0b2\x13.models.EncodeFrameR\timageList\x12\x1b\n\texif_data\
+    \x18\x0b\x20\x01(\x0cR\x08exifDataJ\xaa\x05\n\x06\x12\x04\0\0\x12\x01\n\
     \x08\n\x01\x0c\x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\x02\0\x0f\n\t\n\
     \x02\x03\0\x12\x03\x04\0\x1c\n\n\n\x02\x04\0\x12\x04\x06\0\x12\x01\n\n\n\
     \x03\x04\0\x01\x12\x03\x06\x08\x15\n\x0b\n\x04\x04\0\x02\0\x12\x03\x07\
@@ -350,28 +350,28 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x04\0\x02\x02\x12\x03\t\x04\x15\n\x0c\n\x05\x04\0\x02\x02\x05\x12\x03\t\
     \x04\n\n\x0c\n\x05\x04\0\x02\x02\x01\x12\x03\t\x0b\x10\n\x0c\n\x05\x04\0\
     \x02\x02\x03\x12\x03\t\x13\x14\n\x0b\n\x04\x04\0\x02\x03\x12\x03\n\x04\
-    \x1a\n\x0c\n\x05\x04\0\x02\x03\x05\x12\x03\n\x04\n\n\x0c\n\x05\x04\0\x02\
-    \x03\x01\x12\x03\n\x0b\x15\n\x0c\n\x05\x04\0\x02\x03\x03\x12\x03\n\x18\
-    \x19\n\x0b\n\x04\x04\0\x02\x04\x12\x03\x0b\x04\x19\n\x0c\n\x05\x04\0\x02\
+    \x1b\n\x0c\n\x05\x04\0\x02\x03\x05\x12\x03\n\x04\n\n\x0c\n\x05\x04\0\x02\
+    \x03\x01\x12\x03\n\x0b\x16\n\x0c\n\x05\x04\0\x02\x03\x03\x12\x03\n\x19\
+    \x1a\n\x0b\n\x04\x04\0\x02\x04\x12\x03\x0b\x04\x19\n\x0c\n\x05\x04\0\x02\
     \x04\x05\x12\x03\x0b\x04\n\n\x0c\n\x05\x04\0\x02\x04\x01\x12\x03\x0b\x0b\
     \x14\n\x0c\n\x05\x04\0\x02\x04\x03\x12\x03\x0b\x17\x18\n\x0b\n\x04\x04\0\
-    \x02\x05\x12\x03\x0c\x04\x1c\n\x0c\n\x05\x04\0\x02\x05\x05\x12\x03\x0c\
-    \x04\n\n\x0c\n\x05\x04\0\x02\x05\x01\x12\x03\x0c\x0b\x17\n\x0c\n\x05\x04\
-    \0\x02\x05\x03\x12\x03\x0c\x1a\x1b\n\x0b\n\x04\x04\0\x02\x06\x12\x03\r\
-    \x04\x1c\n\x0c\n\x05\x04\0\x02\x06\x05\x12\x03\r\x04\n\n\x0c\n\x05\x04\0\
-    \x02\x06\x01\x12\x03\r\x0b\x17\n\x0c\n\x05\x04\0\x02\x06\x03\x12\x03\r\
-    \x1a\x1b\n\x0b\n\x04\x04\0\x02\x07\x12\x03\x0e\x04!\n\x0c\n\x05\x04\0\
+    \x02\x05\x12\x03\x0c\x04\x1d\n\x0c\n\x05\x04\0\x02\x05\x05\x12\x03\x0c\
+    \x04\n\n\x0c\n\x05\x04\0\x02\x05\x01\x12\x03\x0c\x0b\x18\n\x0c\n\x05\x04\
+    \0\x02\x05\x03\x12\x03\x0c\x1b\x1c\n\x0b\n\x04\x04\0\x02\x06\x12\x03\r\
+    \x04\x1d\n\x0c\n\x05\x04\0\x02\x06\x05\x12\x03\r\x04\n\n\x0c\n\x05\x04\0\
+    \x02\x06\x01\x12\x03\r\x0b\x18\n\x0c\n\x05\x04\0\x02\x06\x03\x12\x03\r\
+    \x1b\x1c\n\x0b\n\x04\x04\0\x02\x07\x12\x03\x0e\x04#\n\x0c\n\x05\x04\0\
     \x02\x07\x05\x12\x03\x0e\x04\n\n\x0c\n\x05\x04\0\x02\x07\x01\x12\x03\x0e\
-    \x0b\x1c\n\x0c\n\x05\x04\0\x02\x07\x03\x12\x03\x0e\x1f\x20\n\x0b\n\x04\
-    \x04\0\x02\x08\x12\x03\x0f\x04!\n\x0c\n\x05\x04\0\x02\x08\x05\x12\x03\
-    \x0f\x04\n\n\x0c\n\x05\x04\0\x02\x08\x01\x12\x03\x0f\x0b\x1c\n\x0c\n\x05\
-    \x04\0\x02\x08\x03\x12\x03\x0f\x1f\x20\n\x0b\n\x04\x04\0\x02\t\x12\x03\
-    \x10\x04(\n\x0c\n\x05\x04\0\x02\t\x04\x12\x03\x10\x04\x0c\n\x0c\n\x05\
-    \x04\0\x02\t\x06\x12\x03\x10\r\x18\n\x0c\n\x05\x04\0\x02\t\x01\x12\x03\
-    \x10\x19\"\n\x0c\n\x05\x04\0\x02\t\x03\x12\x03\x10%'\n\x0b\n\x04\x04\0\
-    \x02\n\x12\x03\x11\x04\x18\n\x0c\n\x05\x04\0\x02\n\x05\x12\x03\x11\x04\t\
-    \n\x0c\n\x05\x04\0\x02\n\x01\x12\x03\x11\n\x12\n\x0c\n\x05\x04\0\x02\n\
-    \x03\x12\x03\x11\x15\x17b\x06proto3\
+    \x0b\x1e\n\x0c\n\x05\x04\0\x02\x07\x03\x12\x03\x0e!\"\n\x0b\n\x04\x04\0\
+    \x02\x08\x12\x03\x0f\x04#\n\x0c\n\x05\x04\0\x02\x08\x05\x12\x03\x0f\x04\
+    \n\n\x0c\n\x05\x04\0\x02\x08\x01\x12\x03\x0f\x0b\x1e\n\x0c\n\x05\x04\0\
+    \x02\x08\x03\x12\x03\x0f!\"\n\x0b\n\x04\x04\0\x02\t\x12\x03\x10\x04)\n\
+    \x0c\n\x05\x04\0\x02\t\x04\x12\x03\x10\x04\x0c\n\x0c\n\x05\x04\0\x02\t\
+    \x06\x12\x03\x10\r\x18\n\x0c\n\x05\x04\0\x02\t\x01\x12\x03\x10\x19#\n\
+    \x0c\n\x05\x04\0\x02\t\x03\x12\x03\x10&(\n\x0b\n\x04\x04\0\x02\n\x12\x03\
+    \x11\x04\x19\n\x0c\n\x05\x04\0\x02\n\x05\x12\x03\x11\x04\t\n\x0c\n\x05\
+    \x04\0\x02\n\x01\x12\x03\x11\n\x13\n\x0c\n\x05\x04\0\x02\n\x03\x12\x03\
+    \x11\x16\x18b\x06proto3\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file

@@ -112,7 +112,7 @@ pub extern "C" fn init_memory_decoder(ptr: *const c_uchar, len: usize) -> DartDa
         avif_info.width = 0;
         avif_info.height = 0;
         avif_info.duration = (*decoder).duration;
-        avif_info.imagecount = (*decoder).imageCount as u32;
+        avif_info.image_count = (*decoder).imageCount as u32;
 
         match decoder_info_tx.send(avif_info) {
             Ok(result) => result,
@@ -237,15 +237,15 @@ pub extern "C" fn encode_avif(ptr: *const c_uchar, len: usize) -> DartData {
 
     unsafe {
         let encoder = libavif_sys::avifEncoderCreate();
-        (*encoder).maxThreads = input.maxthreads;
+        (*encoder).maxThreads = input.max_threads;
         (*encoder).speed = input.speed;
         (*encoder).timescale = u64::from(input.timescale);
-        (*encoder).minQuantizer = input.minquantizer;
-        (*encoder).maxQuantizer = input.maxquantizer;
-        (*encoder).minQuantizerAlpha = input.minquantizeralpha;
-        (*encoder).maxQuantizerAlpha = input.maxquantizeralpha;
+        (*encoder).minQuantizer = input.min_quantizer;
+        (*encoder).maxQuantizer = input.max_quantizer;
+        (*encoder).minQuantizerAlpha = input.min_quantizer_alpha;
+        (*encoder).maxQuantizerAlpha = input.max_quantizer_alpha;
 
-        let image_sequence = input.imagelist;
+        let image_sequence = input.image_list;
 
         for frame in image_sequence.iter() {
             let image = libavif_sys::avifImageCreate(
@@ -269,11 +269,11 @@ pub extern "C" fn encode_avif(ptr: *const c_uchar, len: usize) -> DartData {
                 (rgb.rowBytes * (*image).height) as usize,
             );
 
-            if input.exifdata.len() > 0 {
+            if input.exif_data.len() > 0 {
                 libavif_sys::avifImageSetMetadataExif(
                     image,
-                    input.exifdata.as_ptr(),
-                    input.exifdata.len(),
+                    input.exif_data.as_ptr(),
+                    input.exif_data.len(),
                 );
             }
 
@@ -287,7 +287,7 @@ pub extern "C" fn encode_avif(ptr: *const c_uchar, len: usize) -> DartData {
             let add_result = libavif_sys::avifEncoderAddImage(
                 encoder,
                 image,
-                u64::from(frame.durationintimescale),
+                u64::from(frame.duration_in_timescale),
                 libavif_sys::AVIF_ADD_IMAGE_FLAG_NONE,
             );
             if add_result != libavif_sys::AVIF_RESULT_OK {

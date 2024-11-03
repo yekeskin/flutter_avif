@@ -30,8 +30,8 @@ pub struct EncodeFrame {
     // message fields
     // @@protoc_insertion_point(field:models.EncodeFrame.data)
     pub data: ::std::vec::Vec<u8>,
-    // @@protoc_insertion_point(field:models.EncodeFrame.durationintimescale)
-    pub durationintimescale: u32,
+    // @@protoc_insertion_point(field:models.EncodeFrame.duration_in_timescale)
+    pub duration_in_timescale: u32,
     // special fields
     // @@protoc_insertion_point(special_field:models.EncodeFrame.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -57,9 +57,9 @@ impl EncodeFrame {
             |m: &mut EncodeFrame| { &mut m.data },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "durationintimescale",
-            |m: &EncodeFrame| { &m.durationintimescale },
-            |m: &mut EncodeFrame| { &mut m.durationintimescale },
+            "duration_in_timescale",
+            |m: &EncodeFrame| { &m.duration_in_timescale },
+            |m: &mut EncodeFrame| { &mut m.duration_in_timescale },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EncodeFrame>(
             "EncodeFrame",
@@ -83,7 +83,7 @@ impl ::protobuf::Message for EncodeFrame {
                     self.data = is.read_bytes()?;
                 },
                 16 => {
-                    self.durationintimescale = is.read_uint32()?;
+                    self.duration_in_timescale = is.read_uint32()?;
                 },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
@@ -100,8 +100,8 @@ impl ::protobuf::Message for EncodeFrame {
         if !self.data.is_empty() {
             my_size += ::protobuf::rt::bytes_size(1, &self.data);
         }
-        if self.durationintimescale != 0 {
-            my_size += ::protobuf::rt::uint32_size(2, self.durationintimescale);
+        if self.duration_in_timescale != 0 {
+            my_size += ::protobuf::rt::uint32_size(2, self.duration_in_timescale);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
@@ -112,8 +112,8 @@ impl ::protobuf::Message for EncodeFrame {
         if !self.data.is_empty() {
             os.write_bytes(1, &self.data)?;
         }
-        if self.durationintimescale != 0 {
-            os.write_uint32(2, self.durationintimescale)?;
+        if self.duration_in_timescale != 0 {
+            os.write_uint32(2, self.duration_in_timescale)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -133,14 +133,14 @@ impl ::protobuf::Message for EncodeFrame {
 
     fn clear(&mut self) {
         self.data.clear();
-        self.durationintimescale = 0;
+        self.duration_in_timescale = 0;
         self.special_fields.clear();
     }
 
     fn default_instance() -> &'static EncodeFrame {
         static instance: EncodeFrame = EncodeFrame {
             data: ::std::vec::Vec::new(),
-            durationintimescale: 0,
+            duration_in_timescale: 0,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -165,17 +165,17 @@ impl ::protobuf::reflect::ProtobufValue for EncodeFrame {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x12encode_frame.proto\x12\x06models\"S\n\x0bEncodeFrame\x12\x12\n\x04\
-    data\x18\x01\x20\x01(\x0cR\x04data\x120\n\x13durationintimescale\x18\x02\
-    \x20\x01(\rR\x13durationintimescaleJ\xa2\x01\n\x06\x12\x04\0\0\x07\x01\n\
-    \x08\n\x01\x0c\x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\x02\0\x0f\n\n\n\
-    \x02\x04\0\x12\x04\x04\0\x07\x01\n\n\n\x03\x04\0\x01\x12\x03\x04\x08\x13\
-    \n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x11\n\x0c\n\x05\x04\0\x02\0\x05\
-    \x12\x03\x05\x02\x07\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\x05\x08\x0c\n\
-    \x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x0f\x10\n\x0b\n\x04\x04\0\x02\x01\
-    \x12\x03\x06\x02!\n\x0c\n\x05\x04\0\x02\x01\x05\x12\x03\x06\x02\x08\n\
-    \x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x1c\n\x0c\n\x05\x04\0\x02\x01\
-    \x03\x12\x03\x06\x1f\x20b\x06proto3\
+    \n\x12encode_frame.proto\x12\x06models\"U\n\x0bEncodeFrame\x12\x12\n\x04\
+    data\x18\x01\x20\x01(\x0cR\x04data\x122\n\x15duration_in_timescale\x18\
+    \x02\x20\x01(\rR\x13durationInTimescaleJ\xa2\x01\n\x06\x12\x04\0\0\x07\
+    \x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\x02\0\x0f\n\
+    \n\n\x02\x04\0\x12\x04\x04\0\x07\x01\n\n\n\x03\x04\0\x01\x12\x03\x04\x08\
+    \x13\n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x11\n\x0c\n\x05\x04\0\x02\0\
+    \x05\x12\x03\x05\x02\x07\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\x05\x08\x0c\
+    \n\x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x0f\x10\n\x0b\n\x04\x04\0\x02\
+    \x01\x12\x03\x06\x02#\n\x0c\n\x05\x04\0\x02\x01\x05\x12\x03\x06\x02\x08\
+    \n\x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x1e\n\x0c\n\x05\x04\0\x02\
+    \x01\x03\x12\x03\x06!\"b\x06proto3\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file

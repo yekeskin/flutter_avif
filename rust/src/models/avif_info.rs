@@ -32,8 +32,8 @@ pub struct AvifInfo {
     pub width: u32,
     // @@protoc_insertion_point(field:models.AvifInfo.height)
     pub height: u32,
-    // @@protoc_insertion_point(field:models.AvifInfo.imagecount)
-    pub imagecount: u32,
+    // @@protoc_insertion_point(field:models.AvifInfo.image_count)
+    pub image_count: u32,
     // @@protoc_insertion_point(field:models.AvifInfo.duration)
     pub duration: f64,
     // special fields
@@ -66,9 +66,9 @@ impl AvifInfo {
             |m: &mut AvifInfo| { &mut m.height },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "imagecount",
-            |m: &AvifInfo| { &m.imagecount },
-            |m: &mut AvifInfo| { &mut m.imagecount },
+            "image_count",
+            |m: &AvifInfo| { &m.image_count },
+            |m: &mut AvifInfo| { &mut m.image_count },
         ));
         fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
             "duration",
@@ -100,7 +100,7 @@ impl ::protobuf::Message for AvifInfo {
                     self.height = is.read_uint32()?;
                 },
                 24 => {
-                    self.imagecount = is.read_uint32()?;
+                    self.image_count = is.read_uint32()?;
                 },
                 33 => {
                     self.duration = is.read_double()?;
@@ -123,8 +123,8 @@ impl ::protobuf::Message for AvifInfo {
         if self.height != 0 {
             my_size += ::protobuf::rt::uint32_size(2, self.height);
         }
-        if self.imagecount != 0 {
-            my_size += ::protobuf::rt::uint32_size(3, self.imagecount);
+        if self.image_count != 0 {
+            my_size += ::protobuf::rt::uint32_size(3, self.image_count);
         }
         if self.duration != 0. {
             my_size += 1 + 8;
@@ -141,8 +141,8 @@ impl ::protobuf::Message for AvifInfo {
         if self.height != 0 {
             os.write_uint32(2, self.height)?;
         }
-        if self.imagecount != 0 {
-            os.write_uint32(3, self.imagecount)?;
+        if self.image_count != 0 {
+            os.write_uint32(3, self.image_count)?;
         }
         if self.duration != 0. {
             os.write_double(4, self.duration)?;
@@ -166,7 +166,7 @@ impl ::protobuf::Message for AvifInfo {
     fn clear(&mut self) {
         self.width = 0;
         self.height = 0;
-        self.imagecount = 0;
+        self.image_count = 0;
         self.duration = 0.;
         self.special_fields.clear();
     }
@@ -175,7 +175,7 @@ impl ::protobuf::Message for AvifInfo {
         static instance: AvifInfo = AvifInfo {
             width: 0,
             height: 0,
-            imagecount: 0,
+            image_count: 0,
             duration: 0.,
             special_fields: ::protobuf::SpecialFields::new(),
         };
@@ -201,24 +201,24 @@ impl ::protobuf::reflect::ProtobufValue for AvifInfo {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x0favif_info.proto\x12\x06models\"t\n\x08AvifInfo\x12\x14\n\x05width\
+    \n\x0favif_info.proto\x12\x06models\"u\n\x08AvifInfo\x12\x14\n\x05width\
     \x18\x01\x20\x01(\rR\x05width\x12\x16\n\x06height\x18\x02\x20\x01(\rR\
-    \x06height\x12\x1e\n\nimagecount\x18\x03\x20\x01(\rR\nimagecount\x12\x1a\
-    \n\x08duration\x18\x04\x20\x01(\x01R\x08durationJ\x90\x02\n\x06\x12\x04\
-    \0\0\t\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\x02\0\
-    \x0f\n\n\n\x02\x04\0\x12\x04\x04\0\t\x01\n\n\n\x03\x04\0\x01\x12\x03\x04\
-    \x08\x10\n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x13\n\x0c\n\x05\x04\0\
-    \x02\0\x05\x12\x03\x05\x02\x08\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\x05\t\
-    \x0e\n\x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x11\x12\n\x0b\n\x04\x04\0\
-    \x02\x01\x12\x03\x06\x02\x14\n\x0c\n\x05\x04\0\x02\x01\x05\x12\x03\x06\
-    \x02\x08\n\x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x0f\n\x0c\n\x05\x04\
-    \0\x02\x01\x03\x12\x03\x06\x12\x13\n\x0b\n\x04\x04\0\x02\x02\x12\x03\x07\
-    \x02\x18\n\x0c\n\x05\x04\0\x02\x02\x05\x12\x03\x07\x02\x08\n\x0c\n\x05\
-    \x04\0\x02\x02\x01\x12\x03\x07\t\x13\n\x0c\n\x05\x04\0\x02\x02\x03\x12\
-    \x03\x07\x16\x17\n\x0b\n\x04\x04\0\x02\x03\x12\x03\x08\x02\x16\n\x0c\n\
-    \x05\x04\0\x02\x03\x05\x12\x03\x08\x02\x08\n\x0c\n\x05\x04\0\x02\x03\x01\
-    \x12\x03\x08\t\x11\n\x0c\n\x05\x04\0\x02\x03\x03\x12\x03\x08\x14\x15b\
-    \x06proto3\
+    \x06height\x12\x1f\n\x0bimage_count\x18\x03\x20\x01(\rR\nimageCount\x12\
+    \x1a\n\x08duration\x18\x04\x20\x01(\x01R\x08durationJ\x90\x02\n\x06\x12\
+    \x04\0\0\t\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\
+    \x02\0\x0f\n\n\n\x02\x04\0\x12\x04\x04\0\t\x01\n\n\n\x03\x04\0\x01\x12\
+    \x03\x04\x08\x10\n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x13\n\x0c\n\x05\
+    \x04\0\x02\0\x05\x12\x03\x05\x02\x08\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\
+    \x05\t\x0e\n\x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x11\x12\n\x0b\n\x04\
+    \x04\0\x02\x01\x12\x03\x06\x02\x14\n\x0c\n\x05\x04\0\x02\x01\x05\x12\x03\
+    \x06\x02\x08\n\x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x0f\n\x0c\n\x05\
+    \x04\0\x02\x01\x03\x12\x03\x06\x12\x13\n\x0b\n\x04\x04\0\x02\x02\x12\x03\
+    \x07\x02\x19\n\x0c\n\x05\x04\0\x02\x02\x05\x12\x03\x07\x02\x08\n\x0c\n\
+    \x05\x04\0\x02\x02\x01\x12\x03\x07\t\x14\n\x0c\n\x05\x04\0\x02\x02\x03\
+    \x12\x03\x07\x17\x18\n\x0b\n\x04\x04\0\x02\x03\x12\x03\x08\x02\x16\n\x0c\
+    \n\x05\x04\0\x02\x03\x05\x12\x03\x08\x02\x08\n\x0c\n\x05\x04\0\x02\x03\
+    \x01\x12\x03\x08\t\x11\n\x0c\n\x05\x04\0\x02\x03\x03\x12\x03\x08\x14\x15\
+    b\x06proto3\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file

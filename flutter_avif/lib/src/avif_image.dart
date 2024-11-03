@@ -966,7 +966,7 @@ class MultiFrameAvifCodec implements AvifCodec {
     try {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
-        _frameCount = info.imagecount;
+        _frameCount = info.imageCount;
         _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
         _ready.complete();
       });
