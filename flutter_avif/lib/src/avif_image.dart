@@ -966,7 +966,7 @@ class MultiFrameAvifCodec implements AvifCodec {
     try {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.initMemoryDecoder(key: _key, avifBytes: avifBytes).then((info) {
-        _frameCount = info.imageCount;
+        _frameCount = info.imagecount;
         _durationMs = overrideDurationMs ?? (info.duration * 1000).round();
         _ready.complete();
       });
@@ -1009,7 +1009,7 @@ class MultiFrameAvifCodec implements AvifCodec {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.getNextFrame(key: _key).then((frame) {
         ui.decodeImageFromPixels(
-          frame.data,
+          Uint8List.fromList(frame.data),
           frame.width,
           frame.height,
           ui.PixelFormat.rgba8888,
@@ -1074,7 +1074,7 @@ class SingleFrameAvifCodec implements AvifCodec {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.decodeSingleFrameImage(avifBytes: _bytes).then((frame) {
         ui.decodeImageFromPixels(
-          frame.data,
+          Uint8List.fromList(frame.data),
           frame.width,
           frame.height,
           ui.PixelFormat.rgba8888,

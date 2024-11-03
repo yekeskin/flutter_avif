@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package models;
+
+message Frame {
+  bytes data = 1;
+  double duration = 2;
+  uint32 width = 3;
+  uint32 height = 4;
+}

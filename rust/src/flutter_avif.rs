@@ -1,5 +1,6 @@
-use flutter_rust_bridge::ZeroCopyBuffer;
 use std::collections::HashMap;
+use std::mem;
+use std::os::raw::c_uchar;
 use std::slice;
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
@@ -7,18 +8,29 @@ use std::sync::mpsc::Sender;
 use std::sync::RwLock;
 use std::thread;
 
+use protobuf::Message;
+
+use crate::models::avif_info::AvifInfo;
+use crate::models::encode_request::EncodeRequest;
+use crate::models::frame::Frame;
+use crate::models::key_request::KeyRequest;
+
 lazy_static::lazy_static! {
     static ref DECODERS: RwLock<HashMap<String, Decoder>> = {
         RwLock::new(HashMap::new())
     };
 }
 
-pub fn decode_single_frame_image(avif_bytes: Vec<u8>) -> Frame {
+#[no_mangle]
+pub extern "C" fn decode_single_frame_image(ptr: *const c_uchar, len: usize) -> DartData {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     unsafe {
         let decoder = libavif_sys::avifDecoderCreate();
 
         let set_memory_result =
-            libavif_sys::avifDecoderSetIOMemory(decoder, avif_bytes.as_ptr(), avif_bytes.len());
+            libavif_sys::avifDecoderSetIOMemory(decoder, input.data.as_ptr(), input.data.len());
         if set_memory_result != libavif_sys::AVIF_RESULT_OK {
             libavif_sys::avifDecoderDestroy(decoder);
             panic!("Couldn't decode the image. Code: {}", set_memory_result);
@@ -35,16 +47,35 @@ pub fn decode_single_frame_image(avif_bytes: Vec<u8>) -> Frame {
         let image = _get_next_frame(decoder);
         libavif_sys::avifDecoderDestroy(decoder);
 
-        return image.frame;
+        let mut output = image.write_to_bytes().unwrap();
+        let data = DartData {
+            ptr: output.as_mut_ptr(),
+            len: output.len() as i32,
+        };
+        mem::forget(output);
+
+        return data;
     }
 }
 
-pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
+#[no_mangle]
+pub extern "C" fn init_memory_decoder(ptr: *const c_uchar, len: usize) -> DartData {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     {
         let map = DECODERS.read().unwrap();
-        if map.contains_key(&key) {
-            let decoder = &map[&key];
-            return decoder.info;
+        if map.contains_key(&input.key) {
+            let decoder = &map[&input.key];
+
+            let mut output = decoder.info.write_to_bytes().unwrap();
+            let data = DartData {
+                ptr: output.as_mut_ptr(),
+                len: output.len() as i32,
+            };
+            mem::forget(output);
+
+            return data;
         }
     }
 
@@ -52,12 +83,12 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
         Sender<DecoderCommand>,
         Receiver<DecoderCommand>,
     ) = mpsc::channel();
-    let (decoder_response_tx, decoder_response_rx): (
-        Sender<CodecResponse>,
-        Receiver<CodecResponse>,
-    ) = mpsc::channel();
+    let (decoder_response_tx, decoder_response_rx): (Sender<Frame>, Receiver<Frame>) =
+        mpsc::channel();
     let (decoder_info_tx, decoder_info_rx): (Sender<AvifInfo>, Receiver<AvifInfo>) =
         mpsc::channel();
+
+    let avif_bytes = input.data;
 
     thread::spawn(move || unsafe {
         let decoder = libavif_sys::avifDecoderCreate();
@@ -77,12 +108,13 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
             panic!("Couldn't decode the image. Code: {}", parse_result);
         }
 
-        match decoder_info_tx.send(AvifInfo {
-            width: 0,
-            height: 0,
-            duration: (*decoder).duration,
-            image_count: (*decoder).imageCount as u32,
-        }) {
+        let mut avif_info = AvifInfo::new();
+        avif_info.width = 0;
+        avif_info.height = 0;
+        avif_info.duration = (*decoder).duration;
+        avif_info.imagecount = (*decoder).imageCount as u32;
+
+        match decoder_info_tx.send(avif_info) {
             Ok(result) => result,
             Err(e) => panic!("Decoder connection lost. {}", e),
         };
@@ -108,30 +140,42 @@ pub fn init_memory_decoder(key: String, avif_bytes: Vec<u8>) -> AvifInfo {
 
     let avif_info = match decoder_info_rx.recv() {
         Ok(result) => result,
-        Err(e) => panic!("Couldn't read avi info. Code: {}", e),
+        Err(e) => panic!("Couldn't read avif info. Code: {}", e),
     };
 
     {
         let mut map = DECODERS.write().unwrap();
         map.insert(
-            key,
+            input.key,
             Decoder {
                 request_tx: decoder_request_tx,
                 response_rx: decoder_response_rx,
-                info: avif_info,
+                info: avif_info.clone(),
             },
         );
     }
-    return avif_info;
+
+    let mut output = avif_info.write_to_bytes().unwrap();
+    let data = DartData {
+        ptr: output.as_mut_ptr(),
+        len: output.len() as i32,
+    };
+    mem::forget(output);
+
+    return data;
 }
 
-pub fn reset_decoder(key: String) -> bool {
+#[no_mangle]
+pub extern "C" fn reset_decoder(ptr: *const c_uchar, len: usize) -> bool {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     let map = DECODERS.read().unwrap();
-    if !map.contains_key(&key) {
+    if !map.contains_key(&input.key) {
         return false;
     }
 
-    let decoder = &map[&key];
+    let decoder = &map[&input.key];
     match decoder.request_tx.send(DecoderCommand::Reset) {
         Ok(result) => result,
         Err(e) => panic!("Decoder connection lost. {}", e),
@@ -140,64 +184,73 @@ pub fn reset_decoder(key: String) -> bool {
     return true;
 }
 
-pub fn dispose_decoder(key: String) -> bool {
+#[no_mangle]
+pub extern "C" fn dispose_decoder(ptr: *const c_uchar, len: usize) -> bool {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     let mut map = DECODERS.write().unwrap();
-    if !map.contains_key(&key) {
+    if !map.contains_key(&input.key) {
         return false;
     }
 
-    let decoder = &map[&key];
+    let decoder = &map[&input.key];
     match decoder.request_tx.send(DecoderCommand::Dispose) {
         Ok(result) => result,
         Err(e) => panic!("Decoder connection lost. {}", e),
     };
     decoder.response_rx.recv().unwrap();
-    map.remove(&key);
+    map.remove(&input.key);
     return true;
 }
 
-pub fn get_next_frame(key: String) -> Frame {
+#[no_mangle]
+pub extern "C" fn get_next_frame(ptr: *const c_uchar, len: usize) -> DartData {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     let map = DECODERS.read().unwrap();
-    if !map.contains_key(&key) {
-        panic!("Decoder not found. {}", key);
+    if !map.contains_key(&input.key) {
+        panic!("Decoder not found. {}", input.key);
     }
 
-    let decoder = &map[&key];
+    let decoder = &map[&input.key];
     match decoder.request_tx.send(DecoderCommand::GetNextFrame) {
         Ok(result) => result,
         Err(e) => panic!("Decoder connection lost. {}", e),
     };
     let result = decoder.response_rx.recv().unwrap();
-    return result.frame;
+    let mut output = result.write_to_bytes().unwrap();
+    let data = DartData {
+        ptr: output.as_mut_ptr(),
+        len: output.len() as i32,
+    };
+    mem::forget(output);
+
+    return data;
 }
 
-pub fn encode_avif(
-    width: u32,
-    height: u32,
-    speed: i32,
-    max_threads: i32,
-    timescale: u64,
-    max_quantizer: i32,
-    min_quantizer: i32,
-    max_quantizer_alpha: i32,
-    min_quantizer_alpha: i32,
-    image_sequence: Vec<EncodeFrame>,
-    exif_data: Vec<u8>,
-) -> ZeroCopyBuffer<Vec<u8>> {
+#[no_mangle]
+pub extern "C" fn encode_avif(ptr: *const c_uchar, len: usize) -> DartData {
+    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = EncodeRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+
     unsafe {
         let encoder = libavif_sys::avifEncoderCreate();
-        (*encoder).maxThreads = max_threads;
-        (*encoder).speed = speed;
-        (*encoder).timescale = timescale;
-        (*encoder).minQuantizer = min_quantizer;
-        (*encoder).maxQuantizer = max_quantizer;
-        (*encoder).minQuantizerAlpha = min_quantizer_alpha;
-        (*encoder).maxQuantizerAlpha = max_quantizer_alpha;
+        (*encoder).maxThreads = input.maxthreads;
+        (*encoder).speed = input.speed;
+        (*encoder).timescale = u64::from(input.timescale);
+        (*encoder).minQuantizer = input.minquantizer;
+        (*encoder).maxQuantizer = input.maxquantizer;
+        (*encoder).minQuantizerAlpha = input.minquantizeralpha;
+        (*encoder).maxQuantizerAlpha = input.maxquantizeralpha;
+
+        let image_sequence = input.imagelist;
 
         for frame in image_sequence.iter() {
             let image = libavif_sys::avifImageCreate(
-                width,
-                height,
+                input.width,
+                input.height,
                 8,
                 libavif_sys::AVIF_PIXEL_FORMAT_YUV444,
             );
@@ -209,14 +262,19 @@ pub fn encode_avif(
             rgb.format = libavif_sys::AVIF_RGB_FORMAT_RGBA;
             rgb.depth = 8;
             libavif_sys::avifRGBImageAllocatePixels(raw_rgb);
+
             std::ptr::copy(
                 frame.data.as_ptr(),
                 rgb.pixels,
                 (rgb.rowBytes * (*image).height) as usize,
             );
 
-            if exif_data.len() > 0 {
-                libavif_sys::avifImageSetMetadataExif(image, exif_data.as_ptr(), exif_data.len());
+            if input.exifdata.len() > 0 {
+                libavif_sys::avifImageSetMetadataExif(
+                    image,
+                    input.exifdata.as_ptr(),
+                    input.exifdata.len(),
+                );
             }
 
             let conversion_result = libavif_sys::avifImageRGBToYUV(image, &rgb);
@@ -229,7 +287,7 @@ pub fn encode_avif(
             let add_result = libavif_sys::avifEncoderAddImage(
                 encoder,
                 image,
-                frame.duration_in_timescale,
+                u64::from(frame.durationintimescale),
                 libavif_sys::AVIF_ADD_IMAGE_FLAG_NONE,
             );
             if add_result != libavif_sys::AVIF_RESULT_OK {
@@ -254,44 +312,59 @@ pub fn encode_avif(
             libavif_sys::avifEncoderDestroy(encoder);
             panic!("avif_output error {}", finish_result);
         }
-        let output_data = slice::from_raw_parts(avif_output.data, avif_output.size).to_vec();
+        let mut output_data = slice::from_raw_parts(avif_output.data, avif_output.size).to_vec();
         libavif_sys::avifRWDataFree(raw_avif_output);
         libavif_sys::avifEncoderDestroy(encoder);
-        return ZeroCopyBuffer(output_data);
+
+        let data = DartData {
+            ptr: output_data.as_mut_ptr(),
+            len: output_data.len() as i32,
+        };
+        mem::forget(output_data);
+
+        return data;
     }
 }
 
-fn _dispose_decoder(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
+#[no_mangle]
+pub unsafe extern "C" fn free_dart_data(data: DartData) {
+    drop(Vec::from_raw_parts(
+        data.ptr,
+        data.len as usize,
+        data.len as usize,
+    ));
+    drop(data);
+}
+
+fn _dispose_decoder(decoder: *mut libavif_sys::avifDecoder) -> Frame {
     unsafe {
         libavif_sys::avifDecoderDestroy(decoder);
-        return CodecResponse {
-            command: DecoderCommand::Dispose,
-            frame: Frame {
-                data: ZeroCopyBuffer(Vec::new()),
-                duration: 0.0,
-                width: 0,
-                height: 0,
-            },
-        };
+
+        let mut frame = Frame::new();
+        frame.data = Vec::new();
+        frame.duration = 0.0;
+        frame.width = 0;
+        frame.height = 0;
+
+        return frame;
     }
 }
 
-fn _reset_decoder(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
+fn _reset_decoder(decoder: *mut libavif_sys::avifDecoder) -> Frame {
     unsafe {
         libavif_sys::avifDecoderReset(decoder);
-        return CodecResponse {
-            command: DecoderCommand::Reset,
-            frame: Frame {
-                data: ZeroCopyBuffer(Vec::new()),
-                duration: 0.0,
-                width: 0,
-                height: 0,
-            },
-        };
+
+        let mut frame = Frame::new();
+        frame.data = Vec::new();
+        frame.duration = 0.0;
+        frame.width = 0;
+        frame.height = 0;
+
+        return frame;
     }
 }
 
-fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
+fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> Frame {
     unsafe {
         let mut decode_result = libavif_sys::avifDecoderNextImage(decoder);
         if decode_result == libavif_sys::AVIF_RESULT_NO_IMAGES_REMAINING {
@@ -317,43 +390,22 @@ fn _get_next_frame(decoder: *mut libavif_sys::avifDecoder) -> CodecResponse {
         }
 
         let size = rgb.rowBytes * (*(*decoder).image).height;
-        let data = ZeroCopyBuffer(slice::from_raw_parts(rgb.pixels, size as usize).to_vec());
+        let data = slice::from_raw_parts(rgb.pixels, size as usize).to_vec();
         libavif_sys::avifRGBImageFreePixels(raw_rgb);
-        return CodecResponse {
-            command: DecoderCommand::GetNextFrame,
-            frame: Frame {
-                data: data,
-                duration: (*decoder).imageTiming.duration,
-                width: (*(*decoder).image).width,
-                height: (*(*decoder).image).height,
-            },
-        };
+
+        let mut frame = Frame::new();
+        frame.data = data;
+        frame.duration = (*decoder).imageTiming.duration;
+        frame.width = (*(*decoder).image).width;
+        frame.height = (*(*decoder).image).height;
+
+        return frame;
     }
-}
-
-#[derive(Copy, Clone)]
-pub struct AvifInfo {
-    pub width: u32,
-    pub height: u32,
-    pub image_count: u32,
-    pub duration: f64,
-}
-
-pub struct Frame {
-    pub data: ZeroCopyBuffer<Vec<u8>>,
-    pub duration: f64,
-    pub width: u32,
-    pub height: u32,
-}
-
-pub struct EncodeFrame {
-    pub data: Vec<u8>,
-    pub duration_in_timescale: u64,
 }
 
 struct Decoder {
     request_tx: Sender<DecoderCommand>,
-    response_rx: Receiver<CodecResponse>,
+    response_rx: Receiver<Frame>,
     info: AvifInfo,
 }
 
@@ -366,7 +418,8 @@ enum DecoderCommand {
     Dispose,
 }
 
-struct CodecResponse {
-    pub command: DecoderCommand,
-    pub frame: Frame,
+#[repr(C)]
+pub struct DartData {
+    ptr: *mut u8,
+    len: i32,
 }

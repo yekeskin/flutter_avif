@@ -55,7 +55,7 @@ Future<Uint8List> encodeAvif(
       final frame = decoded.data.sublist(i * frameSize, (i + 1) * frameSize);
       encodeFrames.add(avif_platform.EncodeFrame(
         data: frame,
-        durationInTimescale: (decoded.durations[i] / timebaseMs).round(),
+        durationintimescale: (decoded.durations[i] / timebaseMs).round(),
       ));
     }
   } else {
@@ -81,7 +81,7 @@ Future<Uint8List> encodeAvif(
       if (imageData != null) {
         encodeFrames.add(avif_platform.EncodeFrame(
           data: imageData.buffer.asUint8List(),
-          durationInTimescale:
+          durationintimescale:
               (frames[i].duration.inMilliseconds / timebaseMs).round(),
         ));
       }
