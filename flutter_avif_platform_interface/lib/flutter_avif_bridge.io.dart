@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:ffi' as ffi;
+import 'dart:ffi';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
@@ -15,45 +18,67 @@ class FlutterAvifImpl implements FlutterAvif {
   final fa_ffi.FlutterAvifFFI flutterAvifFFI;
 
   FlutterAvifImpl(ffi.DynamicLibrary dyLib)
-      : this.flutterAvifFFI = fa_ffi.FlutterAvifFFI(dyLib);
+      : this.flutterAvifFFI = fa_ffi.FlutterAvifFFI(dyLib) {
+    final storeDartPostCObject =
+        dyLib.lookupFunction<dartPostCObject, dartPostCObject>(
+      'store_dart_post_cobject',
+    );
+    storeDartPostCObject(NativeApi.postCObject);
+  }
 
   @override
-  Future<Frame> decodeSingleFrameImage({required Uint8List avifBytes}) async {
+  Future<Frame> decodeSingleFrameImage({required Uint8List avifBytes}) {
     final request = KeyRequest(
       key: "",
       data: avifBytes,
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.decode_single_frame_image(
+    final completer = Completer<Frame>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+
+      final frame = Frame.fromBuffer(response);
+      completer.complete(frame);
+    };
+
+    flutterAvifFFI.decode_single_frame_image(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
-    final frameBuffer = fromDartData(result);
-    final frame = Frame.fromBuffer(frameBuffer);
 
-    flutterAvifFFI.free_dart_data(result);
     malloc.free(nativeRequest[0]);
 
-    return frame;
+    return completer.future;
   }
 
   @override
-  Future<bool> disposeDecoder({required String key}) async {
+  Future<bool> disposeDecoder({required String key}) {
     final request = KeyRequest(
       key: key,
       data: Uint8List.fromList([1]),
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.dispose_decoder(
+    final completer = Completer<bool>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+
+      completer.complete(response);
+    };
+
+    flutterAvifFFI.dispose_decoder(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
 
     malloc.free(nativeRequest[0]);
 
-    return result;
+    return completer.future;
   }
 
   @override
@@ -69,7 +94,7 @@ class FlutterAvifImpl implements FlutterAvif {
     required int minQuantizerAlpha,
     required List<EncodeFrame> imageSequence,
     required Uint8List exifData,
-  }) async {
+  }) {
     final request = EncodeRequest(
       width: width,
       height: height,
@@ -85,79 +110,108 @@ class FlutterAvifImpl implements FlutterAvif {
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.encode_avif(
+    final completer = Completer<Uint8List>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+
+      completer.complete(response);
+    };
+
+    flutterAvifFFI.encode_avif(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
-    final bytes = fromDartData(result);
 
-    flutterAvifFFI.free_dart_data(result);
     malloc.free(nativeRequest[0]);
 
-    return bytes;
+    return completer.future;
   }
 
   @override
-  Future<Frame> getNextFrame({required String key}) async {
+  Future<Frame> getNextFrame({required String key}) {
     final request = KeyRequest(
       key: key,
       data: Uint8List.fromList([1]),
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.get_next_frame(
+    final completer = Completer<Frame>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+      final frame = Frame.fromBuffer(response);
+
+      completer.complete(frame);
+    };
+
+    flutterAvifFFI.get_next_frame(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
-    final frameBuffer = fromDartData(result);
-    final frame = Frame.fromBuffer(frameBuffer);
 
-    flutterAvifFFI.free_dart_data(result);
     malloc.free(nativeRequest[0]);
 
-    return frame;
+    return completer.future;
   }
 
   @override
   Future<AvifInfo> initMemoryDecoder({
     required String key,
     required Uint8List avifBytes,
-  }) async {
+  }) {
     final request = KeyRequest(
       key: key,
       data: avifBytes,
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.init_memory_decoder(
+    final completer = Completer<AvifInfo>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+      final info = AvifInfo.fromBuffer(response);
+
+      completer.complete(info);
+    };
+
+    flutterAvifFFI.init_memory_decoder(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
-    final resultBuffer = fromDartData(result);
-    final info = AvifInfo.fromBuffer(resultBuffer);
-
-    flutterAvifFFI.free_dart_data(result);
     malloc.free(nativeRequest[0]);
 
-    return info;
+    return completer.future;
   }
 
   @override
-  Future<bool> resetDecoder({required String key}) async {
+  Future<bool> resetDecoder({required String key}) {
     final request = KeyRequest(
       key: key,
       data: Uint8List.fromList([1]),
     ).writeToBuffer();
     final nativeRequest = toPointer(request);
 
-    final result = flutterAvifFFI.reset_decoder(
+    final completer = Completer<bool>();
+    final port = RawReceivePort();
+    port.handler = (response) {
+      port.close();
+
+      completer.complete(response);
+    };
+
+    flutterAvifFFI.reset_decoder(
+      port.sendPort.nativePort,
       nativeRequest[0],
       nativeRequest[1],
     );
 
     malloc.free(nativeRequest[0]);
 
-    return result;
+    return completer.future;
   }
 }
 
@@ -218,6 +272,5 @@ List toPointer(Uint8List units) {
   return [data, dataLength];
 }
 
-Uint8List fromDartData(fa_ffi.DartData data) {
-  return Uint8List.fromList(data.ptr.asTypedList(data.len));
-}
+typedef dartPostCObject = Pointer Function(
+    Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>);

@@ -1,3 +1,5 @@
+use allo_isolate::Isolate;
+use async_std::task;
 use libavif_sys::avifDecoder;
 use protobuf::Message;
 use std::collections::HashMap;
@@ -18,243 +20,236 @@ lazy_static::lazy_static! {
 }
 
 #[no_mangle]
-pub extern "C" fn decode_single_frame_image(ptr: *const c_uchar, len: usize) -> DartData {
+pub extern "C" fn decode_single_frame_image(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let isolate = Isolate::new(port);
 
-    let decoder = _init_memory_decoder(input.data.as_ptr(), input.data.len());
-    let image = _get_next_frame(decoder);
-    _dispose_decoder(decoder);
+    task::spawn(isolate.task(async move {
+        let decoder = _init_memory_decoder(input.data.as_ptr(), input.data.len());
+        let image = _get_next_frame(decoder);
+        _dispose_decoder(decoder);
 
-    let mut output = image.write_to_bytes().unwrap();
-    let data = DartData {
-        ptr: output.as_mut_ptr(),
-        len: output.len() as i32,
-    };
-    mem::forget(output);
+        return image.write_to_bytes().unwrap();
+    }));
 
-    return data;
+    return port;
 }
 
 #[no_mangle]
-pub extern "C" fn init_memory_decoder(ptr: *const c_uchar, len: usize) -> DartData {
+pub extern "C" fn init_memory_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let isolate = Isolate::new(port);
 
     {
         let map = DECODERS.read().unwrap();
         if map.contains_key(&input.key) {
             let decoder = &map[&input.key];
 
-            let mut output = decoder.info.write_to_bytes().unwrap();
-            let data = DartData {
-                ptr: output.as_mut_ptr(),
-                len: output.len() as i32,
-            };
-            mem::forget(output);
+            let output = decoder.info.write_to_bytes().unwrap();
 
-            return data;
+            isolate.post(output);
+
+            return port;
         }
     }
 
-    unsafe {
-        let mut avif_bytes = input.data;
-        let decoder = _init_memory_decoder(avif_bytes.as_ptr(), avif_bytes.len());
+    task::spawn(isolate.task(async move {
+        unsafe {
+            let mut avif_bytes = input.data;
+            let decoder = _init_memory_decoder(avif_bytes.as_ptr(), avif_bytes.len());
 
-        let mut avif_info = AvifInfo::new();
-        avif_info.width = 0;
-        avif_info.height = 0;
-        avif_info.duration = (*decoder).duration;
-        avif_info.image_count = (*decoder).imageCount as u32;
+            let mut avif_info = AvifInfo::new();
+            avif_info.width = 0;
+            avif_info.height = 0;
+            avif_info.duration = (*decoder).duration;
+            avif_info.image_count = (*decoder).imageCount as u32;
 
-        let mut map = DECODERS.write().unwrap();
-        map.insert(
-            input.key,
-            DecoderRef {
-                decoder: decoder,
-                ptr: avif_bytes.as_mut_ptr(),
-                len: avif_bytes.len(),
-                info: avif_info.clone(),
-            },
-        );
+            let mut map = DECODERS.write().unwrap();
+            map.insert(
+                input.key,
+                DecoderRef {
+                    decoder: decoder,
+                    ptr: avif_bytes.as_mut_ptr(),
+                    len: avif_bytes.len(),
+                    info: avif_info.clone(),
+                },
+            );
+            mem::forget(avif_bytes);
 
-        let mut output = avif_info.write_to_bytes().unwrap();
-        let data = DartData {
-            ptr: output.as_mut_ptr(),
-            len: output.len() as i32,
-        };
-        mem::forget(output);
-        mem::forget(avif_bytes);
+            return avif_info.write_to_bytes().unwrap();
+        }
+    }));
 
-        return data;
-    }
+    return port;
 }
 
 #[no_mangle]
-pub extern "C" fn reset_decoder(ptr: *const c_uchar, len: usize) -> bool {
+pub extern "C" fn reset_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
-    {
-        let map = DECODERS.read().unwrap();
-        if !map.contains_key(&input.key) {
-            return false;
+    let isolate = Isolate::new(port);
+
+    task::spawn(isolate.task(async move {
+        {
+            let map = DECODERS.read().unwrap();
+            if !map.contains_key(&input.key) {
+                return false;
+            }
+
+            let decoder = &map[&input.key];
+            _reset_decoder(decoder.decoder);
         }
 
-        let decoder = &map[&input.key];
-        _reset_decoder(decoder.decoder);
-    }
-    return true;
+        return true;
+    }));
+
+    return port;
 }
 
 #[no_mangle]
-pub extern "C" fn dispose_decoder(ptr: *const c_uchar, len: usize) -> bool {
+pub extern "C" fn dispose_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let isolate = Isolate::new(port);
 
-    {
-        let mut map = DECODERS.write().unwrap();
-        if !map.contains_key(&input.key) {
-            return false;
+    task::spawn(isolate.task(async move {
+        {
+            let mut map = DECODERS.write().unwrap();
+            if !map.contains_key(&input.key) {
+                return false;
+            }
+
+            let decoder = &map[&input.key];
+            _dispose_decoder(decoder.decoder);
+
+            drop(unsafe { Vec::from_raw_parts(decoder.ptr, decoder.len, decoder.len) });
+            map.remove(&input.key);
         }
 
-        let decoder = &map[&input.key];
-        _dispose_decoder(decoder.decoder);
+        return true;
+    }));
 
-        drop(unsafe { Vec::from_raw_parts(decoder.ptr, decoder.len, decoder.len) });
-        map.remove(&input.key);
-    }
-
-    return true;
+    return port;
 }
 
 #[no_mangle]
-pub extern "C" fn get_next_frame(ptr: *const c_uchar, len: usize) -> DartData {
+pub extern "C" fn get_next_frame(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let isolate = Isolate::new(port);
 
-    {
-        let map = DECODERS.read().unwrap();
-        if !map.contains_key(&input.key) {
-            panic!("Decoder not found. {}", input.key);
+    task::spawn(isolate.task(async move {
+        {
+            let map = DECODERS.read().unwrap();
+            if !map.contains_key(&input.key) {
+                panic!("Decoder not found. {}", input.key);
+            }
+
+            let decoder = &map[&input.key];
+            let result = _get_next_frame(decoder.decoder);
+
+            return result.write_to_bytes().unwrap();
         }
+    }));
 
-        let decoder = &map[&input.key];
-        let result = _get_next_frame(decoder.decoder);
-        let mut output = result.write_to_bytes().unwrap();
-        let data = DartData {
-            ptr: output.as_mut_ptr(),
-            len: output.len() as i32,
-        };
-        mem::forget(output);
-
-        return data;
-    }
+    return port;
 }
 
 #[no_mangle]
-pub extern "C" fn encode_avif(ptr: *const c_uchar, len: usize) -> DartData {
+pub extern "C" fn encode_avif(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
     let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
     let input = EncodeRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let isolate = Isolate::new(port);
 
-    unsafe {
-        let encoder = libavif_sys::avifEncoderCreate();
-        (*encoder).maxThreads = input.max_threads;
-        (*encoder).speed = input.speed;
-        (*encoder).timescale = u64::from(input.timescale);
-        (*encoder).minQuantizer = input.min_quantizer;
-        (*encoder).maxQuantizer = input.max_quantizer;
-        (*encoder).minQuantizerAlpha = input.min_quantizer_alpha;
-        (*encoder).maxQuantizerAlpha = input.max_quantizer_alpha;
+    task::spawn(isolate.task(async move {
+        unsafe {
+            let encoder = libavif_sys::avifEncoderCreate();
+            (*encoder).maxThreads = input.max_threads;
+            (*encoder).speed = input.speed;
+            (*encoder).timescale = u64::from(input.timescale);
+            (*encoder).minQuantizer = input.min_quantizer;
+            (*encoder).maxQuantizer = input.max_quantizer;
+            (*encoder).minQuantizerAlpha = input.min_quantizer_alpha;
+            (*encoder).maxQuantizerAlpha = input.max_quantizer_alpha;
 
-        let image_sequence = input.image_list;
+            let image_sequence = input.image_list;
 
-        for frame in image_sequence.iter() {
-            let image = libavif_sys::avifImageCreate(
-                input.width,
-                input.height,
-                8,
-                libavif_sys::AVIF_PIXEL_FORMAT_YUV444,
-            );
-            libavif_sys::avifImageAllocatePlanes(image, libavif_sys::AVIF_PLANES_YUV);
-
-            let mut rgb = libavif_sys::avifRGBImage::default();
-            let raw_rgb = &mut rgb as *mut libavif_sys::avifRGBImage;
-            libavif_sys::avifRGBImageSetDefaults(raw_rgb, image);
-            rgb.format = libavif_sys::AVIF_RGB_FORMAT_RGBA;
-            rgb.depth = 8;
-            libavif_sys::avifRGBImageAllocatePixels(raw_rgb);
-
-            std::ptr::copy(
-                frame.data.as_ptr(),
-                rgb.pixels,
-                (rgb.rowBytes * (*image).height) as usize,
-            );
-
-            if input.exif_data.len() > 0 {
-                libavif_sys::avifImageSetMetadataExif(
-                    image,
-                    input.exif_data.as_ptr(),
-                    input.exif_data.len(),
+            for frame in image_sequence.iter() {
+                let image = libavif_sys::avifImageCreate(
+                    input.width,
+                    input.height,
+                    8,
+                    libavif_sys::AVIF_PIXEL_FORMAT_YUV444,
                 );
+                libavif_sys::avifImageAllocatePlanes(image, libavif_sys::AVIF_PLANES_YUV);
+
+                let mut rgb = libavif_sys::avifRGBImage::default();
+                let raw_rgb = &mut rgb as *mut libavif_sys::avifRGBImage;
+                libavif_sys::avifRGBImageSetDefaults(raw_rgb, image);
+                rgb.format = libavif_sys::AVIF_RGB_FORMAT_RGBA;
+                rgb.depth = 8;
+                libavif_sys::avifRGBImageAllocatePixels(raw_rgb);
+
+                std::ptr::copy(
+                    frame.data.as_ptr(),
+                    rgb.pixels,
+                    (rgb.rowBytes * (*image).height) as usize,
+                );
+
+                if input.exif_data.len() > 0 {
+                    libavif_sys::avifImageSetMetadataExif(
+                        image,
+                        input.exif_data.as_ptr(),
+                        input.exif_data.len(),
+                    );
+                }
+
+                let conversion_result = libavif_sys::avifImageRGBToYUV(image, &rgb);
+                if conversion_result != libavif_sys::AVIF_RESULT_OK {
+                    libavif_sys::avifImageDestroy(image);
+                    libavif_sys::avifEncoderDestroy(encoder);
+                    libavif_sys::avifRGBImageFreePixels(raw_rgb);
+                    panic!("yuv_to_rgb error {}", conversion_result);
+                }
+                let add_result = libavif_sys::avifEncoderAddImage(
+                    encoder,
+                    image,
+                    u64::from(frame.duration_in_timescale),
+                    libavif_sys::AVIF_ADD_IMAGE_FLAG_NONE,
+                );
+                if add_result != libavif_sys::AVIF_RESULT_OK {
+                    libavif_sys::avifImageDestroy(image);
+                    libavif_sys::avifEncoderDestroy(encoder);
+                    libavif_sys::avifRGBImageFreePixels(raw_rgb);
+                    panic!("add_image error {}", add_result);
+                }
+                libavif_sys::avifImageDestroy(image);
+                libavif_sys::avifRGBImageFreePixels(raw_rgb);
             }
 
-            let conversion_result = libavif_sys::avifImageRGBToYUV(image, &rgb);
-            if conversion_result != libavif_sys::AVIF_RESULT_OK {
-                libavif_sys::avifImageDestroy(image);
+            let mut s = ::std::mem::MaybeUninit::<u8>::uninit();
+            let mut avif_output = libavif_sys::avifRWData {
+                data: s.as_mut_ptr(),
+                size: 0,
+            };
+            let raw_avif_output = &mut avif_output as *mut libavif_sys::avifRWData;
+            let finish_result = libavif_sys::avifEncoderFinish(encoder, raw_avif_output);
+            if finish_result != libavif_sys::AVIF_RESULT_OK {
+                libavif_sys::avifRWDataFree(raw_avif_output);
                 libavif_sys::avifEncoderDestroy(encoder);
-                libavif_sys::avifRGBImageFreePixels(raw_rgb);
-                panic!("yuv_to_rgb error {}", conversion_result);
+                panic!("avif_output error {}", finish_result);
             }
-            let add_result = libavif_sys::avifEncoderAddImage(
-                encoder,
-                image,
-                u64::from(frame.duration_in_timescale),
-                libavif_sys::AVIF_ADD_IMAGE_FLAG_NONE,
-            );
-            if add_result != libavif_sys::AVIF_RESULT_OK {
-                libavif_sys::avifImageDestroy(image);
-                libavif_sys::avifEncoderDestroy(encoder);
-                libavif_sys::avifRGBImageFreePixels(raw_rgb);
-                panic!("add_image error {}", add_result);
-            }
-            libavif_sys::avifImageDestroy(image);
-            libavif_sys::avifRGBImageFreePixels(raw_rgb);
-        }
-
-        let mut s = ::std::mem::MaybeUninit::<u8>::uninit();
-        let mut avif_output = libavif_sys::avifRWData {
-            data: s.as_mut_ptr(),
-            size: 0,
-        };
-        let raw_avif_output = &mut avif_output as *mut libavif_sys::avifRWData;
-        let finish_result = libavif_sys::avifEncoderFinish(encoder, raw_avif_output);
-        if finish_result != libavif_sys::AVIF_RESULT_OK {
+            let output_data = slice::from_raw_parts(avif_output.data, avif_output.size).to_vec();
             libavif_sys::avifRWDataFree(raw_avif_output);
             libavif_sys::avifEncoderDestroy(encoder);
-            panic!("avif_output error {}", finish_result);
+
+            return output_data;
         }
-        let mut output_data = slice::from_raw_parts(avif_output.data, avif_output.size).to_vec();
-        libavif_sys::avifRWDataFree(raw_avif_output);
-        libavif_sys::avifEncoderDestroy(encoder);
+    }));
 
-        let data = DartData {
-            ptr: output_data.as_mut_ptr(),
-            len: output_data.len() as i32,
-        };
-        mem::forget(output_data);
-
-        return data;
-    }
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn free_dart_data(data: DartData) {
-    drop(Vec::from_raw_parts(
-        data.ptr,
-        data.len as usize,
-        data.len as usize,
-    ));
-    drop(data);
+    return port;
 }
 
 fn _init_memory_decoder(ptr: *const u8, len: usize) -> *mut avifDecoder {
@@ -355,9 +350,3 @@ struct DecoderRef {
 
 unsafe impl Send for DecoderRef {}
 unsafe impl Sync for DecoderRef {}
-
-#[repr(C)]
-pub struct DartData {
-    ptr: *mut u8,
-    len: i32,
-}

@@ -2349,11 +2349,13 @@ class FlutterAvifFFI {
 
   set suboptarg(ffi.Pointer<ffi.Char> value) => _suboptarg.value = value;
 
-  DartData decode_single_frame_image(
+  int decode_single_frame_image(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _decode_single_frame_image(
+      port,
       ptr,
       len,
     );
@@ -2361,16 +2363,18 @@ class FlutterAvifFFI {
 
   late final _decode_single_frame_imagePtr = _lookup<
       ffi.NativeFunction<
-          DartData Function(ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
               ffi.UintPtr)>>('decode_single_frame_image');
   late final _decode_single_frame_image = _decode_single_frame_imagePtr
-      .asFunction<DartData Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 
-  DartData init_memory_decoder(
+  int init_memory_decoder(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _init_memory_decoder(
+      port,
       ptr,
       len,
     );
@@ -2378,16 +2382,18 @@ class FlutterAvifFFI {
 
   late final _init_memory_decoderPtr = _lookup<
       ffi.NativeFunction<
-          DartData Function(ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
               ffi.UintPtr)>>('init_memory_decoder');
   late final _init_memory_decoder = _init_memory_decoderPtr
-      .asFunction<DartData Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 
-  bool reset_decoder(
+  int reset_decoder(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _reset_decoder(
+      port,
       ptr,
       len,
     );
@@ -2395,16 +2401,18 @@ class FlutterAvifFFI {
 
   late final _reset_decoderPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Bool Function(
-              ffi.Pointer<ffi.UnsignedChar>, ffi.UintPtr)>>('reset_decoder');
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UintPtr)>>('reset_decoder');
   late final _reset_decoder = _reset_decoderPtr
-      .asFunction<bool Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 
-  bool dispose_decoder(
+  int dispose_decoder(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _dispose_decoder(
+      port,
       ptr,
       len,
     );
@@ -2412,16 +2420,18 @@ class FlutterAvifFFI {
 
   late final _dispose_decoderPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Bool Function(
-              ffi.Pointer<ffi.UnsignedChar>, ffi.UintPtr)>>('dispose_decoder');
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UintPtr)>>('dispose_decoder');
   late final _dispose_decoder = _dispose_decoderPtr
-      .asFunction<bool Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 
-  DartData get_next_frame(
+  int get_next_frame(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _get_next_frame(
+      port,
       ptr,
       len,
     );
@@ -2429,16 +2439,18 @@ class FlutterAvifFFI {
 
   late final _get_next_framePtr = _lookup<
       ffi.NativeFunction<
-          DartData Function(
-              ffi.Pointer<ffi.UnsignedChar>, ffi.UintPtr)>>('get_next_frame');
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UintPtr)>>('get_next_frame');
   late final _get_next_frame = _get_next_framePtr
-      .asFunction<DartData Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 
-  DartData encode_avif(
+  int encode_avif(
+    int port,
     ffi.Pointer<ffi.UnsignedChar> ptr,
     int len,
   ) {
     return _encode_avif(
+      port,
       ptr,
       len,
     );
@@ -2446,24 +2458,10 @@ class FlutterAvifFFI {
 
   late final _encode_avifPtr = _lookup<
       ffi.NativeFunction<
-          DartData Function(
-              ffi.Pointer<ffi.UnsignedChar>, ffi.UintPtr)>>('encode_avif');
+          ffi.Int64 Function(ffi.Int64, ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UintPtr)>>('encode_avif');
   late final _encode_avif = _encode_avifPtr
-      .asFunction<DartData Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
-
-  void free_dart_data(
-    DartData data,
-  ) {
-    return _free_dart_data(
-      data,
-    );
-  }
-
-  late final _free_dart_dataPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartData)>>(
-          'free_dart_data');
-  late final _free_dart_data =
-      _free_dart_dataPtr.asFunction<void Function(DartData)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.UnsignedChar>, int)>();
 }
 
 final class __mbstate_t extends ffi.Union {
@@ -3762,13 +3760,6 @@ typedef dev_t = __darwin_dev_t;
 typedef __darwin_dev_t = __int32_t;
 typedef mode_t = __darwin_mode_t;
 typedef __darwin_mode_t = __uint16_t;
-
-final class DartData extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> ptr;
-
-  @ffi.Int32()
-  external int len;
-}
 
 const int __bool_true_false_are_defined = 1;
 

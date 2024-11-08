@@ -3,21 +3,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct DartData {
-  uint8_t *ptr;
-  int32_t len;
-} DartData;
+int64_t decode_single_frame_image(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData decode_single_frame_image(const unsigned char *ptr, uintptr_t len);
+int64_t init_memory_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData init_memory_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t reset_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-bool reset_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t dispose_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-bool dispose_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t get_next_frame(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData get_next_frame(const unsigned char *ptr, uintptr_t len);
-
-struct DartData encode_avif(const unsigned char *ptr, uintptr_t len);
-
-void free_dart_data(struct DartData data);
+int64_t encode_avif(int64_t port, const unsigned char *ptr, uintptr_t len);

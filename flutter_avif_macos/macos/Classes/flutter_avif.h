@@ -9,19 +9,17 @@ typedef struct DartData
   int32_t len;
 } DartData;
 
-struct DartData decode_single_frame_image(const unsigned char *ptr, uintptr_t len);
+int64_t decode_single_frame_image(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData init_memory_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t init_memory_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-bool reset_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t reset_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-bool dispose_decoder(const unsigned char *ptr, uintptr_t len);
+int64_t dispose_decoder(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData get_next_frame(const unsigned char *ptr, uintptr_t len);
+int64_t get_next_frame(int64_t port, const unsigned char *ptr, uintptr_t len);
 
-struct DartData encode_avif(const unsigned char *ptr, uintptr_t len);
-
-void free_dart_data(struct DartData data);
+int64_t encode_avif(int64_t port, const unsigned char *ptr, uintptr_t len);
 
 static int64_t dummy_method_to_enforce_bundling(void)
 {
@@ -32,6 +30,5 @@ static int64_t dummy_method_to_enforce_bundling(void)
   dummy_var ^= ((int64_t)(void *)dispose_decoder);
   dummy_var ^= ((int64_t)(void *)get_next_frame);
   dummy_var ^= ((int64_t)(void *)encode_avif);
-  dummy_var ^= ((int64_t)(void *)free_dart_data);
   return dummy_var;
 }
