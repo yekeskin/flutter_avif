@@ -1,0 +1,6 @@
+framework module FlutterAvif {
+  umbrella header "Export.h"
+
+  export *
+  module * { export * }
+}
