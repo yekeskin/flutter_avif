@@ -3,7 +3,6 @@ import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.
 
 class FlutterAvifMacos extends FlutterAvifPlatform {
   static void registerWith() {
-    FlutterAvifPlatform.api = FlutterAvifImpl(
-        DynamicLibrary.open("FlutterAvif.framework/FlutterAvif"));
+    FlutterAvifPlatform.api = FlutterAvifImpl(DynamicLibrary.executable());
   }
 }
