@@ -1,6 +1,6 @@
 import 'dart:js' as js;
+import 'dart:typed_data';
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'avif_encoder.dart' as wasm_encoder;
 import 'avif_decoder.dart' as wasm_decoder;
 
@@ -58,24 +58,6 @@ class FlutterAvifWebImpl extends FlutterAvif {
   }
 
   @override
-  FlutterRustBridgeTaskConstMeta get kEncodeAvifConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "encode_avif",
-        argNames: [
-          "width",
-          "height",
-          "speed",
-          "maxThreads",
-          "timescale",
-          "maxQuantizer",
-          "minQuantizer",
-          "maxQuantizerAlpha",
-          "minQuantizerAlpha",
-          "imageSequence"
-        ],
-      );
-
-  @override
   Future<Frame> decodeSingleFrameImage({
     required Uint8List avifBytes,
     hint,
@@ -126,26 +108,6 @@ class FlutterAvifWebImpl extends FlutterAvif {
 
     return await wasm_decoder.resetDecoder(key);
   }
-
-  @override
-  FlutterRustBridgeTaskConstMeta get kDecodeSingleFrameImageConstMeta =>
-      throw UnimplementedError();
-
-  @override
-  FlutterRustBridgeTaskConstMeta get kDisposeDecoderConstMeta =>
-      throw UnimplementedError();
-
-  @override
-  FlutterRustBridgeTaskConstMeta get kGetNextFrameConstMeta =>
-      throw UnimplementedError();
-
-  @override
-  FlutterRustBridgeTaskConstMeta get kInitMemoryDecoderConstMeta =>
-      throw UnimplementedError();
-
-  @override
-  FlutterRustBridgeTaskConstMeta get kResetDecoderConstMeta =>
-      throw UnimplementedError();
 }
 
 Future<DecodeData> decodeImage(Uint8List data, int orientation) async {
