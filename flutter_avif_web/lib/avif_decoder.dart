@@ -1,18 +1,14 @@
 @JS()
 library MODULE;
 
+import 'dart:async';
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+import 'dart:typed_data';
 import 'dart:ui_web';
 
+import 'package:web/web.dart' as web;
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart';
-
-import 'dart:async';
-import 'dart:html';
-import 'dart:js_util';
-import 'dart:typed_data';
-
-import 'package:js/js.dart';
 
 Completer? _scriptLoaderCompleter;
 
@@ -27,59 +23,59 @@ Future<void> loadScript() async {
   _scriptLoaderCompleter = Completer();
 
   final assetManager = AssetManager();
-  final script = ScriptElement();
+  final script = web.HTMLScriptElement();
   script.src = assetManager
       .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.loader.js');
-  document.head!.append(script);
+  web.document.head!.append(script);
   await script.onLoad.first;
 
-  final initBindgen = promiseToFuture(_initBindgen(assetManager
-      .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.worker.js')));
+  final initBindgen = _initBindgen(assetManager
+      .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.worker.js')).toDart;
   await initBindgen;
 
   _scriptLoaderCompleter!.complete();
 }
 
 Future<Frame> decodeSingleFrameImage(Uint8List data) async {
-  final JSObject decoded = await promiseToFuture(_decodeSingleFrameImage(data));
+  final JSObject decoded = await _decodeSingleFrameImage(data.toJS).toDart;
 
   return Frame(
-    data: decoded.getProperty('data'.toJS) as Uint8List,
-    duration: decoded.getProperty('duration'.toJS) as double,
-    width: decoded.getProperty('width'.toJS) as int,
-    height: decoded.getProperty('height'.toJS) as int,
+    data: (decoded.getProperty('data'.toJS) as JSUint8Array).toDart,
+    duration: (decoded.getProperty('duration'.toJS) as JSNumber).toDartDouble,
+    width: (decoded.getProperty('width'.toJS) as JSNumber).toDartInt,
+    height: (decoded.getProperty('height'.toJS) as JSNumber).toDartInt,
   );
 }
 
 Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
-  final JSObject decoded = await promiseToFuture(_initMemoryDecoder(key, data));
+  final JSObject decoded = await _initMemoryDecoder(key, data.toJS).toDart;
 
   return AvifInfo(
-    width: decoded.getProperty('width'.toJS) as int,
-    height: decoded.getProperty('height'.toJS) as int,
-    imageCount: decoded.getProperty('imageCount'.toJS) as int,
-    duration: decoded.getProperty('duration'.toJS) as double,
+    width: (decoded.getProperty('width'.toJS) as JSNumber).toDartInt,
+    height: (decoded.getProperty('height'.toJS) as JSNumber).toDartInt,
+    imageCount: (decoded.getProperty('imageCount'.toJS) as JSNumber).toDartInt,
+    duration: (decoded.getProperty('duration'.toJS) as JSNumber).toDartDouble,
   );
 }
 
 Future<Frame> getNextFrame(String key) async {
-  final JSObject decoded = await promiseToFuture(_getNextFrame(key));
+  final JSObject decoded = await _getNextFrame(key).toDart;
 
   return Frame(
-    data: decoded.getProperty('data'.toJS) as Uint8List,
-    duration: decoded.getProperty('duration'.toJS) as double,
-    width: decoded.getProperty('width'.toJS) as int,
-    height: decoded.getProperty('height'.toJS) as int,
+    data: (decoded.getProperty('data'.toJS) as JSUint8Array).toDart,
+    duration: (decoded.getProperty('duration'.toJS) as JSNumber).toDartDouble,
+    width: (decoded.getProperty('width'.toJS) as JSNumber).toDartInt,
+    height: (decoded.getProperty('height'.toJS) as JSNumber).toDartInt,
   );
 }
 
 Future<bool> resetDecoder(String key) async {
-  await promiseToFuture(_resetDecoder(key));
+  await _resetDecoder(key).toDart;
   return true;
 }
 
 Future<bool> disposeDecoder(String key) async {
-  await promiseToFuture(_disposeDecoder(key));
+  await _disposeDecoder(key).toDart;
   return true;
 }
 
@@ -87,13 +83,13 @@ Future<bool> disposeDecoder(String key) async {
 external JSPromise _initBindgen(String workerPath);
 
 @JS('window.avif_decoder.decodeSingleFrameImage')
-external JSPromise _decodeSingleFrameImage(Uint8List data);
+external JSPromise<JSObject> _decodeSingleFrameImage(JSUint8Array data);
 
 @JS('window.avif_decoder.initMemoryDecoder')
-external JSPromise _initMemoryDecoder(String key, Uint8List data);
+external JSPromise<JSObject> _initMemoryDecoder(String key, JSUint8Array data);
 
 @JS('window.avif_decoder.getNextFrame')
-external JSPromise _getNextFrame(String key);
+external JSPromise<JSObject> _getNextFrame(String key);
 
 @JS('window.avif_decoder.resetDecoder')
 external JSPromise _resetDecoder(String key);
