@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'flutter_avif_bridge.io.dart'
-    if (dart.library.html) 'flutter_avif_bridge.web.dart';
+    if (dart.library.js_interop) 'flutter_avif_bridge.web.dart';
 export 'flutter_avif_bridge.io.dart'
-    if (dart.library.html) 'flutter_avif_bridge.web.dart';
+    if (dart.library.js_interop) 'flutter_avif_bridge.web.dart';
 
 abstract class FlutterAvifPlatform {
   static late final FlutterAvif api;
