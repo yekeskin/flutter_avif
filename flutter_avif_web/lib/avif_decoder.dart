@@ -30,7 +30,7 @@ Future<void> loadScript() async {
   await script.onLoad.first;
 
   final initBindgen = _initBindgen(assetManager
-      .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.worker.js')).toDart;
+      .getAssetUrl('packages/flutter_avif_web/web/avif_decoder.worker.js').toJS).toDart;
   await initBindgen;
 
   _scriptLoaderCompleter!.complete();
@@ -48,7 +48,7 @@ Future<Frame> decodeSingleFrameImage(Uint8List data) async {
 }
 
 Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
-  final JSObject decoded = await _initMemoryDecoder(key, data.toJS).toDart;
+  final JSObject decoded = await _initMemoryDecoder(key.toJS, data.toJS).toDart;
 
   return AvifInfo(
     width: (decoded.getProperty('width'.toJS) as JSNumber).toDartInt,
@@ -59,7 +59,7 @@ Future<AvifInfo> initMemoryDecoder(String key, Uint8List data) async {
 }
 
 Future<Frame> getNextFrame(String key) async {
-  final JSObject decoded = await _getNextFrame(key).toDart;
+  final JSObject decoded = await _getNextFrame(key.toJS).toDart;
 
   return Frame(
     data: (decoded.getProperty('data'.toJS) as JSUint8Array).toDart,
@@ -70,29 +70,29 @@ Future<Frame> getNextFrame(String key) async {
 }
 
 Future<bool> resetDecoder(String key) async {
-  await _resetDecoder(key).toDart;
+  await _resetDecoder(key.toJS).toDart;
   return true;
 }
 
 Future<bool> disposeDecoder(String key) async {
-  await _disposeDecoder(key).toDart;
+  await _disposeDecoder(key.toJS).toDart;
   return true;
 }
 
 @JS('window.avifDecoderLoad')
-external JSPromise _initBindgen(String workerPath);
+external JSPromise _initBindgen(JSString workerPath);
 
 @JS('window.avif_decoder.decodeSingleFrameImage')
 external JSPromise<JSObject> _decodeSingleFrameImage(JSUint8Array data);
 
 @JS('window.avif_decoder.initMemoryDecoder')
-external JSPromise<JSObject> _initMemoryDecoder(String key, JSUint8Array data);
+external JSPromise<JSObject> _initMemoryDecoder(JSString key, JSUint8Array data);
 
 @JS('window.avif_decoder.getNextFrame')
-external JSPromise<JSObject> _getNextFrame(String key);
+external JSPromise<JSObject> _getNextFrame(JSString key);
 
 @JS('window.avif_decoder.resetDecoder')
-external JSPromise _resetDecoder(String key);
+external JSPromise _resetDecoder(JSString key);
 
 @JS('window.avif_decoder.disposeDecoder')
-external JSPromise _disposeDecoder(String key);
+external JSPromise _disposeDecoder(JSString key);

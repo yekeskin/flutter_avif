@@ -30,7 +30,7 @@ Future<void> loadScript() async {
   await script.onLoad.first;
 
   final initBindgen = _initBindgen(assetManager
-      .getAssetUrl('packages/flutter_avif_web/web/avif_encoder.worker.js')).toDart;
+      .getAssetUrl('packages/flutter_avif_web/web/avif_encoder.worker.js').toJS).toDart;
   await initBindgen;
 
   _scriptLoaderCompleter!.complete();
@@ -68,7 +68,7 @@ Future<Uint8List> encodeAvif({
 }
 
 Future<DecodeData> decode(Uint8List data, int orientation) async {
-  final JSObject decoded = await _decode(data.toJS, orientation).toDart;
+  final JSObject decoded = await _decode(data.toJS, orientation.toJS).toDart;
   final rgbaData = decoded.getProperty('data'.toJS) as JSArray<JSNumber>;
   final durations = decoded.getProperty('durations'.toJS) as JSArray<JSNumber>;
 
@@ -81,7 +81,7 @@ Future<DecodeData> decode(Uint8List data, int orientation) async {
 }
 
 @JS('window.avifEncoderLoad')
-external JSPromise _initBindgen(String workerPath);
+external JSPromise _initBindgen(JSString workerPath);
 
 @JS('window.avif_encoder.encode')
 external JSPromise<JSUint8Array> _encode(
@@ -94,5 +94,5 @@ external JSPromise<JSUint8Array> _encode(
 @JS('window.avif_encoder.decode')
 external JSPromise<JSObject> _decode(
   JSUint8Array data,
-  int orientation,
+  JSNumber orientation,
 );
