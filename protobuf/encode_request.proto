@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package models;
+
+import "encode_frame.proto";
+
+message EncodeRequest {
+    uint32 width = 1;
+    uint32 height = 2;
+    sint32 speed = 3;
+    sint32 max_threads = 4;
+    uint32 timescale = 5;
+    sint32 max_quantizer = 6;
+    sint32 min_quantizer = 7;
+    sint32 max_quantizer_alpha = 8;
+    sint32 min_quantizer_alpha = 9;
+    repeated EncodeFrame image_list = 10;
+    bytes exif_data = 11;
+}

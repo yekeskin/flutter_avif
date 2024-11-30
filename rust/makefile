@@ -28,5 +28,5 @@ windows:
 	cargo build --release
 	cp target/release/flutter_avif.dll ../flutter_avif_windows/windows/flutter_avif.dll
 
-codegen:
-	flutter_rust_bridge_codegen --rust-input src/api.rs --dart-output ../flutter_avif_platform_interface/lib/bridge_generated.io.dart --c-output ../flutter_avif_ios/ios/Classes/bridge_generated.h --extra-c-output-path ../flutter_avif_macos/macos/Classes/
+bindgen:
+	cbindgen --config cbindgen.toml --crate flutter_avif --lang c --output ../flutter_avif_platform_interface/headers/flutter_avif.h

@@ -1,0 +1,6 @@
+output: 'lib/flutter_avif_ffi.dart'
+headers:
+  entry-points:
+    - 'headers/**.h'
+name: 'FlutterAvifFFI'
+ignore-source-errors: true

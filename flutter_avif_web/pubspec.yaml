@@ -14,7 +14,6 @@ dependencies:
     sdk: flutter
   flutter_avif_platform_interface: ^2.5.0
   js: ^0.6.7
-  flutter_rust_bridge: "1.82.3"
 
 dev_dependencies:
   flutter_test:
