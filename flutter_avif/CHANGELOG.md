@@ -1,3 +1,9 @@
+## 3.0.0
+
+* Require Dart >= 3.4.0 and Flutter >= 3.22.0
+* Migrate to package:web to support wasm compilation
+* Remove flutter_rust_bridge dependency
+
 ## 2.5.0
 
 * Add CachedNetworkAvifImage and CachedNetworkAvifImageProvider
