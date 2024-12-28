@@ -167,15 +167,17 @@ class _AvifAnimationState extends State<AvifAnimation>
 
   /// Get unique image string from [ImageProvider]
   String _getImageKey(ImageProvider provider) {
-    return provider is NetworkImage
+   return provider is NetworkImage
         ? provider.url
         : provider is AssetImage
             ? provider.assetName
-            : provider is FileImage
-                ? provider.file.path
-                : provider is MemoryImage
-                    ? provider.bytes.toString()
-                    : "";
+            : provider is AssetAvifImage
+                ? provider.asset
+                : provider is FileImage
+                    ? provider.file.path
+                    : provider is MemoryImage
+                        ? provider.bytes.toString()
+                        : "";
   }
 
   /// Calculates the [_frameIndex] based on the [AnimationController] value.
