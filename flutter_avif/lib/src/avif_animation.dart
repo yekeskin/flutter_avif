@@ -167,15 +167,13 @@ class _AvifAnimationState extends State<AvifAnimation>
 
   /// Get unique image string from [ImageProvider]
   String _getImageKey(ImageProvider provider) {
-   return provider is NetworkImage
+   return provider is NetworkAvifImage
         ? provider.url
-        : provider is AssetImage
-            ? provider.assetName
             : provider is AssetAvifImage
                 ? provider.asset
-                : provider is FileImage
+                : provider is FileAvifImage
                     ? provider.file.path
-                    : provider is MemoryImage
+                    : provider is MemoryAvifImage
                         ? provider.bytes.toString()
                         : "";
   }
