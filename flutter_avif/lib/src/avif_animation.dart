@@ -39,7 +39,7 @@ class AvifAnimation extends StatefulWidget {
 
   /// Creates a widget that displays a controllable avif.
   const AvifAnimation({
-    Key? key,
+    super.key,
     required this.image,
     this.controller,
     this.loadingBuilder,
@@ -56,7 +56,7 @@ class AvifAnimation extends StatefulWidget {
     this.centerSlice,
     this.matchTextDirection = false,
     this.useCache = true,
-  }) : super(key: key);
+  });
 
   @override
   State<AvifAnimation> createState() => _AvifAnimationState();
@@ -167,15 +167,15 @@ class _AvifAnimationState extends State<AvifAnimation>
 
   /// Get unique image string from [ImageProvider]
   String _getImageKey(ImageProvider provider) {
-   return provider is NetworkAvifImage
+    return provider is NetworkAvifImage
         ? provider.url
-            : provider is AssetAvifImage
-                ? provider.asset
-                : provider is FileAvifImage
-                    ? provider.file.path
-                    : provider is MemoryAvifImage
-                        ? provider.bytes.toString()
-                        : "";
+        : provider is AssetAvifImage
+            ? provider.asset
+            : provider is FileAvifImage
+                ? provider.file.path
+                : provider is MemoryAvifImage
+                    ? provider.bytes.toString()
+                    : "";
   }
 
   /// Calculates the [_frameIndex] based on the [AnimationController] value.

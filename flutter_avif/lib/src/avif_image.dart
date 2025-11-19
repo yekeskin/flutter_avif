@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/semantics.dart';
-import 'dart:ui' as ui;
-import 'package:http/http.dart' as http;
 import 'package:flutter_avif_platform_interface/flutter_avif_platform_interface.dart'
     as avif_platform;
+import 'package:http/http.dart' as http;
 
 /// Used to support both Flutter 2.x.x and 3.x.x
 ///
@@ -46,7 +46,7 @@ class AvifImage extends StatefulWidget {
   State<AvifImage> createState() => AvifImageState();
 
   const AvifImage({
-    Key? key,
+    super.key,
     required this.image,
     double scale = 1.0,
     this.width,
@@ -69,11 +69,11 @@ class AvifImage extends StatefulWidget {
     this.gaplessPlayback = false,
     this.frameBuilder,
     this.loadingBuilder,
-  }) : super(key: key);
+  });
 
   AvifImage.file(
     File file, {
-    Key? key,
+    super.key,
     double scale = 1.0,
     this.width,
     this.height,
@@ -105,12 +105,14 @@ class AvifImage extends StatefulWidget {
                 scale: scale,
                 overrideDurationMs: overrideDurationMs,
               ),
-        loadingBuilder = null,
-        super(key: key);
+        loadingBuilder = null {
+    // TODO: implement AvifImage.file
+    throw UnimplementedError();
+  }
 
   AvifImage.asset(
     String name, {
-    Key? key,
+    super.key,
     double scale = 1.0,
     this.width,
     this.height,
@@ -144,12 +146,11 @@ class AvifImage extends StatefulWidget {
                 overrideDurationMs: overrideDurationMs,
                 bundle: bundle,
               ),
-        loadingBuilder = null,
-        super(key: key);
+        loadingBuilder = null;
 
   AvifImage.network(
     String url, {
-    Key? key,
+    super.key,
     double scale = 1.0,
     this.width,
     this.height,
@@ -173,7 +174,7 @@ class AvifImage extends StatefulWidget {
     this.frameBuilder,
     this.loadingBuilder,
     Map<String, String>? headers,
-  })  : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
+  }) : image = avif_platform.FlutterAvifPlatform.useNativeDecoder
             ? NetworkImage(
                 url,
                 scale: scale,
@@ -184,12 +185,11 @@ class AvifImage extends StatefulWidget {
                 scale: scale,
                 overrideDurationMs: overrideDurationMs,
                 headers: headers,
-              ),
-        super(key: key);
+              );
 
   AvifImage.memory(
     Uint8List bytes, {
-    Key? key,
+    super.key,
     double scale = 1.0,
     this.width,
     this.height,
@@ -221,8 +221,7 @@ class AvifImage extends StatefulWidget {
                 scale: scale,
                 overrideDurationMs: overrideDurationMs,
               ),
-        loadingBuilder = null,
-        super(key: key);
+        loadingBuilder = null;
 }
 
 class AvifImageState extends State<AvifImage> with WidgetsBindingObserver {
@@ -810,7 +809,7 @@ class NetworkAvifImage extends ImageProvider<NetworkAvifImage> {
     headers?.forEach((String name, String value) {
       httpRequest.headers[name.toLowerCase()] = value;
     });
-    if(!httpRequest.headers.containsKey("accept")) {
+    if (!httpRequest.headers.containsKey("accept")) {
       httpRequest.headers["accept"] = "image/avif";
     }
 
