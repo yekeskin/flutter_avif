@@ -991,14 +991,14 @@ class MultiFrameAvifCodec implements AvifCodec {
   Future<AvifFrameInfo> getNextFrame() async {
     final Completer<AvifFrameInfo> completer = Completer<AvifFrameInfo>.sync();
     final String? error =
-        _getNextFrame((ui.Image? image, int durationMilliseconds) {
+        _getNextFrame((ui.Image? image, int durationMicroseconds) {
       if (image == null) {
         completer.completeError(Exception(
             'Codec failed to produce an image, possibly due to invalid image data.'));
       } else {
         completer.complete(AvifFrameInfo(
           image: image,
-          duration: Duration(milliseconds: durationMilliseconds),
+          duration: Duration(microseconds: durationMicroseconds),
         ));
       }
     });
@@ -1009,6 +1009,7 @@ class MultiFrameAvifCodec implements AvifCodec {
   }
 
   String? _getNextFrame(void Function(ui.Image?, int) callback) {
+    const double secondsToMicroseconds = 1000000.0;
     try {
       final avifFfi = avif_platform.FlutterAvifPlatform.api;
       avifFfi.getNextFrame(key: _key).then((frame) {
@@ -1018,7 +1019,7 @@ class MultiFrameAvifCodec implements AvifCodec {
           frame.height,
           ui.PixelFormat.rgba8888,
           (image) {
-            callback(image, (frame.duration * 1000).round());
+            callback(image, (frame.duration * secondsToMicroseconds).round());
           },
         );
       });
