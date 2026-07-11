@@ -1,110 +1,158 @@
-//
-//  Generated code. Do not modify.
-//  source: frame.proto
-//
-// @dart = 2.12
+import 'dart:typed_data';
 
-// ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+import 'wire_format.dart';
 
-import 'dart:core' as $core;
+/// A decoded RGBA frame exchanged with the native bridge.
+class Frame {
+  Frame({List<int>? data, double? duration, int? width, int? height})
+      : _data = data ?? Uint8List(0),
+        _duration = duration ?? 0,
+        _width = width ?? 0,
+        _height = height ?? 0,
+        _hasData = data != null,
+        _hasDuration = duration != null,
+        _hasWidth = width != null,
+        _hasHeight = height != null;
 
-import 'package:protobuf/protobuf.dart' as $pb;
+  factory Frame.fromBuffer(List<int> input) => Frame()..mergeFromBuffer(input);
 
-class Frame extends $pb.GeneratedMessage {
-  factory Frame({
-    $core.List<$core.int>? data,
-    $core.double? duration,
-    $core.int? width,
-    $core.int? height,
-  }) {
-    final $result = create();
-    if (data != null) {
-      $result.data = data;
-    }
-    if (duration != null) {
-      $result.duration = duration;
-    }
-    if (width != null) {
-      $result.width = width;
-    }
-    if (height != null) {
-      $result.height = height;
-    }
-    return $result;
+  List<int> _data;
+  double _duration;
+  int _width;
+  int _height;
+  bool _hasData;
+  bool _hasDuration;
+  bool _hasWidth;
+  bool _hasHeight;
+
+  List<int> get data => _data;
+  set data(List<int> value) {
+    _data = value;
+    _hasData = true;
   }
-  Frame._() : super();
-  factory Frame.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Frame.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Frame', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
-    ..a<$core.List<$core.int>>(1, _omitFieldNames ? '' : 'data', $pb.PbFieldType.OY)
-    ..a<$core.double>(2, _omitFieldNames ? '' : 'duration', $pb.PbFieldType.OD)
-    ..a<$core.int>(3, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OU3)
-    ..a<$core.int>(4, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OU3)
-    ..hasRequiredFields = false
-  ;
+  double get duration => _duration;
+  set duration(double value) {
+    _duration = value;
+    _hasDuration = true;
+  }
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  Frame clone() => Frame()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  Frame copyWith(void Function(Frame) updates) => super.copyWith((message) => updates(message as Frame)) as Frame;
+  int get width => _width;
+  set width(int value) {
+    _width = value;
+    _hasWidth = true;
+  }
 
-  $pb.BuilderInfo get info_ => _i;
+  int get height => _height;
+  set height(int value) {
+    _height = value;
+    _hasHeight = true;
+  }
 
-  @$core.pragma('dart2js:noInline')
-  static Frame create() => Frame._();
-  Frame createEmptyInstance() => create();
-  static $pb.PbList<Frame> createRepeated() => $pb.PbList<Frame>();
-  @$core.pragma('dart2js:noInline')
-  static Frame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Frame>(create);
-  static Frame? _defaultInstance;
+  bool hasData() => _hasData;
+  bool hasDuration() => _hasDuration;
+  bool hasWidth() => _hasWidth;
+  bool hasHeight() => _hasHeight;
 
-  @$pb.TagNumber(1)
-  $core.List<$core.int> get data => $_getN(0);
-  @$pb.TagNumber(1)
-  set data($core.List<$core.int> v) { $_setBytes(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasData() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearData() => clearField(1);
+  void clearData() {
+    _data = Uint8List(0);
+    _hasData = false;
+  }
 
-  @$pb.TagNumber(2)
-  $core.double get duration => $_getN(1);
-  @$pb.TagNumber(2)
-  set duration($core.double v) { $_setDouble(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasDuration() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearDuration() => clearField(2);
+  void clearDuration() {
+    _duration = 0;
+    _hasDuration = false;
+  }
 
-  @$pb.TagNumber(3)
-  $core.int get width => $_getIZ(2);
-  @$pb.TagNumber(3)
-  set width($core.int v) { $_setUnsignedInt32(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasWidth() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearWidth() => clearField(3);
+  void clearWidth() {
+    _width = 0;
+    _hasWidth = false;
+  }
 
-  @$pb.TagNumber(4)
-  $core.int get height => $_getIZ(3);
-  @$pb.TagNumber(4)
-  set height($core.int v) { $_setUnsignedInt32(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasHeight() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearHeight() => clearField(4);
+  void clearHeight() {
+    _height = 0;
+    _hasHeight = false;
+  }
+
+  static Frame create() => Frame();
+  Frame createEmptyInstance() => Frame();
+  static List<Frame> createRepeated() => <Frame>[];
+  static final Frame _defaultInstance = Frame();
+  static Frame getDefault() => _defaultInstance;
+
+  Frame clone() => Frame(
+        data: Uint8List.fromList(_data),
+        duration: _duration,
+        width: _width,
+        height: _height,
+      );
+
+  Frame copyWith(void Function(Frame) updates) {
+    final copy = clone();
+    updates(copy);
+    return copy;
+  }
+
+  void mergeFromMessage(Frame other) {
+    if (other.hasData()) data = Uint8List.fromList(other.data);
+    if (other.hasDuration()) duration = other.duration;
+    if (other.hasWidth()) width = other.width;
+    if (other.hasHeight()) height = other.height;
+  }
+
+  void mergeFromBuffer(List<int> input) {
+    final reader = WireReader(input);
+    while (!reader.isAtEnd) {
+      final tag = reader.readTag();
+      final field = tag >> 3;
+      final wireType = tag & 7;
+      switch (field) {
+        case 1:
+          reader.requireWireType(wireType, 2);
+          data = reader.readBytes();
+        case 2:
+          reader.requireWireType(wireType, 1);
+          duration = reader.readDouble();
+        case 3:
+          reader.requireWireType(wireType, 0);
+          width = reader.readUint32();
+        case 4:
+          reader.requireWireType(wireType, 0);
+          height = reader.readUint32();
+        default:
+          reader.skipField(wireType);
+      }
+    }
+  }
+
+  Uint8List writeToBuffer() {
+    var length = 0;
+    if (_data.isNotEmpty) length += bytesFieldSize(1, _data.length);
+    if (_duration != 0) length += 1 + 8;
+    if (_width != 0) length += varintFieldSize(3, _width);
+    if (_height != 0) length += varintFieldSize(4, _height);
+
+    final writer = WireWriter(length);
+    if (_data.isNotEmpty) {
+      writer
+        ..writeTag(1, 2)
+        ..writeBytes(_data);
+    }
+    if (_duration != 0) {
+      writer
+        ..writeTag(2, 1)
+        ..writeDouble(_duration);
+    }
+    if (_width != 0) {
+      writer
+        ..writeTag(3, 0)
+        ..writeVarint(_width);
+    }
+    if (_height != 0) {
+      writer
+        ..writeTag(4, 0)
+        ..writeVarint(_height);
+    }
+    return writer.takeBytes();
+  }
 }
-
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

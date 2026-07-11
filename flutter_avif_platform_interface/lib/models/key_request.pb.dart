@@ -1,82 +1,80 @@
-//
-//  Generated code. Do not modify.
-//  source: key_request.proto
-//
-// @dart = 2.12
+import 'dart:convert';
+import 'dart:typed_data';
 
-// ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+import 'wire_format.dart';
 
-import 'dart:core' as $core;
+/// Decoder lookup key plus optional AVIF input bytes.
+class KeyRequest {
+  KeyRequest({String? key, List<int>? data})
+      : key = key ?? '',
+        data = data ?? Uint8List(0);
 
-import 'package:protobuf/protobuf.dart' as $pb;
+  factory KeyRequest.fromBuffer(List<int> input) =>
+      KeyRequest()..mergeFromBuffer(input);
 
-class KeyRequest extends $pb.GeneratedMessage {
-  factory KeyRequest({
-    $core.String? key,
-    $core.List<$core.int>? data,
-  }) {
-    final $result = create();
-    if (key != null) {
-      $result.key = key;
-    }
-    if (data != null) {
-      $result.data = data;
-    }
-    return $result;
+  String key;
+  List<int> data;
+
+  bool hasKey() => key.isNotEmpty;
+  bool hasData() => data.isNotEmpty;
+  void clearKey() => key = '';
+  void clearData() => data = Uint8List(0);
+
+  static KeyRequest create() => KeyRequest();
+  KeyRequest createEmptyInstance() => KeyRequest();
+  static List<KeyRequest> createRepeated() => <KeyRequest>[];
+  static final KeyRequest _defaultInstance = KeyRequest();
+  static KeyRequest getDefault() => _defaultInstance;
+
+  KeyRequest clone() => KeyRequest(key: key, data: Uint8List.fromList(data));
+
+  KeyRequest copyWith(void Function(KeyRequest) updates) {
+    final copy = clone();
+    updates(copy);
+    return copy;
   }
-  KeyRequest._() : super();
-  factory KeyRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory KeyRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'KeyRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'key')
-    ..a<$core.List<$core.int>>(2, _omitFieldNames ? '' : 'data', $pb.PbFieldType.OY)
-    ..hasRequiredFields = false
-  ;
+  void mergeFromMessage(KeyRequest other) {
+    if (other.key.isNotEmpty) key = other.key;
+    if (other.data.isNotEmpty) data = Uint8List.fromList(other.data);
+  }
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  KeyRequest clone() => KeyRequest()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  KeyRequest copyWith(void Function(KeyRequest) updates) => super.copyWith((message) => updates(message as KeyRequest)) as KeyRequest;
+  Uint8List writeToBuffer() {
+    final encodedKey = key.isEmpty ? Uint8List(0) : utf8.encode(key);
+    var length = 0;
+    if (encodedKey.isNotEmpty) length += bytesFieldSize(1, encodedKey.length);
+    if (data.isNotEmpty) length += bytesFieldSize(2, data.length);
 
-  $pb.BuilderInfo get info_ => _i;
+    final writer = WireWriter(length);
+    if (encodedKey.isNotEmpty) {
+      writer
+        ..writeTag(1, 2)
+        ..writeBytes(encodedKey);
+    }
+    if (data.isNotEmpty) {
+      writer
+        ..writeTag(2, 2)
+        ..writeBytes(data);
+    }
+    return writer.takeBytes();
+  }
 
-  @$core.pragma('dart2js:noInline')
-  static KeyRequest create() => KeyRequest._();
-  KeyRequest createEmptyInstance() => create();
-  static $pb.PbList<KeyRequest> createRepeated() => $pb.PbList<KeyRequest>();
-  @$core.pragma('dart2js:noInline')
-  static KeyRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<KeyRequest>(create);
-  static KeyRequest? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get key => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set key($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasKey() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearKey() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.List<$core.int> get data => $_getN(1);
-  @$pb.TagNumber(2)
-  set data($core.List<$core.int> v) { $_setBytes(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasData() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearData() => clearField(2);
+  void mergeFromBuffer(List<int> input) {
+    final reader = WireReader(input);
+    while (!reader.isAtEnd) {
+      final tag = reader.readTag();
+      final field = tag >> 3;
+      final wireType = tag & 7;
+      switch (field) {
+        case 1:
+          reader.requireWireType(wireType, 2);
+          key = reader.readString();
+        case 2:
+          reader.requireWireType(wireType, 2);
+          data = reader.readBytes();
+        default:
+          reader.skipField(wireType);
+      }
+    }
+  }
 }
-
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
