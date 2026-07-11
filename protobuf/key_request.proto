@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package models;
-
-message KeyRequest {
-    string key = 1;
-    bytes data = 2;
-}

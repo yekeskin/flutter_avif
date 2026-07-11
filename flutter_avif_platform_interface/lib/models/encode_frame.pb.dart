@@ -1,82 +1,92 @@
-//
-//  Generated code. Do not modify.
-//  source: encode_frame.proto
-//
-// @dart = 2.12
+import 'dart:typed_data';
 
-// ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+import 'wire_format.dart';
 
-import 'dart:core' as $core;
+/// An RGBA frame supplied to the AVIF encoder.
+class EncodeFrame {
+  EncodeFrame({List<int>? data, int? durationInTimescale})
+      : data = data ?? Uint8List(0),
+        durationInTimescale = durationInTimescale ?? 0;
 
-import 'package:protobuf/protobuf.dart' as $pb;
+  factory EncodeFrame.fromBuffer(List<int> input) =>
+      EncodeFrame()..mergeFromBuffer(input);
 
-class EncodeFrame extends $pb.GeneratedMessage {
-  factory EncodeFrame({
-    $core.List<$core.int>? data,
-    $core.int? durationInTimescale,
-  }) {
-    final $result = create();
-    if (data != null) {
-      $result.data = data;
-    }
-    if (durationInTimescale != null) {
-      $result.durationInTimescale = durationInTimescale;
-    }
-    return $result;
+  List<int> data;
+  int durationInTimescale;
+
+  bool hasData() => data.isNotEmpty;
+  bool hasDurationInTimescale() => durationInTimescale != 0;
+  void clearData() => data = Uint8List(0);
+  void clearDurationInTimescale() => durationInTimescale = 0;
+
+  static EncodeFrame create() => EncodeFrame();
+  EncodeFrame createEmptyInstance() => EncodeFrame();
+  static List<EncodeFrame> createRepeated() => <EncodeFrame>[];
+  static final EncodeFrame _defaultInstance = EncodeFrame();
+  static EncodeFrame getDefault() => _defaultInstance;
+
+  EncodeFrame clone() => EncodeFrame(
+        data: Uint8List.fromList(data),
+        durationInTimescale: durationInTimescale,
+      );
+
+  EncodeFrame copyWith(void Function(EncodeFrame) updates) {
+    final copy = clone();
+    updates(copy);
+    return copy;
   }
-  EncodeFrame._() : super();
-  factory EncodeFrame.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory EncodeFrame.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'EncodeFrame', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
-    ..a<$core.List<$core.int>>(1, _omitFieldNames ? '' : 'data', $pb.PbFieldType.OY)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'durationInTimescale', $pb.PbFieldType.OU3)
-    ..hasRequiredFields = false
-  ;
+  void mergeFromMessage(EncodeFrame other) {
+    if (other.data.isNotEmpty) data = Uint8List.fromList(other.data);
+    if (other.durationInTimescale != 0) {
+      durationInTimescale = other.durationInTimescale;
+    }
+  }
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  EncodeFrame clone() => EncodeFrame()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  EncodeFrame copyWith(void Function(EncodeFrame) updates) => super.copyWith((message) => updates(message as EncodeFrame)) as EncodeFrame;
+  int get wireSize {
+    var length = 0;
+    if (data.isNotEmpty) length += bytesFieldSize(1, data.length);
+    if (durationInTimescale != 0) {
+      length += varintFieldSize(2, durationInTimescale);
+    }
+    return length;
+  }
 
-  $pb.BuilderInfo get info_ => _i;
+  void writeTo(WireWriter writer) {
+    if (data.isNotEmpty) {
+      writer
+        ..writeTag(1, 2)
+        ..writeBytes(data);
+    }
+    if (durationInTimescale != 0) {
+      writer
+        ..writeTag(2, 0)
+        ..writeVarint(durationInTimescale);
+    }
+  }
 
-  @$core.pragma('dart2js:noInline')
-  static EncodeFrame create() => EncodeFrame._();
-  EncodeFrame createEmptyInstance() => create();
-  static $pb.PbList<EncodeFrame> createRepeated() => $pb.PbList<EncodeFrame>();
-  @$core.pragma('dart2js:noInline')
-  static EncodeFrame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<EncodeFrame>(create);
-  static EncodeFrame? _defaultInstance;
+  Uint8List writeToBuffer() {
+    final writer = WireWriter(wireSize);
+    writeTo(writer);
+    return writer.takeBytes();
+  }
 
-  @$pb.TagNumber(1)
-  $core.List<$core.int> get data => $_getN(0);
-  @$pb.TagNumber(1)
-  set data($core.List<$core.int> v) { $_setBytes(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasData() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearData() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.int get durationInTimescale => $_getIZ(1);
-  @$pb.TagNumber(2)
-  set durationInTimescale($core.int v) { $_setUnsignedInt32(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasDurationInTimescale() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearDurationInTimescale() => clearField(2);
+  void mergeFromBuffer(List<int> input) {
+    final reader = WireReader(input);
+    while (!reader.isAtEnd) {
+      final tag = reader.readTag();
+      final field = tag >> 3;
+      final wireType = tag & 7;
+      switch (field) {
+        case 1:
+          reader.requireWireType(wireType, 2);
+          data = reader.readBytes();
+        case 2:
+          reader.requireWireType(wireType, 0);
+          durationInTimescale = reader.readUint32();
+        default:
+          reader.skipField(wireType);
+      }
+    }
+  }
 }
-
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

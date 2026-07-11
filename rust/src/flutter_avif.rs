@@ -1,7 +1,6 @@
 use allo_isolate::Isolate;
 use async_std::task;
 use libavif_sys::avifDecoder;
-use protobuf::Message;
 use std::collections::HashMap;
 use std::mem;
 use std::os::raw::c_uchar;
@@ -21,8 +20,8 @@ lazy_static::lazy_static! {
 
 #[no_mangle]
 pub extern "C" fn decode_single_frame_image(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     task::spawn(isolate.task(async move {
@@ -30,7 +29,7 @@ pub extern "C" fn decode_single_frame_image(port: i64, ptr: *const c_uchar, len:
         let image = _get_next_frame(decoder);
         _dispose_decoder(decoder);
 
-        return image.write_to_bytes().unwrap();
+        return image.write_to_bytes();
     }));
 
     return port;
@@ -38,8 +37,8 @@ pub extern "C" fn decode_single_frame_image(port: i64, ptr: *const c_uchar, len:
 
 #[no_mangle]
 pub extern "C" fn init_memory_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     {
@@ -47,7 +46,7 @@ pub extern "C" fn init_memory_decoder(port: i64, ptr: *const c_uchar, len: usize
         if map.contains_key(&input.key) {
             let decoder = &map[&input.key];
 
-            let output = decoder.info.write_to_bytes().unwrap();
+            let output = decoder.info.write_to_bytes();
 
             isolate.post(output);
 
@@ -78,7 +77,7 @@ pub extern "C" fn init_memory_decoder(port: i64, ptr: *const c_uchar, len: usize
             );
             mem::forget(avif_bytes);
 
-            return avif_info.write_to_bytes().unwrap();
+            return avif_info.write_to_bytes();
         }
     }));
 
@@ -87,8 +86,8 @@ pub extern "C" fn init_memory_decoder(port: i64, ptr: *const c_uchar, len: usize
 
 #[no_mangle]
 pub extern "C" fn reset_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     task::spawn(isolate.task(async move {
@@ -110,8 +109,8 @@ pub extern "C" fn reset_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i
 
 #[no_mangle]
 pub extern "C" fn dispose_decoder(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     task::spawn(isolate.task(async move {
@@ -136,8 +135,8 @@ pub extern "C" fn dispose_decoder(port: i64, ptr: *const c_uchar, len: usize) ->
 
 #[no_mangle]
 pub extern "C" fn get_next_frame(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = KeyRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = KeyRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     task::spawn(isolate.task(async move {
@@ -150,7 +149,7 @@ pub extern "C" fn get_next_frame(port: i64, ptr: *const c_uchar, len: usize) -> 
             let decoder = &map[&input.key];
             let result = _get_next_frame(decoder.decoder);
 
-            return result.write_to_bytes().unwrap();
+            return result.write_to_bytes();
         }
     }));
 
@@ -159,8 +158,8 @@ pub extern "C" fn get_next_frame(port: i64, ptr: *const c_uchar, len: usize) -> 
 
 #[no_mangle]
 pub extern "C" fn encode_avif(port: i64, ptr: *const c_uchar, len: usize) -> i64 {
-    let pb_bytes = unsafe { slice::from_raw_parts(ptr, len) };
-    let input = EncodeRequest::parse_from_bytes(&Vec::from(pb_bytes)).unwrap();
+    let request_bytes = unsafe { slice::from_raw_parts(ptr, len) };
+    let input = EncodeRequest::parse_from_bytes(request_bytes).unwrap();
     let isolate = Isolate::new(port);
 
     task::spawn(isolate.task(async move {

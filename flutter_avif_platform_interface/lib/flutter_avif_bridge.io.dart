@@ -12,12 +12,9 @@ import 'package:flutter_avif_platform_interface/models/encode_request.pb.dart';
 import 'package:flutter_avif_platform_interface/models/frame.pb.dart';
 import 'package:flutter_avif_platform_interface/models/key_request.pb.dart';
 import 'package:flutter_avif_platform_interface/models/encode_frame.pb.dart';
-import 'package:protobuf/protobuf.dart';
 export 'package:flutter_avif_platform_interface/models/encode_frame.pb.dart';
 
 class FlutterAvifImpl implements FlutterAvif {
-  static const int PROTOBUF_SIZE_LIMIT = 2147483648;
-
   final fa_ffi.FlutterAvifFFI flutterAvifFFI;
 
   FlutterAvifImpl(ffi.DynamicLibrary dyLib)
@@ -31,10 +28,7 @@ class FlutterAvifImpl implements FlutterAvif {
 
   @override
   Future<Frame> decodeSingleFrameImage({required Uint8List avifBytes}) {
-    final request = KeyRequest(
-      key: "",
-      data: avifBytes,
-    ).writeToBuffer();
+    final request = KeyRequest(key: "", data: avifBytes).writeToBuffer();
     final nativeRequest = toPointer(request);
 
     final completer = Completer<Frame>();
@@ -42,30 +36,23 @@ class FlutterAvifImpl implements FlutterAvif {
     port.handler = (response) {
       port.close();
 
-      final frame = Frame.create();
-      final codedInput = CodedBufferReader(response, sizeLimit: PROTOBUF_SIZE_LIMIT);
-      frame.mergeFromCodedBufferReader(codedInput);
-
-      completer.complete(frame);
+      completer.complete(Frame.fromBuffer(response));
     };
 
     flutterAvifFFI.decode_single_frame_image(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
 
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
 
   @override
   Future<bool> disposeDecoder({required String key}) {
-    final request = KeyRequest(
-      key: key,
-      data: Uint8List.fromList([1]),
-    ).writeToBuffer();
+    final request = KeyRequest(key: key).writeToBuffer();
     final nativeRequest = toPointer(request);
 
     final completer = Completer<bool>();
@@ -78,11 +65,11 @@ class FlutterAvifImpl implements FlutterAvif {
 
     flutterAvifFFI.dispose_decoder(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
 
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
@@ -126,42 +113,35 @@ class FlutterAvifImpl implements FlutterAvif {
 
     flutterAvifFFI.encode_avif(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
 
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
 
   @override
   Future<Frame> getNextFrame({required String key}) {
-    final request = KeyRequest(
-      key: key,
-      data: Uint8List.fromList([1]),
-    ).writeToBuffer();
+    final request = KeyRequest(key: key).writeToBuffer();
     final nativeRequest = toPointer(request);
 
     final completer = Completer<Frame>();
     final port = RawReceivePort();
     port.handler = (response) {
       port.close();
-      
-      final frame = Frame.create();
-      final codedInput = CodedBufferReader(response, sizeLimit: PROTOBUF_SIZE_LIMIT);
-      frame.mergeFromCodedBufferReader(codedInput);
 
-      completer.complete(frame);
+      completer.complete(Frame.fromBuffer(response));
     };
 
     flutterAvifFFI.get_next_frame(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
 
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
@@ -171,10 +151,7 @@ class FlutterAvifImpl implements FlutterAvif {
     required String key,
     required Uint8List avifBytes,
   }) {
-    final request = KeyRequest(
-      key: key,
-      data: avifBytes,
-    ).writeToBuffer();
+    final request = KeyRequest(key: key, data: avifBytes).writeToBuffer();
     final nativeRequest = toPointer(request);
 
     final completer = Completer<AvifInfo>();
@@ -182,29 +159,22 @@ class FlutterAvifImpl implements FlutterAvif {
     port.handler = (response) {
       port.close();
 
-      final info = AvifInfo.create();
-      final codedInput = CodedBufferReader(response, sizeLimit: PROTOBUF_SIZE_LIMIT);
-      info.mergeFromCodedBufferReader(codedInput);
-
-      completer.complete(info);
+      completer.complete(AvifInfo.fromBuffer(response));
     };
 
     flutterAvifFFI.init_memory_decoder(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
 
   @override
   Future<bool> resetDecoder({required String key}) {
-    final request = KeyRequest(
-      key: key,
-      data: Uint8List.fromList([1]),
-    ).writeToBuffer();
+    final request = KeyRequest(key: key).writeToBuffer();
     final nativeRequest = toPointer(request);
 
     final completer = Completer<bool>();
@@ -217,11 +187,11 @@ class FlutterAvifImpl implements FlutterAvif {
 
     flutterAvifFFI.reset_decoder(
       port.sendPort.nativePort,
-      nativeRequest[0],
-      nativeRequest[1],
+      nativeRequest.$1,
+      nativeRequest.$2,
     );
 
-    malloc.free(nativeRequest[0]);
+    malloc.free(nativeRequest.$1);
 
     return completer.future;
   }
@@ -270,19 +240,19 @@ class DecodeData {
   });
 }
 
-List toPointer(Uint8List units) {
-  final ffi.Pointer<ffi.Uint8> result = malloc.allocate<ffi.Uint8>(
-    units.length + 1,
+(ffi.Pointer<ffi.UnsignedChar>, int) toPointer(Uint8List units) {
+  final ffi.Pointer<ffi.UnsignedChar> result =
+      malloc.allocate<ffi.UnsignedChar>(
+    units.length,
   );
 
-  final Uint8List nativeBytes = result.asTypedList(units.length + 1);
+  final Uint8List nativeBytes = result.cast<ffi.Uint8>().asTypedList(
+        units.length,
+      );
   nativeBytes.setAll(0, units);
-  nativeBytes[units.length] = 0;
-  ffi.Pointer<ffi.Uint8> data = result.cast();
-  int dataLength = units.length;
-
-  return [data, dataLength];
+  return (result, units.length);
 }
 
 typedef dartPostCObject = Pointer Function(
-    Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>);
+  Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>,
+);

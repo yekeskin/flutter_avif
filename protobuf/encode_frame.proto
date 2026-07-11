@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package models;
-
-message EncodeFrame {
-  bytes data = 1;
-  uint32 duration_in_timescale = 2;
-}

@@ -16,6 +16,5 @@ libavif-sys = { version = "0.14.3", git = "https://github.com/yekeskin/libavif-r
 lazy_static = "1.4.0"
 cmake = "=0.1.48"
 proc-macro2 = "=1.0.79"
-protobuf = "3.7.1"
 allo-isolate = "0.1.26"
 async-std = "1.13.0"

@@ -1,204 +1,226 @@
-//
-//  Generated code. Do not modify.
-//  source: encode_request.proto
-//
-// @dart = 2.12
+import 'dart:typed_data';
 
-// ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+import 'encode_frame.pb.dart';
+import 'wire_format.dart';
 
-import 'dart:core' as $core;
+/// Parameters and RGBA frames supplied to the native AVIF encoder.
+class EncodeRequest {
+  EncodeRequest({
+    int? width,
+    int? height,
+    int? speed,
+    int? maxThreads,
+    int? timescale,
+    int? maxQuantizer,
+    int? minQuantizer,
+    int? maxQuantizerAlpha,
+    int? minQuantizerAlpha,
+    Iterable<EncodeFrame>? imageList,
+    List<int>? exifData,
+  })  : width = width ?? 0,
+        height = height ?? 0,
+        speed = speed ?? 0,
+        maxThreads = maxThreads ?? 0,
+        timescale = timescale ?? 0,
+        maxQuantizer = maxQuantizer ?? 0,
+        minQuantizer = minQuantizer ?? 0,
+        maxQuantizerAlpha = maxQuantizerAlpha ?? 0,
+        minQuantizerAlpha = minQuantizerAlpha ?? 0,
+        imageList = imageList?.toList() ?? <EncodeFrame>[],
+        exifData = exifData ?? Uint8List(0);
 
-import 'package:protobuf/protobuf.dart' as $pb;
+  factory EncodeRequest.fromBuffer(List<int> input) =>
+      EncodeRequest()..mergeFromBuffer(input);
 
-import 'encode_frame.pb.dart' as $0;
+  int width;
+  int height;
+  int speed;
+  int maxThreads;
+  int timescale;
+  int maxQuantizer;
+  int minQuantizer;
+  int maxQuantizerAlpha;
+  int minQuantizerAlpha;
+  final List<EncodeFrame> imageList;
+  List<int> exifData;
 
-class EncodeRequest extends $pb.GeneratedMessage {
-  factory EncodeRequest({
-    $core.int? width,
-    $core.int? height,
-    $core.int? speed,
-    $core.int? maxThreads,
-    $core.int? timescale,
-    $core.int? maxQuantizer,
-    $core.int? minQuantizer,
-    $core.int? maxQuantizerAlpha,
-    $core.int? minQuantizerAlpha,
-    $core.Iterable<$0.EncodeFrame>? imageList,
-    $core.List<$core.int>? exifData,
-  }) {
-    final $result = create();
-    if (width != null) {
-      $result.width = width;
-    }
-    if (height != null) {
-      $result.height = height;
-    }
-    if (speed != null) {
-      $result.speed = speed;
-    }
-    if (maxThreads != null) {
-      $result.maxThreads = maxThreads;
-    }
-    if (timescale != null) {
-      $result.timescale = timescale;
-    }
-    if (maxQuantizer != null) {
-      $result.maxQuantizer = maxQuantizer;
-    }
-    if (minQuantizer != null) {
-      $result.minQuantizer = minQuantizer;
-    }
-    if (maxQuantizerAlpha != null) {
-      $result.maxQuantizerAlpha = maxQuantizerAlpha;
-    }
-    if (minQuantizerAlpha != null) {
-      $result.minQuantizerAlpha = minQuantizerAlpha;
-    }
-    if (imageList != null) {
-      $result.imageList.addAll(imageList);
-    }
-    if (exifData != null) {
-      $result.exifData = exifData;
-    }
-    return $result;
+  static EncodeRequest create() => EncodeRequest();
+  EncodeRequest createEmptyInstance() => EncodeRequest();
+  static List<EncodeRequest> createRepeated() => <EncodeRequest>[];
+  static final EncodeRequest _defaultInstance = EncodeRequest();
+  static EncodeRequest getDefault() => _defaultInstance;
+
+  bool hasWidth() => width != 0;
+  bool hasHeight() => height != 0;
+  bool hasSpeed() => speed != 0;
+  bool hasMaxThreads() => maxThreads != 0;
+  bool hasTimescale() => timescale != 0;
+  bool hasMaxQuantizer() => maxQuantizer != 0;
+  bool hasMinQuantizer() => minQuantizer != 0;
+  bool hasMaxQuantizerAlpha() => maxQuantizerAlpha != 0;
+  bool hasMinQuantizerAlpha() => minQuantizerAlpha != 0;
+  bool hasExifData() => exifData.isNotEmpty;
+  void clearWidth() => width = 0;
+  void clearHeight() => height = 0;
+  void clearSpeed() => speed = 0;
+  void clearMaxThreads() => maxThreads = 0;
+  void clearTimescale() => timescale = 0;
+  void clearMaxQuantizer() => maxQuantizer = 0;
+  void clearMinQuantizer() => minQuantizer = 0;
+  void clearMaxQuantizerAlpha() => maxQuantizerAlpha = 0;
+  void clearMinQuantizerAlpha() => minQuantizerAlpha = 0;
+  void clearExifData() => exifData = Uint8List(0);
+
+  EncodeRequest clone() => EncodeRequest(
+        width: width,
+        height: height,
+        speed: speed,
+        maxThreads: maxThreads,
+        timescale: timescale,
+        maxQuantizer: maxQuantizer,
+        minQuantizer: minQuantizer,
+        maxQuantizerAlpha: maxQuantizerAlpha,
+        minQuantizerAlpha: minQuantizerAlpha,
+        imageList: imageList.map((frame) => frame.clone()),
+        exifData: Uint8List.fromList(exifData),
+      );
+
+  EncodeRequest copyWith(void Function(EncodeRequest) updates) {
+    final copy = clone();
+    updates(copy);
+    return copy;
   }
-  EncodeRequest._() : super();
-  factory EncodeRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory EncodeRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'EncodeRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'models'), createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OU3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OU3)
-    ..a<$core.int>(3, _omitFieldNames ? '' : 'speed', $pb.PbFieldType.OS3)
-    ..a<$core.int>(4, _omitFieldNames ? '' : 'maxThreads', $pb.PbFieldType.OS3)
-    ..a<$core.int>(5, _omitFieldNames ? '' : 'timescale', $pb.PbFieldType.OU3)
-    ..a<$core.int>(6, _omitFieldNames ? '' : 'maxQuantizer', $pb.PbFieldType.OS3)
-    ..a<$core.int>(7, _omitFieldNames ? '' : 'minQuantizer', $pb.PbFieldType.OS3)
-    ..a<$core.int>(8, _omitFieldNames ? '' : 'maxQuantizerAlpha', $pb.PbFieldType.OS3)
-    ..a<$core.int>(9, _omitFieldNames ? '' : 'minQuantizerAlpha', $pb.PbFieldType.OS3)
-    ..pc<$0.EncodeFrame>(10, _omitFieldNames ? '' : 'imageList', $pb.PbFieldType.PM, subBuilder: $0.EncodeFrame.create)
-    ..a<$core.List<$core.int>>(11, _omitFieldNames ? '' : 'exifData', $pb.PbFieldType.OY)
-    ..hasRequiredFields = false
-  ;
+  void mergeFromMessage(EncodeRequest other) {
+    if (other.width != 0) width = other.width;
+    if (other.height != 0) height = other.height;
+    if (other.speed != 0) speed = other.speed;
+    if (other.maxThreads != 0) maxThreads = other.maxThreads;
+    if (other.timescale != 0) timescale = other.timescale;
+    if (other.maxQuantizer != 0) maxQuantizer = other.maxQuantizer;
+    if (other.minQuantizer != 0) minQuantizer = other.minQuantizer;
+    if (other.maxQuantizerAlpha != 0) {
+      maxQuantizerAlpha = other.maxQuantizerAlpha;
+    }
+    if (other.minQuantizerAlpha != 0) {
+      minQuantizerAlpha = other.minQuantizerAlpha;
+    }
+    imageList.addAll(other.imageList.map((frame) => frame.clone()));
+    if (other.exifData.isNotEmpty) {
+      exifData = Uint8List.fromList(other.exifData);
+    }
+  }
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  EncodeRequest clone() => EncodeRequest()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  EncodeRequest copyWith(void Function(EncodeRequest) updates) => super.copyWith((message) => updates(message as EncodeRequest)) as EncodeRequest;
+  Uint8List writeToBuffer() {
+    var length = 0;
+    if (width != 0) length += varintFieldSize(1, width);
+    if (height != 0) length += varintFieldSize(2, height);
+    if (speed != 0) length += varintFieldSize(3, zigZagEncode32(speed));
+    if (maxThreads != 0) {
+      length += varintFieldSize(4, zigZagEncode32(maxThreads));
+    }
+    if (timescale != 0) length += varintFieldSize(5, timescale);
+    if (maxQuantizer != 0) {
+      length += varintFieldSize(6, zigZagEncode32(maxQuantizer));
+    }
+    if (minQuantizer != 0) {
+      length += varintFieldSize(7, zigZagEncode32(minQuantizer));
+    }
+    if (maxQuantizerAlpha != 0) {
+      length += varintFieldSize(8, zigZagEncode32(maxQuantizerAlpha));
+    }
+    if (minQuantizerAlpha != 0) {
+      length += varintFieldSize(9, zigZagEncode32(minQuantizerAlpha));
+    }
+    for (final frame in imageList) {
+      length += bytesFieldSize(10, frame.wireSize);
+    }
+    if (exifData.isNotEmpty) length += bytesFieldSize(11, exifData.length);
 
-  $pb.BuilderInfo get info_ => _i;
+    final writer = WireWriter(length);
+    _writeUnsigned(writer, 1, width);
+    _writeUnsigned(writer, 2, height);
+    _writeSigned(writer, 3, speed);
+    _writeSigned(writer, 4, maxThreads);
+    _writeUnsigned(writer, 5, timescale);
+    _writeSigned(writer, 6, maxQuantizer);
+    _writeSigned(writer, 7, minQuantizer);
+    _writeSigned(writer, 8, maxQuantizerAlpha);
+    _writeSigned(writer, 9, minQuantizerAlpha);
+    for (final frame in imageList) {
+      writer
+        ..writeTag(10, 2)
+        ..writeVarint(frame.wireSize);
+      frame.writeTo(writer);
+    }
+    if (exifData.isNotEmpty) {
+      writer
+        ..writeTag(11, 2)
+        ..writeBytes(exifData);
+    }
+    return writer.takeBytes();
+  }
 
-  @$core.pragma('dart2js:noInline')
-  static EncodeRequest create() => EncodeRequest._();
-  EncodeRequest createEmptyInstance() => create();
-  static $pb.PbList<EncodeRequest> createRepeated() => $pb.PbList<EncodeRequest>();
-  @$core.pragma('dart2js:noInline')
-  static EncodeRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<EncodeRequest>(create);
-  static EncodeRequest? _defaultInstance;
+  void mergeFromBuffer(List<int> input) {
+    final reader = WireReader(input);
+    while (!reader.isAtEnd) {
+      final tag = reader.readTag();
+      final field = tag >> 3;
+      final wireType = tag & 7;
+      switch (field) {
+        case 1:
+          reader.requireWireType(wireType, 0);
+          width = reader.readUint32();
+        case 2:
+          reader.requireWireType(wireType, 0);
+          height = reader.readUint32();
+        case 3:
+          reader.requireWireType(wireType, 0);
+          speed = zigZagDecode32(reader.readVarint());
+        case 4:
+          reader.requireWireType(wireType, 0);
+          maxThreads = zigZagDecode32(reader.readVarint());
+        case 5:
+          reader.requireWireType(wireType, 0);
+          timescale = reader.readUint32();
+        case 6:
+          reader.requireWireType(wireType, 0);
+          maxQuantizer = zigZagDecode32(reader.readVarint());
+        case 7:
+          reader.requireWireType(wireType, 0);
+          minQuantizer = zigZagDecode32(reader.readVarint());
+        case 8:
+          reader.requireWireType(wireType, 0);
+          maxQuantizerAlpha = zigZagDecode32(reader.readVarint());
+        case 9:
+          reader.requireWireType(wireType, 0);
+          minQuantizerAlpha = zigZagDecode32(reader.readVarint());
+        case 10:
+          reader.requireWireType(wireType, 2);
+          final nested = reader.readMessage();
+          imageList.add(EncodeFrame.fromBuffer(nested.bytes));
+        case 11:
+          reader.requireWireType(wireType, 2);
+          exifData = reader.readBytes();
+        default:
+          reader.skipField(wireType);
+      }
+    }
+  }
 
-  @$pb.TagNumber(1)
-  $core.int get width => $_getIZ(0);
-  @$pb.TagNumber(1)
-  set width($core.int v) { $_setUnsignedInt32(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasWidth() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearWidth() => clearField(1);
+  static void _writeUnsigned(WireWriter writer, int field, int value) {
+    if (value != 0) {
+      writer
+        ..writeTag(field, 0)
+        ..writeVarint(value);
+    }
+  }
 
-  @$pb.TagNumber(2)
-  $core.int get height => $_getIZ(1);
-  @$pb.TagNumber(2)
-  set height($core.int v) { $_setUnsignedInt32(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasHeight() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearHeight() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.int get speed => $_getIZ(2);
-  @$pb.TagNumber(3)
-  set speed($core.int v) { $_setSignedInt32(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasSpeed() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearSpeed() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.int get maxThreads => $_getIZ(3);
-  @$pb.TagNumber(4)
-  set maxThreads($core.int v) { $_setSignedInt32(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasMaxThreads() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearMaxThreads() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $core.int get timescale => $_getIZ(4);
-  @$pb.TagNumber(5)
-  set timescale($core.int v) { $_setUnsignedInt32(4, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasTimescale() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearTimescale() => clearField(5);
-
-  @$pb.TagNumber(6)
-  $core.int get maxQuantizer => $_getIZ(5);
-  @$pb.TagNumber(6)
-  set maxQuantizer($core.int v) { $_setSignedInt32(5, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasMaxQuantizer() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearMaxQuantizer() => clearField(6);
-
-  @$pb.TagNumber(7)
-  $core.int get minQuantizer => $_getIZ(6);
-  @$pb.TagNumber(7)
-  set minQuantizer($core.int v) { $_setSignedInt32(6, v); }
-  @$pb.TagNumber(7)
-  $core.bool hasMinQuantizer() => $_has(6);
-  @$pb.TagNumber(7)
-  void clearMinQuantizer() => clearField(7);
-
-  @$pb.TagNumber(8)
-  $core.int get maxQuantizerAlpha => $_getIZ(7);
-  @$pb.TagNumber(8)
-  set maxQuantizerAlpha($core.int v) { $_setSignedInt32(7, v); }
-  @$pb.TagNumber(8)
-  $core.bool hasMaxQuantizerAlpha() => $_has(7);
-  @$pb.TagNumber(8)
-  void clearMaxQuantizerAlpha() => clearField(8);
-
-  @$pb.TagNumber(9)
-  $core.int get minQuantizerAlpha => $_getIZ(8);
-  @$pb.TagNumber(9)
-  set minQuantizerAlpha($core.int v) { $_setSignedInt32(8, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasMinQuantizerAlpha() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearMinQuantizerAlpha() => clearField(9);
-
-  @$pb.TagNumber(10)
-  $core.List<$0.EncodeFrame> get imageList => $_getList(9);
-
-  @$pb.TagNumber(11)
-  $core.List<$core.int> get exifData => $_getN(10);
-  @$pb.TagNumber(11)
-  set exifData($core.List<$core.int> v) { $_setBytes(10, v); }
-  @$pb.TagNumber(11)
-  $core.bool hasExifData() => $_has(10);
-  @$pb.TagNumber(11)
-  void clearExifData() => clearField(11);
+  static void _writeSigned(WireWriter writer, int field, int value) {
+    if (value != 0) {
+      writer
+        ..writeTag(field, 0)
+        ..writeVarint(zigZagEncode32(value));
+    }
+  }
 }
-
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
