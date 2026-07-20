@@ -27,7 +27,7 @@ android {
         namespace = "com.teknorota.flutter_avif"
     }
 
-    compileSdkVersion 31
+    compileSdk 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
