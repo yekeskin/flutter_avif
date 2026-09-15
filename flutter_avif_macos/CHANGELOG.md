@@ -1,3 +1,8 @@
+## Unreleased
+
+* Add Swift Package Manager support for macOS using the existing universal binary.
+* Share native registration with CocoaPods and retain all Dart FFI entry points.
+
 ## 3.1.0
 
 * Update android binaries to support 16KB page size
