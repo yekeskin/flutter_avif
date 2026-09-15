@@ -1,3 +1,8 @@
+## Unreleased
+
+* Add iOS Swift Package Manager support while retaining CocoaPods compatibility.
+* Retain native FFI entry points during plugin registration in optimized builds.
+
 ## 3.1.0
 
 * Update android binaries to support 16KB page size
