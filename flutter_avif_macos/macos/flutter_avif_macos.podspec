@@ -19,8 +19,8 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'flutter_avif_macos/Sources/**/*.{swift,c,h}'
+  s.public_header_files = 'flutter_avif_macos/Sources/flutter_avif_macos_linker/include/*.h'
   s.dependency 'FlutterMacOS'
   s.platform = :osx, '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
