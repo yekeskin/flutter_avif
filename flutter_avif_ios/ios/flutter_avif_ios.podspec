@@ -5,7 +5,7 @@
 
 `
 rm -rf Frameworks/FlutterAvif.xcframework
-unzip FlutterAvif.xcframework.zip -d Frameworks/
+unzip flutter_avif_ios/FlutterAvif.xcframework.zip -d Frameworks/
 `
 
 Pod::Spec.new do |s|
@@ -19,13 +19,12 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'flutter_avif_ios/Sources/flutter_avif_ios/**/*.{h,m}'
+  s.public_header_files = 'flutter_avif_ios/Sources/flutter_avif_ios/include/**/*.h'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.vendored_frameworks = 'Frameworks/FlutterAvif.xcframework'
-  s.swift_version = '5.0'
 end
