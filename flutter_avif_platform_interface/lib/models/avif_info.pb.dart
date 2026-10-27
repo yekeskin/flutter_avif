@@ -63,7 +63,6 @@ class AvifInfo extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AvifInfo create() => AvifInfo._();
   AvifInfo createEmptyInstance() => create();
-  static $pb.PbList<AvifInfo> createRepeated() => $pb.PbList<AvifInfo>();
   @$core.pragma('dart2js:noInline')
   static AvifInfo getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AvifInfo>(create);
   static AvifInfo? _defaultInstance;

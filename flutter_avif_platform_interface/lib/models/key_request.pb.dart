@@ -53,7 +53,6 @@ class KeyRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static KeyRequest create() => KeyRequest._();
   KeyRequest createEmptyInstance() => create();
-  static $pb.PbList<KeyRequest> createRepeated() => $pb.PbList<KeyRequest>();
   @$core.pragma('dart2js:noInline')
   static KeyRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<KeyRequest>(create);
   static KeyRequest? _defaultInstance;

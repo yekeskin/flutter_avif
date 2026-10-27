@@ -53,7 +53,6 @@ class EncodeFrame extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static EncodeFrame create() => EncodeFrame._();
   EncodeFrame createEmptyInstance() => create();
-  static $pb.PbList<EncodeFrame> createRepeated() => $pb.PbList<EncodeFrame>();
   @$core.pragma('dart2js:noInline')
   static EncodeFrame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<EncodeFrame>(create);
   static EncodeFrame? _defaultInstance;

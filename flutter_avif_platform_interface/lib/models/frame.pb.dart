@@ -63,7 +63,6 @@ class Frame extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Frame create() => Frame._();
   Frame createEmptyInstance() => create();
-  static $pb.PbList<Frame> createRepeated() => $pb.PbList<Frame>();
   @$core.pragma('dart2js:noInline')
   static Frame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Frame>(create);
   static Frame? _defaultInstance;

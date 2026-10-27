@@ -100,7 +100,6 @@ class EncodeRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static EncodeRequest create() => EncodeRequest._();
   EncodeRequest createEmptyInstance() => create();
-  static $pb.PbList<EncodeRequest> createRepeated() => $pb.PbList<EncodeRequest>();
   @$core.pragma('dart2js:noInline')
   static EncodeRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<EncodeRequest>(create);
   static EncodeRequest? _defaultInstance;
